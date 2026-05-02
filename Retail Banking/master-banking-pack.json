@@ -1,0 +1,216 @@
+{
+  "version": "1.0.0",
+  "name": "Master Banking Pack",
+  "tables": [
+    {
+      "id": "tbl-001", "name": "customers",
+      "columns": [
+        { "id": "t1c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t1c2", "name": "first_name", "type": "string", "strategy": "name" },
+        { "id": "t1c3", "name": "last_name", "type": "string", "strategy": "name" },
+        { "id": "t1c4", "name": "email", "type": "email", "strategy": "email" },
+        { "id": "t1c5", "name": "phone_number", "type": "string", "nullable": true, "strategy": "phone" },
+        { "id": "t1c6", "name": "kyc_status", "type": "enum", "strategy": "enum", "options": { "values": ["verified", "pending", "failed", "expired"], "weights": [72, 15, 8, 5] } },
+        { "id": "t1c7", "name": "risk_score", "type": "enum", "strategy": "enum", "options": { "values": ["low", "medium", "high", "critical"], "weights": [55, 30, 12, 3] } },
+        { "id": "t1c8", "name": "created_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-002", "name": "branches",
+      "columns": [
+        { "id": "t2c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t2c2", "name": "name", "type": "string", "strategy": "company_name" },
+        { "id": "t2c3", "name": "branch_type", "type": "enum", "strategy": "enum", "options": { "values": ["retail", "commercial", "private_banking", "digital_only"], "weights": [55, 25, 10, 10] } },
+        { "id": "t2c4", "name": "region", "type": "enum", "strategy": "enum", "options": { "values": ["northeast", "southeast", "midwest", "southwest", "west"], "weights": [22, 20, 18, 15, 25] } },
+        { "id": "t2c5", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["active", "temporarily_closed", "permanently_closed"], "weights": [88, 7, 5] } },
+        { "id": "t2c6", "name": "opened_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-003", "name": "accounts",
+      "columns": [
+        { "id": "t3c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t3c2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-001", "columnId": "t1c1" } },
+        { "id": "t3c3", "name": "branch_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-002", "columnId": "t2c1" } },
+        { "id": "t3c4", "name": "account_type", "type": "enum", "strategy": "enum", "options": { "values": ["checking", "savings", "money_market", "cd", "ira"], "weights": [40, 35, 12, 8, 5] } },
+        { "id": "t3c5", "name": "balance", "type": "decimal", "strategy": "decimal" },
+        { "id": "t3c6", "name": "currency", "type": "enum", "strategy": "enum", "options": { "values": ["USD", "EUR", "GBP", "CAD"], "weights": [80, 10, 5, 5] } },
+        { "id": "t3c7", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["active", "dormant", "frozen", "closed"], "weights": [75, 12, 5, 8] } },
+        { "id": "t3c8", "name": "opened_at", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t3c9", "name": "closed_at", "type": "timestamp", "nullable": true, "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-004", "name": "transactions",
+      "columns": [
+        { "id": "t4c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t4c2", "name": "account_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-003", "columnId": "t3c1" } },
+        { "id": "t4c3", "name": "transaction_type", "type": "enum", "strategy": "enum", "options": { "values": ["deposit", "withdrawal", "transfer_in", "transfer_out", "fee", "interest", "refund"], "weights": [28, 25, 15, 15, 8, 6, 3] } },
+        { "id": "t4c4", "name": "amount", "type": "decimal", "strategy": "decimal" },
+        { "id": "t4c5", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["completed", "pending", "failed", "reversed"], "weights": [82, 10, 5, 3] } },
+        { "id": "t4c6", "name": "channel", "type": "enum", "strategy": "enum", "options": { "values": ["online", "mobile", "atm", "branch", "wire"], "weights": [30, 35, 15, 12, 8] } },
+        { "id": "t4c7", "name": "executed_at", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t4c8", "name": "settled_at", "type": "timestamp", "nullable": true, "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-005", "name": "loans",
+      "columns": [
+        { "id": "t5c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t5c2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-001", "columnId": "t1c1" } },
+        { "id": "t5c3", "name": "loan_type", "type": "enum", "strategy": "enum", "options": { "values": ["mortgage", "auto", "personal", "student", "business", "home_equity"], "weights": [30, 22, 20, 12, 10, 6] } },
+        { "id": "t5c4", "name": "principal_amount", "type": "decimal", "strategy": "decimal" },
+        { "id": "t5c5", "name": "interest_rate", "type": "decimal", "strategy": "decimal" },
+        { "id": "t5c6", "name": "term_months", "type": "integer", "strategy": "integer" },
+        { "id": "t5c7", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["current", "delinquent_30", "delinquent_60", "delinquent_90", "default", "paid_off", "restructured"], "weights": [60, 12, 6, 4, 3, 12, 3] } },
+        { "id": "t5c8", "name": "originated_at", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t5c9", "name": "defaulted_at", "type": "timestamp", "nullable": true, "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-006", "name": "credit_cards",
+      "columns": [
+        { "id": "t6c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t6c2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-001", "columnId": "t1c1" } },
+        { "id": "t6c3", "name": "card_type", "type": "enum", "strategy": "enum", "options": { "values": ["visa_standard", "visa_gold", "visa_platinum", "mastercard_standard", "mastercard_world", "amex"], "weights": [30, 20, 10, 20, 12, 8] } },
+        { "id": "t6c4", "name": "credit_limit", "type": "decimal", "strategy": "decimal" },
+        { "id": "t6c5", "name": "current_balance", "type": "decimal", "strategy": "decimal" },
+        { "id": "t6c6", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["active", "suspended", "cancelled", "expired", "lost_stolen"], "weights": [70, 8, 10, 7, 5] } },
+        { "id": "t6c7", "name": "issued_at", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t6c8", "name": "cancelled_at", "type": "timestamp", "nullable": true, "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-007", "name": "fraud_reports",
+      "columns": [
+        { "id": "t7c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t7c2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-001", "columnId": "t1c1" } },
+        { "id": "t7c3", "name": "fraud_type", "type": "enum", "strategy": "enum", "options": { "values": ["identity_theft", "transaction_fraud", "account_takeover", "card_not_present", "phishing"], "weights": [25, 25, 20, 20, 10] } },
+        { "id": "t7c4", "name": "severity", "type": "enum", "strategy": "enum", "options": { "values": ["low", "medium", "high", "critical"], "weights": [30, 35, 25, 10] } },
+        { "id": "t7c5", "name": "resolution_status", "type": "enum", "strategy": "enum", "options": { "values": ["confirmed_fraud", "false_positive", "under_review", "customer_verified", "escalated"], "weights": [18, 40, 15, 20, 7] } },
+        { "id": "t7c6", "name": "reported_at", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t7c7", "name": "resolved_at", "type": "timestamp", "nullable": true, "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-008", "name": "atms",
+      "columns": [
+        { "id": "t8c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t8c2", "name": "branch_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-002", "columnId": "t2c1" } },
+        { "id": "t8c3", "name": "location", "type": "string", "strategy": "address" },
+        { "id": "t8c4", "name": "atm_type", "type": "enum", "strategy": "enum", "options": { "values": ["full_service", "cash_only", "drive_through", "in_branch"], "weights": [40, 30, 15, 15] } },
+        { "id": "t8c5", "name": "operational_status", "type": "enum", "strategy": "enum", "options": { "values": ["online", "offline", "maintenance", "out_of_cash"], "weights": [80, 8, 7, 5] } },
+        { "id": "t8c6", "name": "installed_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-009", "name": "loan_payments",
+      "columns": [
+        { "id": "t9c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t9c2", "name": "loan_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-005", "columnId": "t5c1" } },
+        { "id": "t9c3", "name": "amount", "type": "decimal", "strategy": "decimal" },
+        { "id": "t9c4", "name": "payment_type", "type": "enum", "strategy": "enum", "options": { "values": ["scheduled", "extra", "lump_sum", "insurance_payout"], "weights": [75, 15, 7, 3] } },
+        { "id": "t9c5", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["completed", "returned", "late"], "weights": [85, 5, 10] } },
+        { "id": "t9c6", "name": "paid_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-010", "name": "card_transactions",
+      "columns": [
+        { "id": "t10c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t10c2", "name": "card_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-006", "columnId": "t6c1" } },
+        { "id": "t10c3", "name": "merchant_category", "type": "enum", "strategy": "enum", "options": { "values": ["grocery", "restaurant", "gas_station", "retail", "online", "travel", "healthcare", "entertainment"], "weights": [18, 14, 10, 16, 20, 6, 9, 7] } },
+        { "id": "t10c4", "name": "amount", "type": "decimal", "strategy": "decimal" },
+        { "id": "t10c5", "name": "is_international", "type": "enum", "strategy": "enum", "options": { "values": ["true", "false"], "weights": [8, 92] } },
+        { "id": "t10c6", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["approved", "declined", "disputed", "reversed"], "weights": [88, 6, 4, 2] } },
+        { "id": "t10c7", "name": "executed_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-011", "name": "atm_transactions",
+      "columns": [
+        { "id": "t11c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t11c2", "name": "atm_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-008", "columnId": "t8c1" } },
+        { "id": "t11c3", "name": "account_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-003", "columnId": "t3c1" } },
+        { "id": "t11c4", "name": "transaction_type", "type": "enum", "strategy": "enum", "options": { "values": ["withdrawal", "deposit", "balance_inquiry", "transfer", "mini_statement"], "weights": [45, 20, 18, 10, 7] } },
+        { "id": "t11c5", "name": "amount", "type": "decimal", "nullable": true, "strategy": "decimal" },
+        { "id": "t11c6", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["completed", "failed", "card_retained"], "weights": [90, 8, 2] } },
+        { "id": "t11c7", "name": "executed_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-012", "name": "customer_service_tickets",
+      "columns": [
+        { "id": "t12c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t12c2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-001", "columnId": "t1c1" } },
+        { "id": "t12c3", "name": "category", "type": "enum", "strategy": "enum", "options": { "values": ["billing_dispute", "card_issue", "account_access", "fraud_report", "loan_inquiry", "general", "complaint"], "weights": [18, 15, 14, 12, 10, 20, 11] } },
+        { "id": "t12c4", "name": "priority", "type": "enum", "strategy": "enum", "options": { "values": ["low", "medium", "high", "urgent"], "weights": [25, 40, 25, 10] } },
+        { "id": "t12c5", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["open", "in_progress", "waiting_customer", "resolved", "closed"], "weights": [15, 25, 10, 30, 20] } },
+        { "id": "t12c6", "name": "channel", "type": "enum", "strategy": "enum", "options": { "values": ["phone", "email", "chat", "branch", "social_media"], "weights": [30, 25, 22, 15, 8] } },
+        { "id": "t12c7", "name": "opened_at", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t12c8", "name": "resolved_at", "type": "timestamp", "nullable": true, "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-013", "name": "account_audit_log",
+      "columns": [
+        { "id": "t13c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t13c2", "name": "account_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-003", "columnId": "t3c1" } },
+        { "id": "t13c3", "name": "action", "type": "enum", "strategy": "enum", "options": { "values": ["opened", "status_change", "balance_adjustment", "interest_applied", "fee_charged", "limit_updated", "kyc_updated", "closed"], "weights": [8, 20, 25, 15, 12, 8, 7, 5] } },
+        { "id": "t13c4", "name": "old_value", "type": "string", "nullable": true, "strategy": "random_string" },
+        { "id": "t13c5", "name": "new_value", "type": "string", "nullable": true, "strategy": "random_string" },
+        { "id": "t13c6", "name": "performed_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-014", "name": "interest_rates",
+      "columns": [
+        { "id": "t14c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t14c2", "name": "product_type", "type": "enum", "strategy": "enum", "options": { "values": ["checking", "savings", "money_market", "cd_6mo", "cd_12mo", "mortgage_15yr", "mortgage_30yr", "auto", "personal"], "weights": [12, 15, 10, 10, 10, 12, 12, 10, 9] } },
+        { "id": "t14c3", "name": "rate", "type": "decimal", "strategy": "decimal" },
+        { "id": "t14c4", "name": "effective_from", "type": "timestamp", "strategy": "timestamp" },
+        { "id": "t14c5", "name": "effective_to", "type": "timestamp", "nullable": true, "strategy": "future_date" }
+      ]
+    },
+    {
+      "id": "tbl-015", "name": "fraud_rules",
+      "columns": [
+        { "id": "t15c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t15c2", "name": "rule_name", "type": "string", "strategy": "random_string" },
+        { "id": "t15c3", "name": "rule_type", "type": "enum", "strategy": "enum", "options": { "values": ["velocity", "amount_threshold", "geo_fence", "device_fingerprint", "behavioral", "network_analysis"], "weights": [20, 25, 15, 15, 15, 10] } },
+        { "id": "t15c4", "name": "severity", "type": "enum", "strategy": "enum", "options": { "values": ["info", "warning", "alert", "block"], "weights": [15, 30, 35, 20] } },
+        { "id": "t15c5", "name": "is_active", "type": "enum", "strategy": "enum", "options": { "values": ["true", "false"], "weights": [85, 15] } },
+        { "id": "t15c6", "name": "created_at", "type": "timestamp", "strategy": "timestamp" }
+      ]
+    },
+    {
+      "id": "tbl-016", "name": "customer_addresses",
+      "columns": [
+        { "id": "t16c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "t16c2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-001", "columnId": "t1c1" } },
+        { "id": "t16c3", "name": "address_type", "type": "enum", "strategy": "enum", "options": { "values": ["home", "work", "mailing"], "weights": [50, 30, 20] } },
+        { "id": "t16c4", "name": "street", "type": "string", "strategy": "address" },
+        { "id": "t16c5", "name": "city", "type": "string", "strategy": "random_string" },
+        { "id": "t16c6", "name": "state", "type": "enum", "strategy": "enum", "options": { "values": ["CA", "TX", "FL", "NY", "PA", "IL", "OH", "GA", "NC", "MI"], "weights": [15, 12, 10, 10, 8, 8, 7, 7, 6, 5] } },
+        { "id": "t16c7", "name": "zip_code", "type": "string", "strategy": "random_string" },
+        { "id": "t16c8", "name": "is_primary", "type": "enum", "strategy": "enum", "options": { "values": ["true", "false"], "weights": [60, 40] } }
+      ]
+    }
+  ],
+  "relationships": [
+    { "id": "r1", "sourceTableId": "tbl-001", "sourceColumnId": "t1c1", "targetTableId": "tbl-003", "targetColumnId": "t3c2", "type": "one-to-many" },
+    { "id": "r2", "sourceTableId": "tbl-002", "sourceColumnId": "t2c1", "targetTableId": "tbl-003", "targetColumnId": "t3c3", "type": "one-to-many" },
+    { "id": "r3", "sourceTableId": "tbl-003", "sourceColumnId": "t3c1", "targetTableId": "tbl-004", "targetColumnId": "t4c2", "type": "one-to-many" },
+    { "id": "r4", "sourceTableId": "tbl-001", "sourceColumnId": "t1c1", "targetTableId": "tbl-005", "targetColumnId": "t5c2", "type": "one-to-many" },
+    { "id": "r5", "sourceTableId": "tbl-001", "sourceColumnId": "t1c1", "targetTableId": "tbl-006", "targetColumnId": "t6c2", "type": "one-to-many" },
+    { "id": "r6", "sourceTableId": "tbl-001", "sourceColumnId": "t1c1", "targetTableId": "tbl-007", "targetColumnId": "t7c2", "type": "one-to-many" },
+    { "id": "r7", "sourceTableId": "tbl-002", "sourceColumnId": "t2c1", "targetTableId": "tbl-008", "targetColumnId": "t8c2", "type": "one-to-many" },
+    { "id": "r8", "sourceTableId": "tbl-005", "sourceColumnId": "t5c1", "targetTableId": "tbl-009", "targetColumnId": "t9c2", "type": "one-to-many" },
+    { "id": "r9", "sourceTableId": "tbl-006", "sourceColumnId": "t6c1", "targetTableId": "tbl-010", "targetColumnId": "t10c2", "type": "one-to-many" },
+    { "id": "r10", "sourceTableId": "tbl-008", "sourceColumnId": "t8c1", "targetTableId": "tbl-011", "targetColumnId": "t11c2", "type": "one-to-many" },
+    { "id": "r11", "sourceTableId": "tbl-003", "sourceColumnId": "t3c1", "targetTableId": "tbl-011", "targetColumnId": "t11c3", "type": "one-to-many" },
+    { "id": "r12", "sourceTableId": "tbl-001", "sourceColumnId": "t1c1", "targetTableId": "tbl-012", "targetColumnId": "t12c2", "type": "one-to-many" },
+    { "id": "r13", "sourceTableId": "tbl-003", "sourceColumnId": "t3c1", "targetTableId": "tbl-013", "targetColumnId": "t13c2", "type": "one-to-many" },
+    { "id": "r14", "sourceTableId": "tbl-001", "sourceColumnId": "t1c1", "targetTableId": "tbl-016", "targetColumnId": "t16c2", "type": "one-to-many" }
+  ]
+}

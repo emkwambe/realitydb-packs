@@ -1,0 +1,266 @@
+{
+  "tables": [
+    {
+      "id": "tbl-001",
+      "name": "patients",
+      "columns": [
+        { "id": "tbl-001-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-001-c2", "name": "mrn", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "template", "options": { "template": "EHR-{{rowIndex}}" } },
+        { "id": "tbl-001-c3", "name": "full_name", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "full_name", "options": {} },
+        { "id": "tbl-001-c4", "name": "date_of_birth", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 25, "maxYearsAgo": 90 } },
+        { "id": "tbl-001-c5", "name": "sex", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["male", "female", "other"], "weights": [48, 51, 1], "_citation": "US Census 2023: 50.5% female, 49.5% male. Oncology populations slightly more female due to breast cancer prevalence." } },
+        { "id": "tbl-001-c6", "name": "race", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["white", "black", "asian", "hispanic", "native_american", "pacific_islander", "multiracial", "unknown"], "weights": [58, 13, 6, 15, 1, 1, 3, 3], "_citation": "US Census 2023: White 58.4%, Hispanic 19.1%, Black 13.6%, Asian 6.3%. Adjusted for OMB categories used in EHR." } },
+        { "id": "tbl-001-c7", "name": "insurance_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["medicare", "medicaid", "commercial", "medicare_advantage", "self_pay", "dual_eligible", "tricare", "uninsured"], "weights": [30, 12, 35, 10, 3, 5, 3, 2], "_citation": "KFF 2024: Commercial ~35% of cancer patients. Medicare ~30% (median age 62-70). Medicaid ~12%. Dual eligible ~5%." } },
+        { "id": "tbl-001-c8", "name": "smoking_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["never", "former", "current", "unknown"], "weights": [45, 30, 15, 10], "_citation": "CDC BRFSS 2023: Never smokers ~58% general pop. Oncology populations have higher smoking rates. ~15% current." } },
+        { "id": "tbl-001-c9", "name": "bmi", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 16, "max": 48, "precision": 1 } },
+        { "id": "tbl-001-c10", "name": "primary_care_provider", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "full_name", "options": {} },
+        { "id": "tbl-001-c11", "name": "created_at", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 10 } }
+      ],
+      "position": { "x": 100, "y": 100 }
+    },
+    {
+      "id": "tbl-002",
+      "name": "encounters",
+      "columns": [
+        { "id": "tbl-002-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-002-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-002-c3", "name": "provider_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-010", "columnId": "tbl-010-c1" } },
+        { "id": "tbl-002-c4", "name": "facility_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-011", "columnId": "tbl-011-c1" } },
+        { "id": "tbl-002-c5", "name": "encounter_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["office_visit", "infusion_center", "emergency", "inpatient", "telehealth", "lab_only", "imaging", "procedure"], "weights": [30, 22, 5, 12, 10, 8, 8, 5], "_citation": "CMS: Office visits most common. Infusion visits high for chemo/IO patients (~22%). Telehealth increased post-COVID (~10%). AHRQ." } },
+        { "id": "tbl-002-c6", "name": "encounter_class", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["ambulatory", "inpatient", "observation", "emergency", "virtual"], "weights": [50, 15, 8, 7, 20], "_citation": "USCDI: Ambulatory most common encounter class (~50%). Virtual/telehealth ~20%. Inpatient ~15%." } },
+        { "id": "tbl-002-c7", "name": "discharge_disposition", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["home", "home_health", "snf", "hospice", "deceased", "against_medical_advice", "not_applicable"], "weights": [35, 8, 5, 5, 2, 1, 44], "_citation": "CMS: Home discharge ~70% of inpatient. N/A for ambulatory (~44% of all encounters). Hospice ~5% in oncology." } },
+        { "id": "tbl-002-c8", "name": "encounter_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } },
+        { "id": "tbl-002-c9", "name": "duration_minutes", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 10, "max": 480 } }
+      ],
+      "position": { "x": 420, "y": 100 }
+    },
+    {
+      "id": "tbl-003",
+      "name": "diagnoses",
+      "columns": [
+        { "id": "tbl-003-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-003-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-003-c3", "name": "encounter_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-002", "columnId": "tbl-002-c1" } },
+        { "id": "tbl-003-c4", "name": "icd10_code", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["C34.1", "C34.9", "C50.9", "C18.9", "C61", "C43.9", "C25.9", "C64.9", "C67.9", "Z51.11", "Z51.12", "Z85.3", "R91.1", "D64.9", "E11.9", "I10"], "weights": [8, 6, 8, 6, 6, 4, 3, 3, 3, 12, 8, 5, 4, 8, 8, 7], "_citation": "SEER: Lung (C34) and breast (C50) most common. Z51.11 (chemo encounter), Z51.12 (IO encounter) high in oncology EHR. Comorbidities: anemia (D64.9), diabetes (E11.9), HTN (I10) common." } },
+        { "id": "tbl-003-c5", "name": "diagnosis_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["primary", "secondary", "admitting", "discharge", "comorbidity"], "weights": [30, 30, 8, 7, 25], "_citation": "CMS coding: Multiple diagnoses per encounter. Primary + secondary most common. Comorbidities ~25% of all Dx codes." } },
+        { "id": "tbl-003-c6", "name": "diagnosis_rank", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 1, "max": 10 } },
+        { "id": "tbl-003-c7", "name": "present_on_admission", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["yes", "no", "unknown", "not_applicable"], "weights": [40, 10, 5, 45], "_citation": "CMS POA indicator: Required for inpatient. N/A for ambulatory (~45%). Yes for chronic conditions." } },
+        { "id": "tbl-003-c8", "name": "diagnosis_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 740, "y": 100 }
+    },
+    {
+      "id": "tbl-004",
+      "name": "procedures",
+      "columns": [
+        { "id": "tbl-004-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-004-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-004-c3", "name": "encounter_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-002", "columnId": "tbl-002-c1" } },
+        { "id": "tbl-004-c4", "name": "cpt_code", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["99213", "99214", "99215", "96413", "96415", "77385", "77386", "88305", "88342", "36561", "71260", "78816"], "weights": [15, 18, 8, 12, 8, 5, 5, 6, 4, 4, 8, 7], "_citation": "CMS: 99213-99215 E/M codes most common. 96413/96415 chemo administration. 77385-86 IMRT. 88305/88342 pathology. 71260 CT chest. 78816 PET-CT." } },
+        { "id": "tbl-004-c5", "name": "procedure_category", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["evaluation_management", "chemotherapy_admin", "radiation_therapy", "surgery", "pathology", "imaging", "infusion_support", "biopsy"], "weights": [30, 18, 10, 8, 10, 12, 7, 5], "_citation": "CMS oncology claims: E/M visits ~30%. Chemo admin ~18%. Imaging ~12%. Pathology ~10%. Surgery ~8%." } },
+        { "id": "tbl-004-c6", "name": "modifier", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["none", "25", "59", "76", "77", "LT", "RT", "TC", "26"], "weights": [40, 12, 8, 5, 5, 8, 8, 7, 7], "_citation": "CMS: No modifier most common (~40%). Mod 25 (significant E/M) ~12%. LT/RT laterality ~16%. TC/26 (technical/professional) ~14%." } },
+        { "id": "tbl-004-c7", "name": "procedure_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 1060, "y": 100 }
+    },
+    {
+      "id": "tbl-005",
+      "name": "medications",
+      "columns": [
+        { "id": "tbl-005-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-005-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-005-c3", "name": "medication_name", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["pembrolizumab", "carboplatin", "paclitaxel", "nivolumab", "osimertinib", "ondansetron", "dexamethasone", "filgrastim", "metformin", "lisinopril", "levothyroxine", "oxycodone", "lorazepam", "omeprazole", "enoxaparin"], "weights": [10, 8, 8, 6, 5, 10, 10, 6, 7, 6, 5, 5, 4, 5, 5], "_citation": "NCCN/CMS: Pembrolizumab most prescribed IO. Carboplatin/paclitaxel standard chemo. Ondansetron/dexamethasone for antiemesis. Supportive meds (metformin, lisinopril) for comorbidities." } },
+        { "id": "tbl-005-c4", "name": "medication_class", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["antineoplastic_IO", "antineoplastic_chemo", "antineoplastic_targeted", "antiemetic", "corticosteroid", "growth_factor", "analgesic", "antihypertensive", "antidiabetic", "thyroid", "anticoagulant", "anxiolytic", "ppi"], "weights": [12, 12, 8, 12, 10, 6, 8, 6, 6, 4, 5, 4, 7], "_citation": "Oncology pharmacy: Antineoplastics ~32%. Supportive care (antiemetics, steroids, growth factors) ~28%. Comorbidity meds ~40%." } },
+        { "id": "tbl-005-c5", "name": "route", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["IV", "oral", "subcutaneous", "intramuscular", "topical"], "weights": [35, 45, 10, 5, 5], "_citation": "Oncology: Oral ~45% (includes supportive meds). IV ~35% (chemo/IO). SC ~10% (growth factors, enoxaparin)." } },
+        { "id": "tbl-005-c6", "name": "status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["active", "completed", "discontinued", "on_hold"], "weights": [45, 30, 15, 10], "_citation": "EHR data: ~45% active prescriptions. ~30% completed courses. ~15% discontinued (AE/progression)." } },
+        { "id": "tbl-005-c7", "name": "start_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } },
+        { "id": "tbl-005-c8", "name": "end_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": true, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 3 } }
+      ],
+      "position": { "x": 100, "y": 400 }
+    },
+    {
+      "id": "tbl-006",
+      "name": "lab_results",
+      "columns": [
+        { "id": "tbl-006-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-006-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-006-c3", "name": "encounter_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-002", "columnId": "tbl-002-c1" } },
+        { "id": "tbl-006-c4", "name": "loinc_code", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["26464-8", "718-7", "777-3", "2160-0", "1742-6", "1920-8", "1975-2", "3016-3", "2532-0", "14979-9"], "weights": [12, 12, 10, 10, 8, 8, 8, 8, 8, 8], "_citation": "LOINC: 26464-8 WBC, 718-7 Hemoglobin, 777-3 Platelets, 2160-0 Creatinine, 1742-6 ALT, 1920-8 AST, 1975-2 Bilirubin, 3016-3 TSH, 2532-0 LDH, 14979-9 aPTT." } },
+        { "id": "tbl-006-c5", "name": "test_name", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["WBC", "hemoglobin", "platelets", "creatinine", "ALT", "AST", "bilirubin", "TSH", "LDH", "aPTT"], "weights": [12, 12, 10, 10, 8, 8, 8, 8, 8, 8], "_citation": "Mapped to LOINC codes. Standard oncology lab panel." } },
+        { "id": "tbl-006-c6", "name": "numeric_value", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 0.1, "max": 500, "precision": 1 } },
+        { "id": "tbl-006-c7", "name": "unit", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["10*3/uL", "g/dL", "10*3/uL_plt", "mg/dL", "U/L", "mg/dL_bili", "mIU/L", "U/L_ldh", "seconds", "other"], "weights": [12, 12, 10, 10, 8, 8, 8, 8, 8, 8], "_citation": "Standard SI/conventional units per LOINC test." } },
+        { "id": "tbl-006-c8", "name": "result_flag", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["normal", "low", "high", "critical_low", "critical_high"], "weights": [55, 12, 20, 3, 10], "_citation": "Clinical practice: ~55% normal. Elevated values common during treatment (~20% high). Critical values ~13% trigger intervention." } },
+        { "id": "tbl-006-c9", "name": "collection_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 420, "y": 400 }
+    },
+    {
+      "id": "tbl-007",
+      "name": "vital_signs",
+      "columns": [
+        { "id": "tbl-007-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-007-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-007-c3", "name": "encounter_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-002", "columnId": "tbl-002-c1" } },
+        { "id": "tbl-007-c4", "name": "weight_kg", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 40, "max": 130, "precision": 1 } },
+        { "id": "tbl-007-c5", "name": "height_cm", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 145, "max": 200 } },
+        { "id": "tbl-007-c6", "name": "systolic_bp", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 85, "max": 185 } },
+        { "id": "tbl-007-c7", "name": "diastolic_bp", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 50, "max": 115 } },
+        { "id": "tbl-007-c8", "name": "heart_rate", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 48, "max": 125 } },
+        { "id": "tbl-007-c9", "name": "temperature_c", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 35.5, "max": 40.0, "precision": 1 } },
+        { "id": "tbl-007-c10", "name": "spo2_pct", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 85, "max": 100 } },
+        { "id": "tbl-007-c11", "name": "pain_score", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], "weights": [25, 8, 8, 10, 8, 10, 8, 8, 6, 5, 4], "_citation": "NRS pain scale: 0 (no pain) most common ~25%. Moderate 3-5 (~28%). Severe 7-10 (~23%). Cancer pain prevalence ~55%." } },
+        { "id": "tbl-007-c12", "name": "measurement_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 740, "y": 400 }
+    },
+    {
+      "id": "tbl-008",
+      "name": "imaging_orders",
+      "columns": [
+        { "id": "tbl-008-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-008-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-008-c3", "name": "encounter_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-002", "columnId": "tbl-002-c1" } },
+        { "id": "tbl-008-c4", "name": "modality", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["CT", "PET_CT", "MRI", "X_ray", "ultrasound", "mammogram", "bone_scan", "DEXA"], "weights": [30, 20, 15, 12, 8, 7, 5, 3], "_citation": "ACR/NCCN: CT most common oncology imaging (~30%). PET-CT for staging (~20%). MRI for brain/liver/breast (~15%)." } },
+        { "id": "tbl-008-c5", "name": "body_site", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["chest", "abdomen_pelvis", "brain", "chest_abdomen_pelvis", "bone", "breast", "neck", "extremity"], "weights": [25, 20, 15, 15, 8, 7, 5, 5], "_citation": "NCCN: CT chest/abd/pelvis most common staging. Brain MRI for NSCLC Stage III-IV." } },
+        { "id": "tbl-008-c6", "name": "order_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["completed", "scheduled", "cancelled", "in_progress"], "weights": [70, 15, 8, 7], "_citation": "EHR data: ~70% imaging orders completed. ~15% pending/scheduled. ~8% cancelled." } },
+        { "id": "tbl-008-c7", "name": "finding_summary", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["no_change", "improvement", "progression", "new_finding", "indeterminate", "normal"], "weights": [25, 15, 18, 10, 12, 20], "_citation": "Radiology reports: Stable ~25%. Normal ~20%. Progression ~18%. Improvement ~15%. New findings ~10%." } },
+        { "id": "tbl-008-c8", "name": "order_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 1060, "y": 400 }
+    },
+    {
+      "id": "tbl-009",
+      "name": "insurance_claims",
+      "columns": [
+        { "id": "tbl-009-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-009-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-009-c3", "name": "encounter_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-002", "columnId": "tbl-002-c1" } },
+        { "id": "tbl-009-c4", "name": "payer_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-012", "columnId": "tbl-012-c1" } },
+        { "id": "tbl-009-c5", "name": "claim_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["professional", "institutional", "pharmacy", "dme"], "weights": [45, 30, 18, 7], "_citation": "CMS: Professional (Part B) ~45%. Institutional (Part A) ~30%. Pharmacy (Part D) ~18%. DME ~7%." } },
+        { "id": "tbl-009-c6", "name": "claim_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["paid", "denied", "pending", "partially_paid", "appealed", "adjusted"], "weights": [65, 10, 10, 5, 5, 5], "_citation": "CMS/AHIP: ~65% paid first submission. Denial rate ~10% oncology. Appeals ~5%. Prior auth denials higher for novel drugs." } },
+        { "id": "tbl-009-c7", "name": "billed_amount", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 25, "max": 25000, "precision": 2 } },
+        { "id": "tbl-009-c8", "name": "allowed_amount", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 15, "max": 20000, "precision": 2 } },
+        { "id": "tbl-009-c9", "name": "patient_responsibility", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 0, "max": 5000, "precision": 2 } },
+        { "id": "tbl-009-c10", "name": "service_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } },
+        { "id": "tbl-009-c11", "name": "denial_reason", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["not_medically_necessary", "prior_auth_missing", "duplicate_claim", "coding_error", "out_of_network", "timely_filing", "not_applicable"], "weights": [12, 15, 5, 8, 5, 5, 50], "_citation": "AHIP: Prior auth missing most common denial (~15%). Medical necessity ~12%. N/A for paid claims (~50%)." } }
+      ],
+      "position": { "x": 100, "y": 700 }
+    },
+    {
+      "id": "tbl-010",
+      "name": "providers",
+      "columns": [
+        { "id": "tbl-010-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-010-c2", "name": "npi", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "template", "options": { "template": "NPI{{rowIndex}}" } },
+        { "id": "tbl-010-c3", "name": "full_name", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "full_name", "options": {} },
+        { "id": "tbl-010-c4", "name": "specialty", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["medical_oncology", "radiation_oncology", "surgical_oncology", "hematology", "pathology", "radiology", "palliative_care", "internal_medicine", "primary_care"], "weights": [25, 12, 10, 8, 10, 12, 5, 10, 8], "_citation": "CMS: Medical oncology most common provider for cancer patients (~25%). Radiology ~12%. Pathology ~10%." } },
+        { "id": "tbl-010-c5", "name": "provider_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["physician", "nurse_practitioner", "physician_assistant", "registered_nurse"], "weights": [55, 20, 15, 10], "_citation": "ASCO workforce: Physicians ~55% of oncology providers. APPs (NP+PA) ~35% and growing. RN for infusion care." } },
+        { "id": "tbl-010-c6", "name": "created_at", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 1, "maxYearsAgo": 15 } }
+      ],
+      "position": { "x": 420, "y": 700 }
+    },
+    {
+      "id": "tbl-011",
+      "name": "facilities",
+      "columns": [
+        { "id": "tbl-011-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-011-c2", "name": "facility_name", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "company_name", "options": {} },
+        { "id": "tbl-011-c3", "name": "facility_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["academic_cancer_center", "community_hospital", "community_oncology_practice", "freestanding_infusion", "radiation_center", "va_medical_center"], "weights": [15, 25, 30, 12, 10, 8], "_citation": "NCI/ASCO: Community oncology ~30% of cancer care. Community hospitals ~25%. Academic centers ~15%. VA ~8%." } },
+        { "id": "tbl-011-c4", "name": "state", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "state", "options": {} },
+        { "id": "tbl-011-c5", "name": "nci_designation", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["comprehensive", "clinical", "basic", "none"], "weights": [8, 5, 3, 84], "_citation": "NCI: 72 NCI-designated centers in US (~16%). Comprehensive ~8%. Most cancer care at non-NCI facilities (~84%)." } },
+        { "id": "tbl-011-c6", "name": "created_at", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 2, "maxYearsAgo": 30 } }
+      ],
+      "position": { "x": 740, "y": 700 }
+    },
+    {
+      "id": "tbl-012",
+      "name": "payers",
+      "columns": [
+        { "id": "tbl-012-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-012-c2", "name": "payer_name", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["Medicare_FFS", "Medicare_Advantage", "Medicaid", "Blue_Cross", "United_Healthcare", "Aetna", "Cigna", "Humana", "Kaiser", "Tricare", "Self_Pay"], "weights": [20, 12, 10, 12, 12, 8, 8, 5, 5, 4, 4], "_citation": "KFF 2024: Medicare ~32% of cancer patients. UHC/BCBS/Aetna/Cigna top commercial. Humana/Kaiser regional." } },
+        { "id": "tbl-012-c3", "name": "payer_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["government", "commercial", "managed_care", "self_pay"], "weights": [35, 35, 25, 5], "_citation": "KFF: Government (Medicare+Medicaid) ~35%. Commercial ~35%. Managed care (MA plans) ~25%." } },
+        { "id": "tbl-012-c4", "name": "created_at", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 1, "maxYearsAgo": 10 } }
+      ],
+      "position": { "x": 1060, "y": 700 }
+    },
+    {
+      "id": "tbl-013",
+      "name": "referrals",
+      "columns": [
+        { "id": "tbl-013-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-013-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-013-c3", "name": "referring_provider_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-010", "columnId": "tbl-010-c1" } },
+        { "id": "tbl-013-c4", "name": "referral_to", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["medical_oncology", "radiation_oncology", "surgical_oncology", "palliative_care", "genetics_counseling", "clinical_trial", "social_work", "pain_management", "nutrition"], "weights": [25, 15, 12, 12, 8, 8, 8, 7, 5], "_citation": "NCCN: Medical oncology most common referral (~25%). Palliative care recommended for all advanced cancer (~12%). Genetics for family history." } },
+        { "id": "tbl-013-c5", "name": "referral_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["completed", "scheduled", "pending", "cancelled", "no_show"], "weights": [55, 15, 12, 10, 8], "_citation": "EHR data: ~55% referrals completed. No-show rate ~8% in oncology." } },
+        { "id": "tbl-013-c6", "name": "urgency", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["routine", "urgent", "stat"], "weights": [60, 30, 10], "_citation": "Clinical practice: Routine ~60%. Urgent for new diagnoses ~30%. Stat for emergencies ~10%." } },
+        { "id": "tbl-013-c7", "name": "referral_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 100, "y": 1000 }
+    },
+    {
+      "id": "tbl-014",
+      "name": "care_plans",
+      "columns": [
+        { "id": "tbl-014-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-014-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-014-c3", "name": "plan_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["treatment_plan", "survivorship_plan", "palliative_plan", "end_of_life", "supportive_care"], "weights": [40, 20, 18, 10, 12], "_citation": "NCCN/CoC: Treatment plan required for all new cancer patients. Survivorship plans post-treatment. Palliative for advanced." } },
+        { "id": "tbl-014-c4", "name": "status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["active", "completed", "revised", "discontinued"], "weights": [45, 25, 20, 10], "_citation": "EHR: ~45% active plans. ~25% completed. ~20% revised (treatment change). ~10% discontinued." } },
+        { "id": "tbl-014-c5", "name": "advance_directive", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["full_code", "dnr", "dnr_dni", "comfort_measures", "not_documented"], "weights": [40, 12, 8, 5, 35], "_citation": "AMA: ~35% of patients have documented advance directives. Full code default. DNR increases with advanced disease." } },
+        { "id": "tbl-014-c6", "name": "created_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 420, "y": 1000 }
+    },
+    {
+      "id": "tbl-015",
+      "name": "social_determinants",
+      "columns": [
+        { "id": "tbl-015-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-015-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-015-c3", "name": "housing_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["stable_housing", "unstable_housing", "homeless", "assisted_living", "unknown"], "weights": [70, 10, 3, 7, 10], "_citation": "CMS SDOH: ~70% stable housing. ~10% housing instability. ~3% homeless. Impacts treatment adherence." } },
+        { "id": "tbl-015-c4", "name": "transportation_access", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["personal_vehicle", "public_transit", "medical_transport", "rideshare", "barrier_identified", "unknown"], "weights": [55, 12, 8, 5, 12, 8], "_citation": "ACS: Transportation barriers affect ~12% of cancer patients. Leading cause of missed appointments." } },
+        { "id": "tbl-015-c5", "name": "food_security", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["food_secure", "low_food_security", "very_low_food_security", "unknown"], "weights": [70, 12, 8, 10], "_citation": "USDA: ~10-12% of US households food insecure. Higher in cancer patients due to treatment costs." } },
+        { "id": "tbl-015-c6", "name": "health_literacy", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["adequate", "limited", "unknown"], "weights": [55, 25, 20], "_citation": "AHRQ: ~36% of US adults have limited health literacy. Higher in older, minority populations." } },
+        { "id": "tbl-015-c7", "name": "screening_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 3 } }
+      ],
+      "position": { "x": 740, "y": 1000 }
+    },
+    {
+      "id": "tbl-016",
+      "name": "problem_list",
+      "columns": [
+        { "id": "tbl-016-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-016-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-016-c3", "name": "problem_code", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["I10", "E11.9", "E78.5", "J44.1", "D64.9", "G89.3", "F32.9", "N18.3", "F41.9", "Z87.891", "M79.3", "K21.0", "Z85.3"], "weights": [15, 12, 8, 6, 10, 8, 7, 5, 5, 4, 5, 8, 7], "_citation": "CMS: HTN (I10) most common comorbidity ~15%. DM (E11.9) ~12%. Anemia (D64.9) ~10% in chemo patients. Pain (G89.3) ~8%. Depression (F32.9) ~7%." } },
+        { "id": "tbl-016-c4", "name": "problem_name", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["hypertension", "diabetes_type2", "hyperlipidemia", "COPD", "anemia", "cancer_pain", "depression", "CKD_stage3", "anxiety", "tobacco_history", "myalgia", "GERD", "personal_hx_cancer"], "weights": [15, 12, 8, 6, 10, 8, 7, 5, 5, 4, 5, 8, 7], "_citation": "Mapped to ICD-10 problem codes above." } },
+        { "id": "tbl-016-c5", "name": "problem_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["active", "resolved", "inactive", "controlled"], "weights": [50, 15, 15, 20], "_citation": "EHR: ~50% active problems. ~20% controlled (managed with medication). ~15% resolved." } },
+        { "id": "tbl-016-c6", "name": "onset_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 15 } }
+      ],
+      "position": { "x": 1060, "y": 1000 }
+    }
+  ],
+  "relationships": [
+    { "id": "rel-001", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-002", "targetColumnId": "tbl-002-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-002", "sourceTableId": "tbl-010", "sourceColumnId": "tbl-010-c1", "targetTableId": "tbl-002", "targetColumnId": "tbl-002-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-003", "sourceTableId": "tbl-011", "sourceColumnId": "tbl-011-c1", "targetTableId": "tbl-002", "targetColumnId": "tbl-002-c4", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-004", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-003", "targetColumnId": "tbl-003-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-005", "sourceTableId": "tbl-002", "sourceColumnId": "tbl-002-c1", "targetTableId": "tbl-003", "targetColumnId": "tbl-003-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-006", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-004", "targetColumnId": "tbl-004-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-007", "sourceTableId": "tbl-002", "sourceColumnId": "tbl-002-c1", "targetTableId": "tbl-004", "targetColumnId": "tbl-004-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-008", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-005", "targetColumnId": "tbl-005-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-009", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-006", "targetColumnId": "tbl-006-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-010", "sourceTableId": "tbl-002", "sourceColumnId": "tbl-002-c1", "targetTableId": "tbl-006", "targetColumnId": "tbl-006-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-011", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-007", "targetColumnId": "tbl-007-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-012", "sourceTableId": "tbl-002", "sourceColumnId": "tbl-002-c1", "targetTableId": "tbl-007", "targetColumnId": "tbl-007-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-013", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-008", "targetColumnId": "tbl-008-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-014", "sourceTableId": "tbl-002", "sourceColumnId": "tbl-002-c1", "targetTableId": "tbl-008", "targetColumnId": "tbl-008-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-015", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-009", "targetColumnId": "tbl-009-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-016", "sourceTableId": "tbl-002", "sourceColumnId": "tbl-002-c1", "targetTableId": "tbl-009", "targetColumnId": "tbl-009-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-017", "sourceTableId": "tbl-012", "sourceColumnId": "tbl-012-c1", "targetTableId": "tbl-009", "targetColumnId": "tbl-009-c4", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-018", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-013", "targetColumnId": "tbl-013-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-019", "sourceTableId": "tbl-010", "sourceColumnId": "tbl-010-c1", "targetTableId": "tbl-013", "targetColumnId": "tbl-013-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-020", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-014", "targetColumnId": "tbl-014-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-021", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-015", "targetColumnId": "tbl-015-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-022", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-016", "targetColumnId": "tbl-016-c2", "type": "one-to-many", "semantic": "connection" }
+  ],
+  "version": "1.0.0"
+}

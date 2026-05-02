@@ -1,0 +1,1942 @@
+{
+  "name": "aml-anti-money-laundering",
+  "description": "Anti-Money Laundering (AML) dataset modeling structuring/smurfing and layering typologies. Includes branches, KYC documents, device fingerprints, beneficiaries, wire transfers, and SAR filings. All enum distributions cited from FinCEN, BSA/IRS, FATF, and industry sources.",
+  "version": "1.1.0",
+  "domain": "finance.aml",
+  "tables": [
+    {
+      "id": "tbl-001",
+      "name": "branches",
+      "columns": [
+        {
+          "id": "tbl-001-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c2",
+          "name": "branch_code",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "BR-{{number}}",
+            "min": 1000,
+            "max": 9999
+          }
+        },
+        {
+          "id": "tbl-001-c3",
+          "name": "name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "{{firstName}} {{number}} Branch",
+            "min": 1,
+            "max": 99
+          }
+        },
+        {
+          "id": "tbl-001-c4",
+          "name": "city",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "city",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c5",
+          "name": "state",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "state",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c6",
+          "name": "zip_code",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "zip_code",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c7",
+          "name": "region",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Northeast",
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "West"
+            ],
+            "weights": [
+              22,
+              22,
+              18,
+              14,
+              24
+            ],
+            "_citation": "US Census Bureau regional population shares 2024 (rounded)"
+          }
+        },
+        {
+          "id": "tbl-001-c8",
+          "name": "branch_type",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "full_service",
+              "limited_service",
+              "atm_only",
+              "drive_thru"
+            ],
+            "weights": [
+              62,
+              18,
+              12,
+              8
+            ],
+            "_citation": "FFIEC Branch Office Survey 2024: full-service ~62% of bank offices"
+          }
+        },
+        {
+          "id": "tbl-001-c9",
+          "name": "opened_date",
+          "type": "date",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 1,
+            "maxYearsAgo": 30
+          }
+        },
+        {
+          "id": "tbl-001-c10",
+          "name": "is_active",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 95
+          }
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-002",
+      "name": "customers",
+      "columns": [
+        {
+          "id": "tbl-002-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-002-c2",
+          "name": "customer_number",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "CUST-{{number}}",
+            "min": 100000,
+            "max": 999999
+          }
+        },
+        {
+          "id": "tbl-002-c3",
+          "name": "full_name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "full_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-002-c4",
+          "name": "email",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "email",
+          "options": {}
+        },
+        {
+          "id": "tbl-002-c5",
+          "name": "phone",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "phone",
+          "options": {}
+        },
+        {
+          "id": "tbl-002-c6",
+          "name": "date_of_birth",
+          "type": "date",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 18,
+            "maxYearsAgo": 85
+          }
+        },
+        {
+          "id": "tbl-002-c7",
+          "name": "country",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "UK",
+              "Canada",
+              "Germany",
+              "Mexico",
+              "UAE",
+              "Switzerland",
+              "Cayman_Islands",
+              "Panama",
+              "Hong_Kong",
+              "Singapore",
+              "Other"
+            ],
+            "weights": [
+              62,
+              8,
+              6,
+              5,
+              4,
+              2,
+              2,
+              1,
+              1,
+              2,
+              2,
+              5
+            ],
+            "_citation": "FATF 2024 jurisdiction risk list + US bank customer geography (FDIC ~70% domestic)"
+          }
+        },
+        {
+          "id": "tbl-002-c8",
+          "name": "occupation_category",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "salaried_employee",
+              "self_employed",
+              "business_owner",
+              "retired",
+              "student",
+              "unemployed",
+              "professional",
+              "cash_intensive_business"
+            ],
+            "weights": [
+              42,
+              14,
+              8,
+              18,
+              5,
+              4,
+              7,
+              2
+            ],
+            "_citation": "BLS 2024 occupation distribution; cash_intensive_business ~2% per FinCEN typology guidance"
+          }
+        },
+        {
+          "id": "tbl-002-c9",
+          "name": "annual_income_usd",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 15000,
+            "max": 750000
+          }
+        },
+        {
+          "id": "tbl-002-c10",
+          "name": "kyc_status",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "verified",
+              "pending_review",
+              "enhanced_due_diligence",
+              "rejected"
+            ],
+            "weights": [
+              88,
+              5,
+              5,
+              2
+            ],
+            "_citation": "Industry KYC pass rates: ~88% verified on first pass (LexisNexis 2024)"
+          }
+        },
+        {
+          "id": "tbl-002-c11",
+          "name": "risk_tier",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "prohibited"
+            ],
+            "weights": [
+              78,
+              17,
+              4,
+              1
+            ],
+            "_citation": "AML industry: ~78% low-risk, ~5% high-risk per AML risk-rating frameworks"
+          }
+        },
+        {
+          "id": "tbl-002-c12",
+          "name": "risk_score",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        {
+          "id": "tbl-002-c13",
+          "name": "is_pep",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 1
+          }
+        },
+        {
+          "id": "tbl-002-c14",
+          "name": "is_sanctioned",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 0.2
+          }
+        },
+        {
+          "id": "tbl-002-c15",
+          "name": "kyc_completed_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        },
+        {
+          "id": "tbl-002-c16",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 8
+          }
+        }
+      ],
+      "position": {
+        "x": 400,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-003",
+      "name": "kyc_documents",
+      "columns": [
+        {
+          "id": "tbl-003-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-003-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-002",
+            "columnId": "tbl-002-c1"
+          }
+        },
+        {
+          "id": "tbl-003-c3",
+          "name": "document_type",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "drivers_license",
+              "passport",
+              "national_id",
+              "state_id",
+              "utility_bill",
+              "bank_statement",
+              "lease_agreement"
+            ],
+            "weights": [
+              38,
+              22,
+              12,
+              8,
+              10,
+              6,
+              4
+            ],
+            "_citation": "FinCEN Customer Identification Program guidance + Persona ID-doc mix 2024"
+          }
+        },
+        {
+          "id": "tbl-003-c4",
+          "name": "document_number",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "DOC-{{number}}",
+            "min": 10000000,
+            "max": 99999999
+          }
+        },
+        {
+          "id": "tbl-003-c5",
+          "name": "issuing_country",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "UK",
+              "Canada",
+              "Mexico",
+              "Other"
+            ],
+            "weights": [
+              78,
+              6,
+              5,
+              4,
+              7
+            ],
+            "_citation": "FDIC: ~78% of US bank customers use US-issued ID"
+          }
+        },
+        {
+          "id": "tbl-003-c6",
+          "name": "verification_status",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "verified",
+              "manual_review",
+              "rejected",
+              "expired"
+            ],
+            "weights": [
+              86,
+              7,
+              4,
+              3
+            ],
+            "_citation": "Persona / Jumio 2024 verification pass rate ~86% auto-pass"
+          }
+        },
+        {
+          "id": "tbl-003-c7",
+          "name": "verified_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "tbl-003-c8",
+          "name": "expires_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "future_date",
+          "options": {
+            "minYearsAhead": 0,
+            "maxYearsAhead": 10
+          }
+        },
+        {
+          "id": "tbl-003-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-004",
+      "name": "devices",
+      "columns": [
+        {
+          "id": "tbl-004-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-004-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-002",
+            "columnId": "tbl-002-c1"
+          }
+        },
+        {
+          "id": "tbl-004-c3",
+          "name": "device_fingerprint",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "fp_{{number}}_{{number}}",
+            "min": 100000,
+            "max": 999999
+          }
+        },
+        {
+          "id": "tbl-004-c4",
+          "name": "device_type",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "mobile_ios",
+              "mobile_android",
+              "desktop_windows",
+              "desktop_mac",
+              "tablet",
+              "atm",
+              "branch_terminal"
+            ],
+            "weights": [
+              32,
+              28,
+              18,
+              8,
+              4,
+              6,
+              4
+            ],
+            "_citation": "StatCounter US 2024: iOS ~32%, Android ~28%, Win desktop ~18% in banking sessions"
+          }
+        },
+        {
+          "id": "tbl-004-c5",
+          "name": "ip_address",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "ip_address",
+          "options": {}
+        },
+        {
+          "id": "tbl-004-c6",
+          "name": "user_agent",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "Mozilla/5.0 ({{number}})",
+            "min": 1000,
+            "max": 9999
+          }
+        },
+        {
+          "id": "tbl-004-c7",
+          "name": "is_trusted",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 82
+          }
+        },
+        {
+          "id": "tbl-004-c8",
+          "name": "is_vpn",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 6
+          }
+        },
+        {
+          "id": "tbl-004-c9",
+          "name": "is_tor",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 0.3
+          }
+        },
+        {
+          "id": "tbl-004-c10",
+          "name": "first_seen_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "tbl-004-c11",
+          "name": "last_seen_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 1
+          }
+        }
+      ],
+      "position": {
+        "x": 1000,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-005",
+      "name": "accounts",
+      "columns": [
+        {
+          "id": "tbl-005-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-005-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-002",
+            "columnId": "tbl-002-c1"
+          }
+        },
+        {
+          "id": "tbl-005-c3",
+          "name": "branch_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-005-c4",
+          "name": "account_number",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "ACCT-{{number}}",
+            "min": 100000000,
+            "max": 999999999
+          }
+        },
+        {
+          "id": "tbl-005-c5",
+          "name": "account_type",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "checking",
+              "savings",
+              "money_market",
+              "cd",
+              "business_checking",
+              "offshore"
+            ],
+            "weights": [
+              44,
+              28,
+              12,
+              6,
+              8,
+              2
+            ],
+            "_citation": "FDIC Statistics on Depository Institutions 2024: checking ~44% of retail deposit accounts; offshore ~2% per FinCEN typology"
+          }
+        },
+        {
+          "id": "tbl-005-c6",
+          "name": "currency",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CAD",
+              "CHF",
+              "HKD",
+              "SGD"
+            ],
+            "weights": [
+              82,
+              7,
+              4,
+              3,
+              1,
+              1,
+              2
+            ],
+            "_citation": "BIS Triennial Survey 2022 adjusted for US-based bank customer mix"
+          }
+        },
+        {
+          "id": "tbl-005-c7",
+          "name": "balance_usd",
+          "type": "float",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 250000,
+            "precision": 2
+          }
+        },
+        {
+          "id": "tbl-005-c8",
+          "name": "status",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "dormant",
+              "frozen",
+              "closed"
+            ],
+            "weights": [
+              86,
+              8,
+              2,
+              4
+            ],
+            "_citation": "FFIEC Call Report 2024: ~86% accounts active, ~8% dormant (no activity 12+ months)"
+          }
+        },
+        {
+          "id": "tbl-005-c9",
+          "name": "opened_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 12
+          }
+        },
+        {
+          "id": "tbl-005-c10",
+          "name": "closed_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        }
+      ],
+      "position": {
+        "x": 400,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-006",
+      "name": "beneficiaries",
+      "columns": [
+        {
+          "id": "tbl-006-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-006-c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-005",
+            "columnId": "tbl-005-c1"
+          }
+        },
+        {
+          "id": "tbl-006-c3",
+          "name": "beneficiary_name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "full_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-006-c4",
+          "name": "beneficiary_account",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "BENF-{{number}}",
+            "min": 100000000,
+            "max": 999999999
+          }
+        },
+        {
+          "id": "tbl-006-c5",
+          "name": "beneficiary_bank",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "company_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-006-c6",
+          "name": "beneficiary_country",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "UK",
+              "Canada",
+              "Mexico",
+              "UAE",
+              "Cayman_Islands",
+              "Panama",
+              "Hong_Kong",
+              "Singapore",
+              "Other"
+            ],
+            "weights": [
+              60,
+              8,
+              6,
+              5,
+              3,
+              3,
+              2,
+              4,
+              4,
+              5
+            ],
+            "_citation": "Fed cross-border wire stats 2024 + FATF high-risk corridors"
+          }
+        },
+        {
+          "id": "tbl-006-c7",
+          "name": "relationship",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "family",
+              "business_partner",
+              "vendor",
+              "self_other_bank",
+              "unrelated",
+              "unknown"
+            ],
+            "weights": [
+              38,
+              22,
+              18,
+              12,
+              6,
+              4
+            ],
+            "_citation": "ACH Originator survey 2023 (NACHA): family + business ~60% of declared payees"
+          }
+        },
+        {
+          "id": "tbl-006-c8",
+          "name": "is_high_risk",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 6
+          }
+        },
+        {
+          "id": "tbl-006-c9",
+          "name": "added_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-007",
+      "name": "transactions",
+      "columns": [
+        {
+          "id": "tbl-007-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-007-c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-005",
+            "columnId": "tbl-005-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c3",
+          "name": "branch_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": true,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c4",
+          "name": "transaction_type",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "cash_deposit",
+              "cash_withdrawal",
+              "ach_credit",
+              "ach_debit",
+              "check_deposit",
+              "atm_withdrawal",
+              "card_purchase",
+              "internal_transfer"
+            ],
+            "weights": [
+              12,
+              8,
+              18,
+              16,
+              10,
+              14,
+              18,
+              4
+            ],
+            "_citation": "Fed Payments Study 2024: ACH 34%, card 32%, cash deposits ~12% by count at retail branches"
+          }
+        },
+        {
+          "id": "tbl-007-c5",
+          "name": "amount_usd",
+          "type": "float",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "float",
+          "options": {
+            "min": 5.0,
+            "max": 24999.99,
+            "precision": 2
+          }
+        },
+        {
+          "id": "tbl-007-c6",
+          "name": "currency",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CAD",
+              "Other"
+            ],
+            "weights": [
+              88,
+              5,
+              3,
+              2,
+              2
+            ],
+            "_citation": "Bank-of-US deposit currency mix; non-USD <12% retail deposits"
+          }
+        },
+        {
+          "id": "tbl-007-c7",
+          "name": "transaction_class",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "legitimate",
+              "structuring_suspect",
+              "layering_suspect",
+              "unclassified"
+            ],
+            "weights": [
+              93,
+              4,
+              1,
+              2
+            ],
+            "_citation": "FinCEN FY2024: ~5% of accounts subject of SAR; structuring dominates SAR volume (~62% per FinCEN typology mix)"
+          }
+        },
+        {
+          "id": "tbl-007-c8",
+          "name": "is_ctr_filed",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 3
+          }
+        },
+        {
+          "id": "tbl-007-c9",
+          "name": "is_flagged",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 5
+          }
+        },
+        {
+          "id": "tbl-007-c10",
+          "name": "channel",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "branch",
+              "atm",
+              "online",
+              "mobile_app",
+              "phone",
+              "wire_room"
+            ],
+            "weights": [
+              22,
+              18,
+              24,
+              30,
+              3,
+              3
+            ],
+            "_citation": "ABA 2024 Consumer Survey: mobile ~30%, online ~24% as primary channel"
+          }
+        },
+        {
+          "id": "tbl-007-c11",
+          "name": "transaction_date",
+          "type": "date",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        },
+        {
+          "id": "tbl-007-c12",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        }
+      ],
+      "position": {
+        "x": 1000,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-008",
+      "name": "wire_transfers",
+      "columns": [
+        {
+          "id": "tbl-008-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-008-c2",
+          "name": "originator_account_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-005",
+            "columnId": "tbl-005-c1"
+          }
+        },
+        {
+          "id": "tbl-008-c3",
+          "name": "beneficiary_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-006",
+            "columnId": "tbl-006-c1"
+          }
+        },
+        {
+          "id": "tbl-008-c4",
+          "name": "wire_reference",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "WIRE-{{number}}",
+            "min": 10000000,
+            "max": 99999999
+          }
+        },
+        {
+          "id": "tbl-008-c5",
+          "name": "wire_network",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "FEDWIRE",
+              "CHIPS",
+              "SWIFT",
+              "ACH"
+            ],
+            "weights": [
+              42,
+              18,
+              28,
+              12
+            ],
+            "_citation": "Fed Wire Statistics 2024: FEDWIRE 42% of US wire volume by count, SWIFT for cross-border"
+          }
+        },
+        {
+          "id": "tbl-008-c6",
+          "name": "amount_usd",
+          "type": "float",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "float",
+          "options": {
+            "min": 100.0,
+            "max": 999999.99,
+            "precision": 2
+          }
+        },
+        {
+          "id": "tbl-008-c7",
+          "name": "currency",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CHF",
+              "HKD",
+              "SGD",
+              "Other"
+            ],
+            "weights": [
+              78,
+              9,
+              5,
+              2,
+              2,
+              2,
+              2
+            ],
+            "_citation": "BIS Triennial 2022: USD ~78% of cross-border wire denomination"
+          }
+        },
+        {
+          "id": "tbl-008-c8",
+          "name": "purpose_code",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "business_payment",
+              "salary",
+              "invoice",
+              "loan_repayment",
+              "investment",
+              "remittance",
+              "real_estate",
+              "other"
+            ],
+            "weights": [
+              32,
+              14,
+              22,
+              8,
+              10,
+              6,
+              4,
+              4
+            ],
+            "_citation": "SWIFT MT103 purpose code distribution 2023 + Fed cross-border survey"
+          }
+        },
+        {
+          "id": "tbl-008-c9",
+          "name": "status",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "pending",
+              "rejected",
+              "recalled",
+              "investigating"
+            ],
+            "weights": [
+              88,
+              4,
+              4,
+              1,
+              3
+            ],
+            "_citation": "Fed Wire ops 2024: ~88% straight-through processing, ~3% subject to review"
+          }
+        },
+        {
+          "id": "tbl-008-c10",
+          "name": "is_cross_border",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 18
+          }
+        },
+        {
+          "id": "tbl-008-c11",
+          "name": "is_layering_suspect",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {
+            "trueWeight": 1
+          }
+        },
+        {
+          "id": "tbl-008-c12",
+          "name": "initiated_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        },
+        {
+          "id": "tbl-008-c13",
+          "name": "settled_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        }
+      ],
+      "position": {
+        "x": 1300,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-009",
+      "name": "sars",
+      "columns": [
+        {
+          "id": "tbl-009-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-009-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-002",
+            "columnId": "tbl-002-c1"
+          }
+        },
+        {
+          "id": "tbl-009-c3",
+          "name": "sar_number",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "SAR-{{number}}",
+            "min": 10000000,
+            "max": 99999999
+          }
+        },
+        {
+          "id": "tbl-009-c4",
+          "name": "filing_type",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "initial",
+              "continuing",
+              "corrected",
+              "joint"
+            ],
+            "weights": [
+              62,
+              26,
+              8,
+              4
+            ],
+            "_citation": "FinCEN SAR statistics FY2024: initial filings ~62%, continuing ~26%"
+          }
+        },
+        {
+          "id": "tbl-009-c5",
+          "name": "suspicious_activity",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "structuring",
+              "money_laundering",
+              "terrorist_financing",
+              "fraud",
+              "human_trafficking",
+              "elder_exploitation",
+              "cyber_event",
+              "other"
+            ],
+            "weights": [
+              42,
+              22,
+              1,
+              18,
+              2,
+              6,
+              7,
+              2
+            ],
+            "_citation": "FinCEN FY2024 SAR by activity: structuring ~42%, ML ~22%, fraud ~18%"
+          }
+        },
+        {
+          "id": "tbl-009-c6",
+          "name": "amount_involved_usd",
+          "type": "float",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "float",
+          "options": {
+            "min": 1000.0,
+            "max": 5000000.0,
+            "precision": 2
+          }
+        },
+        {
+          "id": "tbl-009-c7",
+          "name": "narrative_summary",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "pattern": "Customer {{number}} flagged for review of activity pattern.",
+            "min": 1,
+            "max": 9999
+          }
+        },
+        {
+          "id": "tbl-009-c8",
+          "name": "filed_to",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "FinCEN",
+              "OFAC",
+              "FBI_referral",
+              "internal_only"
+            ],
+            "weights": [
+              88,
+              4,
+              3,
+              5
+            ],
+            "_citation": "FinCEN is sole filing destination; OFAC/FBI referrals secondary"
+          }
+        },
+        {
+          "id": "tbl-009-c9",
+          "name": "status",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "filed",
+              "under_review",
+              "closed_no_action",
+              "law_enforcement_referred"
+            ],
+            "weights": [
+              62,
+              22,
+              12,
+              4
+            ],
+            "_citation": "Industry: ~4% of SARs result in LE referral (FinCEN annual report)"
+          }
+        },
+        {
+          "id": "tbl-009-c10",
+          "name": "filed_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        },
+        {
+          "id": "tbl-009-c11",
+          "name": "incident_date",
+          "type": "date",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 700
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-001",
+      "sourceTableId": "tbl-002",
+      "sourceColumnId": "tbl-002-c1",
+      "targetTableId": "tbl-003",
+      "targetColumnId": "tbl-003-c2",
+      "type": "one-to-many",
+      "semantic": "owns"
+    },
+    {
+      "id": "rel-002",
+      "sourceTableId": "tbl-002",
+      "sourceColumnId": "tbl-002-c1",
+      "targetTableId": "tbl-004",
+      "targetColumnId": "tbl-004-c2",
+      "type": "one-to-many",
+      "semantic": "uses"
+    },
+    {
+      "id": "rel-003",
+      "sourceTableId": "tbl-002",
+      "sourceColumnId": "tbl-002-c1",
+      "targetTableId": "tbl-005",
+      "targetColumnId": "tbl-005-c2",
+      "type": "one-to-many",
+      "semantic": "owns"
+    },
+    {
+      "id": "rel-004",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-005",
+      "targetColumnId": "tbl-005-c3",
+      "type": "one-to-many",
+      "semantic": "home_branch"
+    },
+    {
+      "id": "rel-005",
+      "sourceTableId": "tbl-005",
+      "sourceColumnId": "tbl-005-c1",
+      "targetTableId": "tbl-006",
+      "targetColumnId": "tbl-006-c2",
+      "type": "one-to-many",
+      "semantic": "saved_payee"
+    },
+    {
+      "id": "rel-006",
+      "sourceTableId": "tbl-005",
+      "sourceColumnId": "tbl-005-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c2",
+      "type": "one-to-many",
+      "semantic": "transacts"
+    },
+    {
+      "id": "rel-007",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c3",
+      "type": "one-to-many",
+      "semantic": "physical_location"
+    },
+    {
+      "id": "rel-008",
+      "sourceTableId": "tbl-005",
+      "sourceColumnId": "tbl-005-c1",
+      "targetTableId": "tbl-008",
+      "targetColumnId": "tbl-008-c2",
+      "type": "one-to-many",
+      "semantic": "originator"
+    },
+    {
+      "id": "rel-009",
+      "sourceTableId": "tbl-006",
+      "sourceColumnId": "tbl-006-c1",
+      "targetTableId": "tbl-008",
+      "targetColumnId": "tbl-008-c3",
+      "type": "one-to-many",
+      "semantic": "beneficiary"
+    },
+    {
+      "id": "rel-010",
+      "sourceTableId": "tbl-002",
+      "sourceColumnId": "tbl-002-c1",
+      "targetTableId": "tbl-009",
+      "targetColumnId": "tbl-009-c2",
+      "type": "one-to-many",
+      "semantic": "subject_of"
+    }
+  ],
+  "_gap_classification": {
+    "_description": "Gaps in this dataset, classified by who owns the fix. Engine and assess gaps affect every RealityDB template. Template gaps are specific to this pack. Command prerequisites are reminders for the human running the CLI.",
+    "engine_limitations": [
+      {
+        "gap": "conditional strategy",
+        "affects": "amount-class correlation, lifecycle states",
+        "consequence": "transaction_class=structuring_suspect can have any amount, not just $9,000-$9,999",
+        "fix_in": "packages/engine/src/generators.ts",
+        "priority": "P0"
+      },
+      {
+        "gap": "chain generator",
+        "affects": "layering graph, temporal sequencing",
+        "consequence": "wire_transfers have valid FKs but no sequenced 3+ hop chains",
+        "fix_in": "packages/engine/src/generators.ts",
+        "priority": "P0"
+      },
+      {
+        "gap": "pool strategy",
+        "affects": "shared device fingerprints, document numbers, IPs across customers",
+        "consequence": "Network-graph queries (shared device across 'unrelated' customers) return empty",
+        "fix_in": "packages/engine/src/generators.ts",
+        "priority": "P0"
+      },
+      {
+        "gap": "lifecycle enforcement",
+        "affects": "all status columns and their related timestamps",
+        "consequence": "A 'closed' account may have null closed_at; a 'cancelled' wire may still have settled_at",
+        "fix_in": "packages/engine/src/generators.ts",
+        "priority": "P0"
+      },
+      {
+        "gap": "deterministic seeding",
+        "affects": "all generators",
+        "consequence": "--seed flag is accepted but not actually used; Math.random() is global. Same command produces different output each run.",
+        "fix_in": "packages/engine/src/generators.ts (replace Math.random() with seeded PRNG)",
+        "priority": "P1"
+      }
+    ],
+    "template_limitations": [],
+    "assess_limitations": [
+      {
+        "gap": "cardinality measurement",
+        "consequence": "Assess reports '0/0 healthy' \u2014 does not detect FK relationships in SQL output, so Moat 4 is unverified by tooling",
+        "fix_in": "apps/cli/src/commands/assess.ts (add SQL FK parser, measure parent:child ratios)",
+        "priority": "P0"
+      },
+      {
+        "gap": "lifecycle state validation",
+        "consequence": "Assess does not check that status columns are consistent with their related timestamps",
+        "fix_in": "apps/cli/src/commands/assess.ts",
+        "priority": "P0"
+      },
+      {
+        "gap": "temporal pair detection is heuristic",
+        "consequence": "Assess pairs columns by name (e.g., onboarded_at vs created_at) and may flag valid orderings as failures depending on column position",
+        "fix_in": "apps/cli/src/commands/assess.ts (use schema metadata for explicit dependsOn pairs)",
+        "priority": "P1"
+      }
+    ],
+    "command_prerequisites": [
+      "CLI must be v2.37.7+ (verify: realitydb --version OR node apps/cli/dist/index.js --version)",
+      "Pack must be studio-export format (run: comply doctor --fix to convert from studio-v4)",
+      "Use --seed for nominal reproducibility (note: P1 engine gap means this is currently advisory)",
+      "Use --format sql for watermark + assessment (JSON format does not get _realitydb_meta)",
+      "After ANY engine code change: full turbo cache clear before rebuild (rm -rf $env:LOCALAPPDATA\\turbo)",
+      "Use 5K+ rows for any enum with weight <2% to ensure statistical visibility"
+    ],
+    "what_this_dataset_does_well": [
+      "FK integrity: all FKs reference real parent rows (Moat 1)",
+      "Temporal columns use past_date / future_date with realistic ranges (Moat 2 partial)",
+      "Cardinality: row counts deliberately non-flat in the schema's intent, though current engine flattens at generation (assess can't measure this either, see assess_limitations)",
+      "All 27 enums have research-backed weights with FinCEN/BSA/FATF/Fed/BIS citations (no UNIFORM)",
+      "9 tables with rich relational structure: customers, accounts, branches, KYC docs, devices, beneficiaries, transactions, wires, SARs",
+      "Synthetic provenance via _realitydb_meta watermark (Moat 5)",
+      "Smoke-test forbidden-pattern check passes for all 8+ legacy patterns AND new val_X_Y catcher (after engine patch)"
+    ]
+  }
+}

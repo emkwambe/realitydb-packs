@@ -1,0 +1,217 @@
+{
+    "version": "2.3.0",
+    "tables": [
+      {
+        "id": "tbl-01", "name": "patients",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "age_at_diagnosis", "type": "integer", "strategy": "integer", "options": { "min": 18, "max": 90 } },
+          { "id": "c3", "name": "smoking_status", "type": "enum", "strategy": "enum", "options": { "values": ["never", "former", "current"], "weights": [40, 40, 20] } },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 0, "y": 0 }
+      },
+      {
+        "id": "tbl-02", "name": "diagnoses",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "cancer_type", "type": "enum", "strategy": "enum", "options": { "values": ["NSCLC", "Breast_IDC", "Colorectal"], "weights": [40, 30, 30] } },
+          { "id": "c4", "name": "date_of_diagnosis", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 350, "y": 0 }
+      },
+      {
+        "id": "tbl-03", "name": "genomics",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "diagnosis_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-02", "columnId": "c1" } },
+          { "id": "c3", "name": "mutation", "type": "enum", "strategy": "enum", "options": { "values": ["EGFR", "KRAS", "BRAF", "WT"], "weights": [20, 20, 20, 40] } },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 700, "y": 0 }
+      },
+      {
+        "id": "tbl-04", "name": "treatments",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "line_of_therapy", "type": "integer", "strategy": "integer", "options": { "min": 1, "max": 5 } },
+          { "id": "c4", "name": "start_date", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 1050, "y": 0 }
+      },
+      {
+        "id": "tbl-05", "name": "treatment_cycles",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "treatment_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-04", "columnId": "c1" } },
+          { "id": "c3", "name": "cycle_number", "type": "integer", "strategy": "integer" },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 0, "y": 350 }
+      },
+      {
+        "id": "tbl-06", "name": "imaging_results",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "recist_response", "type": "enum", "strategy": "enum", "options": { "values": ["CR", "PR", "SD", "PD"] } },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 350, "y": 350 }
+      },
+      {
+        "id": "tbl-07", "name": "lab_results",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "value", "type": "decimal", "strategy": "decimal" },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 700, "y": 350 }
+      },
+      {
+        "id": "tbl-08", "name": "adverse_events",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "treatment_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-04", "columnId": "c1" } },
+          { "id": "c3", "name": "severity", "type": "enum", "strategy": "enum", "options": { "values": ["G1", "G2", "G3", "G4", "G5"] } },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 1050, "y": 350 }
+      },
+      {
+        "id": "tbl-09", "name": "progression_events",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "diagnosis_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-02", "columnId": "c1" } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 0, "y": 700 }
+      },
+      {
+        "id": "tbl-10", "name": "outcomes",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 350, "y": 700 }
+      },
+      {
+        "id": "tbl-11", "name": "biomarkers",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "diagnosis_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-02", "columnId": "c1" } },
+          { "id": "c3", "name": "marker", "type": "enum", "strategy": "enum", "options": { "values": ["HER2", "PD-L1", "ALK"] } },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 700, "y": 700 }
+      },
+      {
+        "id": "tbl-12", "name": "vital_signs",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 1050, "y": 700 }
+      },
+      {
+        "id": "tbl-13", "name": "concomitant_medications",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "med_name", "type": "string", "strategy": "company_name" },
+          { "id": "c4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 0, "y": 1050 }
+      },
+      {
+        "id": "tbl-14", "name": "sites",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "site_name", "type": "string", "strategy": "company_name" },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 350, "y": 1050 }
+      },
+      {
+        "id": "tbl-15", "name": "clinical_trials",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "trial_name", "type": "string", "strategy": "company_name" },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 700, "y": 1050 }
+      },
+      {
+        "id": "tbl-16", "name": "enrollments",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-01", "columnId": "c1" } },
+          { "id": "c3", "name": "trial_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-15", "columnId": "c1" } },
+          { "id": "c4", "name": "site_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-14", "columnId": "c1" } },
+          { "id": "c5", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 1050, "y": 1050 }
+      },
+      {
+        "id": "tbl-17", "name": "consent_records",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "enrollment_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-16", "columnId": "c1" } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 0, "y": 1400 }
+      },
+      {
+        "id": "tbl-18", "name": "regulatory_submissions",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "trial_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-15", "columnId": "c1" } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 350, "y": 1400 }
+      },
+      {
+        "id": "tbl-19", "name": "audit_logs",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "action", "type": "enum", "strategy": "enum", "options": { "values": ["INSERT", "UPDATE", "DELETE"] } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 700, "y": 1400 }
+      },
+      {
+        "id": "tbl-20", "name": "site_monitoring",
+        "columns": [
+          { "id": "c1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+          { "id": "c2", "name": "site_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "tbl-14", "columnId": "c1" } },
+          { "id": "c3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+        ],
+        "position": { "x": 1050, "y": 1400 }
+      }
+    ],
+    "relationships": [
+      { "id": "r1", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-02", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r2", "sourceTableId": "tbl-02", "sourceColumnId": "c1", "targetTableId": "tbl-03", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r3", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-04", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r4", "sourceTableId": "tbl-04", "sourceColumnId": "c1", "targetTableId": "tbl-05", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r5", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-06", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r6", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-07", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r7", "sourceTableId": "tbl-04", "sourceColumnId": "c1", "targetTableId": "tbl-08", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r8", "sourceTableId": "tbl-02", "sourceColumnId": "c1", "targetTableId": "tbl-09", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r9", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-10", "targetColumnId": "c2", "type": "one-to-one" },
+      { "id": "r10", "sourceTableId": "tbl-02", "sourceColumnId": "c1", "targetTableId": "tbl-11", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r11", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-12", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r12", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-13", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r13", "sourceTableId": "tbl-01", "sourceColumnId": "c1", "targetTableId": "tbl-16", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r14", "sourceTableId": "tbl-15", "sourceColumnId": "c1", "targetTableId": "tbl-16", "targetColumnId": "c3", "type": "one-to-many" },
+      { "id": "r15", "sourceTableId": "tbl-14", "sourceColumnId": "c1", "targetTableId": "tbl-16", "targetColumnId": "c4", "type": "one-to-many" },
+      { "id": "r16", "sourceTableId": "tbl-16", "sourceColumnId": "c1", "targetTableId": "tbl-17", "targetColumnId": "c2", "type": "one-to-one" },
+      { "id": "r17", "sourceTableId": "tbl-15", "sourceColumnId": "c1", "targetTableId": "tbl-18", "targetColumnId": "c2", "type": "one-to-many" },
+      { "id": "r18", "sourceTableId": "tbl-14", "sourceColumnId": "c1", "targetTableId": "tbl-20", "targetColumnId": "c2", "type": "one-to-many" }
+    ]
+  }

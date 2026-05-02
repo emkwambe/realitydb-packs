@@ -1,0 +1,1532 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Converted from Studio v4 by realitydb doctor",
+  "tables": {
+    "suppliers": {
+      "match": "suppliers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "company_name"
+        },
+        "country": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "China",
+              "USA",
+              "Germany",
+              "Mexico",
+              "India",
+              "Vietnam",
+              "Japan",
+              "Brazil",
+              "South Korea",
+              "Taiwan"
+            ],
+            "weights": [
+              25,
+              15,
+              12,
+              10,
+              10,
+              8,
+              7,
+              5,
+              4,
+              4
+            ]
+          }
+        },
+        "rating": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "weights": [
+              20,
+              45,
+              25,
+              10
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "products": {
+      "match": "products",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "sku": {
+          "strategy": "random_string"
+        },
+        "name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Hydraulic Pump",
+              "Steel Beam",
+              "Circuit Board",
+              "Bearing Assembly",
+              "Control Valve",
+              "Power Supply Unit",
+              "Gasket Set",
+              "Drive Belt",
+              "Pressure Sensor",
+              "Motor Controller",
+              "Heat Exchanger",
+              "Filter Cartridge",
+              "Coupling Adapter",
+              "Relay Module",
+              "Actuator Arm",
+              "Transformer Core",
+              "Wiring Harness",
+              "Compressor Unit",
+              "Thermostat Assembly",
+              "Brake Pad Set"
+            ],
+            "weights": [
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5,
+              5
+            ]
+          }
+        },
+        "category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "electronics",
+              "mechanical",
+              "hydraulics",
+              "electrical",
+              "consumables"
+            ],
+            "weights": [
+              25,
+              30,
+              15,
+              20,
+              10
+            ]
+          }
+        },
+        "weight_kg": {
+          "strategy": "float",
+          "options": {
+            "min": 0.1,
+            "max": 250
+          }
+        },
+        "unit_cost": {
+          "strategy": "float",
+          "options": {
+            "min": 5,
+            "max": 2500
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "supplier_products": {
+      "match": "supplier_products",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "supplier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "suppliers",
+            "column": "id"
+          }
+        },
+        "product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "lead_time_days": {
+          "strategy": "integer",
+          "options": {
+            "min": 3,
+            "max": 90
+          }
+        },
+        "moq": {
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 5000
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "purchase_orders": {
+      "match": "purchase_orders",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "supplier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "suppliers",
+            "column": "id"
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "draft",
+              "submitted",
+              "confirmed",
+              "shipped",
+              "received",
+              "cancelled"
+            ],
+            "weights": [
+              5,
+              10,
+              20,
+              25,
+              35,
+              5
+            ]
+          }
+        },
+        "expected_delivery": {
+          "strategy": "future_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "po_lines": {
+      "match": "po_lines",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "po_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "purchase_orders",
+            "column": "id"
+          }
+        },
+        "product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "quantity": {
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 5000
+          }
+        },
+        "unit_price": {
+          "strategy": "float",
+          "options": {
+            "min": 5,
+            "max": 2500
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "warehouses": {
+      "match": "warehouses",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte DC",
+              "Chicago Hub",
+              "Dallas Fulfillment",
+              "Newark Terminal",
+              "LA Distribution",
+              "Atlanta Gateway",
+              "Seattle Warehouse",
+              "Miami Port Depot",
+              "Phoenix Center",
+              "Denver Logistics"
+            ],
+            "weights": [
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          }
+        },
+        "city": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte",
+              "Chicago",
+              "Dallas",
+              "Newark",
+              "Los Angeles",
+              "Atlanta",
+              "Seattle",
+              "Miami",
+              "Phoenix",
+              "Denver"
+            ],
+            "weights": [
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Southeast",
+              "Northwest",
+              "Southeast",
+              "Southwest",
+              "Mountain"
+            ],
+            "weights": [
+              15,
+              15,
+              15,
+              15,
+              10,
+              10,
+              7,
+              5,
+              4,
+              4
+            ]
+          }
+        },
+        "capacity_units": {
+          "strategy": "integer",
+          "options": {
+            "min": 5000,
+            "max": 100000
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "warehouse_zones": {
+      "match": "warehouse_zones",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "warehouse_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "warehouses",
+            "column": "id"
+          }
+        },
+        "zone_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "bulk_storage",
+              "pick_pack",
+              "cold_chain",
+              "hazmat",
+              "staging",
+              "returns"
+            ],
+            "weights": [
+              30,
+              25,
+              15,
+              5,
+              15,
+              10
+            ]
+          }
+        },
+        "capacity": {
+          "strategy": "integer",
+          "options": {
+            "min": 500,
+            "max": 20000
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "inventory": {
+      "match": "inventory",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "warehouse_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "warehouses",
+            "column": "id"
+          }
+        },
+        "quantity_on_hand": {
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        "reorder_point": {
+          "strategy": "integer",
+          "options": {
+            "min": 50,
+            "max": 2000
+          }
+        },
+        "last_counted": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "inventory_transactions": {
+      "match": "inventory_transactions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "inventory_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "inventory",
+            "column": "id"
+          }
+        },
+        "txn_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "inbound",
+              "outbound",
+              "adjustment",
+              "transfer",
+              "return"
+            ],
+            "weights": [
+              30,
+              35,
+              10,
+              15,
+              10
+            ]
+          }
+        },
+        "quantity_change": {
+          "strategy": "integer",
+          "options": {
+            "min": -500,
+            "max": 2000
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "customers": {
+      "match": "customers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "company_name"
+        },
+        "email": {
+          "strategy": "email"
+        },
+        "city": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "New York",
+              "Los Angeles",
+              "Chicago",
+              "Houston",
+              "Phoenix",
+              "Philadelphia",
+              "San Antonio",
+              "San Diego",
+              "Dallas",
+              "Charlotte",
+              "Atlanta",
+              "Miami",
+              "Denver",
+              "Seattle",
+              "Portland"
+            ],
+            "weights": [
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7
+            ]
+          }
+        },
+        "segment": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "enterprise",
+              "mid_market",
+              "small_business",
+              "wholesale",
+              "retail"
+            ],
+            "weights": [
+              10,
+              20,
+              30,
+              25,
+              15
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "orders": {
+      "match": "orders",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled",
+              "returned"
+            ],
+            "weights": [
+              10,
+              15,
+              20,
+              40,
+              10,
+              5
+            ]
+          }
+        },
+        "priority": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "standard",
+              "express",
+              "overnight",
+              "freight"
+            ],
+            "weights": [
+              50,
+              25,
+              10,
+              15
+            ]
+          }
+        },
+        "total_amount": {
+          "strategy": "float",
+          "options": {
+            "min": 50,
+            "max": 75000
+          }
+        },
+        "shipped_at": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "order_items": {
+      "match": "order_items",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "order_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "orders",
+            "column": "id"
+          }
+        },
+        "product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "quantity": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 500
+          }
+        },
+        "line_total": {
+          "strategy": "float",
+          "options": {
+            "min": 25,
+            "max": 25000
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "carriers": {
+      "match": "carriers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "FastFreight Inc",
+              "Continental Carriers",
+              "Pacific Logistics",
+              "Eagle Transport",
+              "Summit Shipping",
+              "Coastal Express",
+              "Heartland Haulers",
+              "Pinnacle Freight"
+            ],
+            "weights": [
+              13,
+              13,
+              13,
+              13,
+              13,
+              13,
+              13,
+              13
+            ]
+          }
+        },
+        "mode": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "truck",
+              "rail",
+              "air",
+              "ocean",
+              "intermodal"
+            ],
+            "weights": [
+              40,
+              20,
+              15,
+              10,
+              15
+            ]
+          }
+        },
+        "coverage": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "domestic",
+              "international",
+              "regional"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "routes": {
+      "match": "routes",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "origin_region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Northwest",
+              "Mountain"
+            ],
+            "weights": [
+              14,
+              14,
+              14,
+              14,
+              14,
+              14,
+              14
+            ]
+          }
+        },
+        "dest_region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Northwest",
+              "Mountain"
+            ],
+            "weights": [
+              14,
+              14,
+              14,
+              14,
+              14,
+              14,
+              14
+            ]
+          }
+        },
+        "avg_transit_days": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 14
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "carrier_rates": {
+      "match": "carrier_rates",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "carrier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "carriers",
+            "column": "id"
+          }
+        },
+        "route_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "routes",
+            "column": "id"
+          }
+        },
+        "rate_per_kg": {
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 15
+          }
+        },
+        "flat_fee": {
+          "strategy": "float",
+          "options": {
+            "min": 25,
+            "max": 500
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "shipments": {
+      "match": "shipments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "order_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "orders",
+            "column": "id"
+          }
+        },
+        "warehouse_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "warehouses",
+            "column": "id"
+          }
+        },
+        "carrier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "carriers",
+            "column": "id"
+          }
+        },
+        "route_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "routes",
+            "column": "id"
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "picked",
+              "packed",
+              "dispatched",
+              "in_transit",
+              "at_hub",
+              "out_for_delivery",
+              "delivered",
+              "exception"
+            ],
+            "weights": [
+              5,
+              5,
+              10,
+              15,
+              10,
+              10,
+              40,
+              5
+            ]
+          }
+        },
+        "shipped_at": {
+          "strategy": "past_date"
+        },
+        "delivered_at": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "shipment_events": {
+      "match": "shipment_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "shipment_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "shipments",
+            "column": "id"
+          }
+        },
+        "event_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "scan_pickup",
+              "depart_facility",
+              "arrive_hub",
+              "depart_hub",
+              "out_for_delivery",
+              "delivered",
+              "exception_weather",
+              "exception_address",
+              "return_to_sender"
+            ],
+            "weights": [
+              15,
+              15,
+              15,
+              12,
+              12,
+              20,
+              4,
+              4,
+              3
+            ]
+          }
+        },
+        "location": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte NC",
+              "Chicago IL",
+              "Dallas TX",
+              "Newark NJ",
+              "Los Angeles CA",
+              "Atlanta GA",
+              "Seattle WA",
+              "Miami FL",
+              "Phoenix AZ",
+              "Denver CO",
+              "Memphis TN",
+              "Louisville KY",
+              "Indianapolis IN",
+              "Columbus OH",
+              "Kansas City MO"
+            ],
+            "weights": [
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7,
+              7
+            ]
+          }
+        },
+        "occurred_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "delivery_exceptions": {
+      "match": "delivery_exceptions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "shipment_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "shipments",
+            "column": "id"
+          }
+        },
+        "reason": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "weather_delay",
+              "address_not_found",
+              "customer_unavailable",
+              "damaged_in_transit",
+              "customs_hold",
+              "vehicle_breakdown",
+              "incorrect_routing",
+              "security_hold"
+            ],
+            "weights": [
+              20,
+              15,
+              20,
+              10,
+              10,
+              8,
+              10,
+              7
+            ]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              30,
+              40,
+              20,
+              10
+            ]
+          }
+        },
+        "resolved": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "true",
+              "false"
+            ],
+            "weights": [
+              75,
+              25
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "supplier_contacts": {
+      "match": "supplier_contacts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "supplier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "suppliers",
+            "column": "id"
+          }
+        },
+        "contact_name": {
+          "strategy": "full_name"
+        },
+        "role": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "account_manager",
+              "logistics_coordinator",
+              "quality_lead",
+              "sales_rep",
+              "compliance_officer"
+            ],
+            "weights": [
+              30,
+              25,
+              15,
+              20,
+              10
+            ]
+          }
+        },
+        "email": {
+          "strategy": "email"
+        },
+        "phone": {
+          "strategy": "phone"
+        },
+        "is_primary": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "true",
+              "false"
+            ],
+            "weights": [
+              30,
+              70
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "supplier_ratings": {
+      "match": "supplier_ratings",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "supplier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "suppliers",
+            "column": "id"
+          }
+        },
+        "period": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "2024-Q1",
+              "2024-Q2",
+              "2024-Q3",
+              "2024-Q4",
+              "2025-Q1",
+              "2025-Q2",
+              "2025-Q3",
+              "2025-Q4"
+            ],
+            "weights": [
+              13,
+              13,
+              13,
+              13,
+              13,
+              13,
+              13,
+              13
+            ]
+          }
+        },
+        "quality_score": {
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        "delivery_score": {
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        "cost_score": {
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        "risk_level": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              40,
+              35,
+              18,
+              7
+            ]
+          }
+        },
+        "evaluated_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "compliance_records": {
+      "match": "compliance_records",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "supplier_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "suppliers",
+            "column": "id"
+          }
+        },
+        "certification": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ISO_9001",
+              "ISO_14001",
+              "ISO_45001",
+              "REACH",
+              "RoHS",
+              "CTPAT",
+              "SA8000",
+              "IATF_16949"
+            ],
+            "weights": [
+              25,
+              15,
+              10,
+              15,
+              15,
+              8,
+              5,
+              7
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "expired",
+              "pending_renewal",
+              "revoked"
+            ],
+            "weights": [
+              60,
+              15,
+              20,
+              5
+            ]
+          }
+        },
+        "issued_at": {
+          "strategy": "past_date"
+        },
+        "expires_at": {
+          "strategy": "future_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "product_components": {
+      "match": "product_components",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "parent_product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "child_product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "quantity_per_unit": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 50
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "demand_forecasts": {
+      "match": "demand_forecasts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "product_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "products",
+            "column": "id"
+          }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Northwest",
+              "Mountain"
+            ],
+            "weights": [
+              14,
+              14,
+              14,
+              14,
+              14,
+              14,
+              14
+            ]
+          }
+        },
+        "period": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "2025-W01",
+              "2025-W02",
+              "2025-W03",
+              "2025-W04",
+              "2025-W05",
+              "2025-W06",
+              "2025-W07",
+              "2025-W08",
+              "2025-W09",
+              "2025-W10",
+              "2025-W11",
+              "2025-W12"
+            ],
+            "weights": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ]
+          }
+        },
+        "forecast_qty": {
+          "strategy": "integer",
+          "options": {
+            "min": 50,
+            "max": 5000
+          }
+        },
+        "actual_qty": {
+          "strategy": "integer",
+          "options": {
+            "min": 20,
+            "max": 5500
+          }
+        },
+        "confidence": {
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 0.99
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "order_status_history": {
+      "match": "order_status_history",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "order_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "orders",
+            "column": "id"
+          }
+        },
+        "old_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled",
+              "returned"
+            ],
+            "weights": [
+              20,
+              20,
+              20,
+              15,
+              15,
+              10
+            ]
+          }
+        },
+        "new_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled",
+              "returned",
+              "pending"
+            ],
+            "weights": [
+              25,
+              25,
+              20,
+              15,
+              10,
+              5
+            ]
+          }
+        },
+        "changed_by": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "system",
+              "warehouse_ops",
+              "customer_service",
+              "logistics_team",
+              "manager"
+            ],
+            "weights": [
+              40,
+              25,
+              15,
+              12,
+              8
+            ]
+          }
+        },
+        "reason": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "auto_progression",
+              "manual_override",
+              "customer_request",
+              "quality_hold",
+              "payment_issue",
+              "stock_unavailable",
+              "address_correction"
+            ],
+            "weights": [
+              35,
+              15,
+              15,
+              10,
+              10,
+              8,
+              7
+            ]
+          }
+        },
+        "changed_at": {
+          "strategy": "past_date"
+        }
+      }
+    }
+  }
+}

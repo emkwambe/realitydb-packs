@@ -1,0 +1,5932 @@
+{
+  "version": "4.3.0",
+  "name": "edunode-analytics-demo",
+  "description": "EduNode Analytics MTSS platform — 3 schools, full risk engine pipeline, \"Independent Excellence\" narrative",
+  "tables": [
+    {
+      "id": "tbl-01",
+      "name": "ai_usage",
+      "columns": [
+        {
+          "id": "tbl-01-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-01-c2",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-01-c3",
+          "name": "user_id",
+          "type": "uuid",
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-01-c4",
+          "name": "provider",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "anthropic",
+              "openai"
+            ],
+            "weights": [
+              70,
+              30
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c5",
+          "name": "model",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "claude-sonnet-4-20250514",
+              "claude-3-haiku",
+              "gpt-4o-mini"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c6",
+          "name": "feature",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "risk_analysis",
+              "intervention_recommendation",
+              "report_generation",
+              "data_summary",
+              "parent_communication"
+            ],
+            "weights": [
+              25,
+              25,
+              20,
+              15,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c7",
+          "name": "input_tokens",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 100,
+            "max": 5000
+          }
+        },
+        {
+          "id": "tbl-01-c8",
+          "name": "output_tokens",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 50,
+            "max": 2000
+          }
+        },
+        {
+          "id": "tbl-01-c9",
+          "name": "total_tokens",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 150,
+            "max": 7000
+          }
+        },
+        {
+          "id": "tbl-01-c10",
+          "name": "cost_cents",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 50
+          }
+        },
+        {
+          "id": "tbl-01-c11",
+          "name": "latency_ms",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 200,
+            "max": 5000
+          }
+        },
+        {
+          "id": "tbl-01-c12",
+          "name": "success",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-01-c13",
+          "name": "error_message",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-01-c14",
+          "name": "anonymization_level",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "none",
+              "partial",
+              "full"
+            ],
+            "weights": [
+              10,
+              30,
+              60
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c15",
+          "name": "student_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-01-c16",
+          "name": "pii_detected",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-01-c17",
+          "name": "audit_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-01-c18",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-02",
+      "name": "ai_usage_limits",
+      "columns": [
+        {
+          "id": "tbl-02-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-02-c2",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-02-c3",
+          "name": "monthly_token_limit",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-02-c4",
+          "name": "monthly_cost_limit_cents",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-02-c5",
+          "name": "current_month_tokens",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-02-c6",
+          "name": "current_month_cost_cents",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-02-c7",
+          "name": "period_start",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-02-c8",
+          "name": "alert_threshold_percent",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-02-c9",
+          "name": "alert_sent_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-02-c10",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-02-c11",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-03",
+      "name": "audit_logs",
+      "columns": [
+        {
+          "id": "tbl-03-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-03-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-03-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-03-c4",
+          "name": "user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-03-c5",
+          "name": "action",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "create",
+              "read",
+              "update",
+              "delete",
+              "export",
+              "login"
+            ],
+            "weights": [
+              15,
+              35,
+              25,
+              5,
+              10,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-03-c6",
+          "name": "resource_type",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "student",
+              "intervention",
+              "report",
+              "dashboard",
+              "data_source",
+              "user",
+              "school_settings"
+            ],
+            "weights": [
+              25,
+              20,
+              15,
+              10,
+              10,
+              10,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-03-c7",
+          "name": "resource_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-03-c8",
+          "name": "old_values",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-03-c9",
+          "name": "new_values",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-03-c10",
+          "name": "ip_address",
+          "type": "inet",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-03-c11",
+          "name": "user_agent",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-03-c12",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-04",
+      "name": "authorizers",
+      "columns": [
+        {
+          "id": "tbl-04-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-04-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-04-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-04-c4",
+          "name": "name",
+          "type": "text",
+          "strategy": "company_name"
+        },
+        {
+          "id": "tbl-04-c5",
+          "name": "slug",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-04-c6",
+          "name": "contact_email",
+          "type": "text",
+          "strategy": "email"
+        },
+        {
+          "id": "tbl-04-c7",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-05",
+      "name": "dashboard_configs",
+      "columns": [
+        {
+          "id": "tbl-05-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-05-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-05-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-05-c4",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-05-c5",
+          "name": "user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-05-c6",
+          "name": "name",
+          "type": "text",
+          "strategy": "company_name"
+        },
+        {
+          "id": "tbl-05-c7",
+          "name": "slug",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-05-c8",
+          "name": "description",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-05-c9",
+          "name": "is_default",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-05-c10",
+          "name": "is_shared",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-05-c11",
+          "name": "layout_config",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-05-c12",
+          "name": "widget_configs",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-05-c13",
+          "name": "filters",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-05-c14",
+          "name": "refresh_interval_seconds",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-05-c15",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-06",
+      "name": "data_sources",
+      "columns": [
+        {
+          "id": "tbl-06-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-06-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-06-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-06-c4",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-06-c5",
+          "name": "name",
+          "type": "text",
+          "strategy": "company_name"
+        },
+        {
+          "id": "tbl-06-c6",
+          "name": "type",
+          "type": "data_source_type",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "sis",
+              "lms",
+              "assessment",
+              "attendance",
+              "behavior"
+            ],
+            "weights": [
+              25,
+              25,
+              20,
+              15,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c7",
+          "name": "provider",
+          "type": "data_source_provider",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "clever",
+              "classlink",
+              "powerschool",
+              "canvas",
+              "google_classroom",
+              "nwea_map",
+              "iready",
+              "renaissance_star",
+              "custom"
+            ],
+            "weights": [
+              15,
+              10,
+              20,
+              15,
+              10,
+              10,
+              8,
+              7,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c8",
+          "name": "connection_config",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-06-c9",
+          "name": "sync_enabled",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-06-c10",
+          "name": "sync_frequency_hours",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 48
+          }
+        },
+        {
+          "id": "tbl-06-c11",
+          "name": "last_sync_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-06-c12",
+          "name": "next_sync_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-06-c13",
+          "name": "sync_status",
+          "type": "sync_status",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "syncing",
+              "completed",
+              "failed"
+            ],
+            "weights": [
+              10,
+              5,
+              75,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c14",
+          "name": "sync_error",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-06-c15",
+          "name": "field_mappings",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-06-c16",
+          "name": "records_synced",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 50000
+          }
+        },
+        {
+          "id": "tbl-06-c17",
+          "name": "last_record_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-06-c18",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-06-c19",
+          "name": "connected_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-06-c20",
+          "name": "disconnected_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-06-c21",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-06-c22",
+          "name": "access_token_encrypted",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-06-c23",
+          "name": "refresh_token_encrypted",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-06-c24",
+          "name": "token_expires_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-07",
+      "name": "generated_reports",
+      "columns": [
+        {
+          "id": "tbl-07-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-07-c2",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-07-c3",
+          "name": "scheduled_report_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-20",
+            "columnId": "tbl-20-c1"
+          }
+        },
+        {
+          "id": "tbl-07-c4",
+          "name": "report_type",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c5",
+          "name": "format",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c6",
+          "name": "title",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c7",
+          "name": "generated_by",
+          "type": "uuid",
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-07-c8",
+          "name": "generated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-07-c9",
+          "name": "generation_time_ms",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-07-c10",
+          "name": "storage_path",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c11",
+          "name": "file_size_bytes",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-07-c12",
+          "name": "expires_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-07-c13",
+          "name": "delivery_status",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c14",
+          "name": "delivered_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-07-c15",
+          "name": "delivery_error",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c16",
+          "name": "filters",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-07-c17",
+          "name": "record_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-07-c18",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-08",
+      "name": "integration_events",
+      "columns": [
+        {
+          "id": "tbl-08-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-08-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-08-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-08-c4",
+          "name": "data_source_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-08-c5",
+          "name": "sync_history_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-27",
+            "columnId": "tbl-27-c1"
+          }
+        },
+        {
+          "id": "tbl-08-c6",
+          "name": "integration_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-08-c7",
+          "name": "event_type",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-08-c8",
+          "name": "records_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-08-c9",
+          "name": "students_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-08-c10",
+          "name": "duration_ms",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-08-c11",
+          "name": "is_billable",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-08-c12",
+          "name": "cost_amount",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-08-c13",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-08-c14",
+          "name": "error_message",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-08-c15",
+          "name": "triggered_by_user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-09",
+      "name": "integration_pricing",
+      "columns": [
+        {
+          "id": "tbl-09-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-09-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-09-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-09-c4",
+          "name": "integration_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-09-c5",
+          "name": "name",
+          "type": "text",
+          "strategy": "company_name"
+        },
+        {
+          "id": "tbl-09-c6",
+          "name": "category",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "type_a",
+              "type_b",
+              "type_c"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-09-c7",
+          "name": "base_monthly_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c8",
+          "name": "per_student_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c9",
+          "name": "per_sync_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c10",
+          "name": "per_record_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c11",
+          "name": "free_students_limit",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-09-c12",
+          "name": "free_syncs_limit",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-09-c13",
+          "name": "free_records_limit",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-09-c14",
+          "name": "starter_multiplier",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c15",
+          "name": "pro_multiplier",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c16",
+          "name": "enterprise_multiplier",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-09-c17",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-09-c18",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-10",
+      "name": "integration_usage",
+      "columns": [
+        {
+          "id": "tbl-10-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-10-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-10-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-10-c4",
+          "name": "data_source_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-10-c5",
+          "name": "integration_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-10-c6",
+          "name": "billing_period_start",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-10-c7",
+          "name": "billing_period_end",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-10-c8",
+          "name": "students_synced",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-10-c9",
+          "name": "sync_operations",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-10-c10",
+          "name": "records_processed",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-10-c11",
+          "name": "base_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-10-c12",
+          "name": "student_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-10-c13",
+          "name": "sync_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-10-c14",
+          "name": "record_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-10-c15",
+          "name": "total_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-10-c16",
+          "name": "discount_amount",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-10-c17",
+          "name": "discount_reason",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-10-c18",
+          "name": "invoiced",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-10-c19",
+          "name": "invoice_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-10-c20",
+          "name": "invoiced_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-11",
+      "name": "intervention_dosage_metrics",
+      "columns": [
+        {
+          "id": "tbl-11-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-11-c2",
+          "name": "intervention_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "tbl-13-c1"
+          }
+        },
+        {
+          "id": "tbl-11-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-11-c4",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-11-c5",
+          "name": "planned_sessions_per_week",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 2,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-11-c6",
+          "name": "planned_minutes_per_session",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 20,
+            "max": 60
+          }
+        },
+        {
+          "id": "tbl-11-c7",
+          "name": "planned_total_weeks",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 4,
+            "max": 12
+          }
+        },
+        {
+          "id": "tbl-11-c8",
+          "name": "planned_total_sessions",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-11-c9",
+          "name": "planned_total_minutes",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-11-c10",
+          "name": "actual_sessions_completed",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 30
+          }
+        },
+        {
+          "id": "tbl-11-c11",
+          "name": "actual_sessions_partial",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-11-c12",
+          "name": "actual_sessions_cancelled",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 8
+          }
+        },
+        {
+          "id": "tbl-11-c13",
+          "name": "actual_sessions_no_show",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-11-c14",
+          "name": "actual_total_minutes",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 900
+          }
+        },
+        {
+          "id": "tbl-11-c15",
+          "name": "session_completion_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.4,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-11-c16",
+          "name": "dosage_compliance_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.3,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-11-c17",
+          "name": "attendance_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-11-c18",
+          "name": "average_fidelity_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-11-c19",
+          "name": "fidelity_trend",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "improving",
+              "stable",
+              "declining"
+            ],
+            "weights": [
+              30,
+              50,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-11-c20",
+          "name": "weeks_elapsed",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 12
+          }
+        },
+        {
+          "id": "tbl-11-c21",
+          "name": "sessions_behind_schedule",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 6
+          }
+        },
+        {
+          "id": "tbl-11-c22",
+          "name": "minutes_behind_schedule",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 180
+          }
+        },
+        {
+          "id": "tbl-11-c23",
+          "name": "on_track",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-11-c24",
+          "name": "average_engagement_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-11-c25",
+          "name": "dosage_status",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "not_started",
+              "on_track",
+              "behind",
+              "critical",
+              "completed",
+              "discontinued"
+            ],
+            "weights": [
+              5,
+              40,
+              20,
+              10,
+              20,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "not_started",
+                "nullFields": [
+                  "first_session_date",
+                  "last_session_date",
+                  "average_fidelity_score"
+                ]
+              },
+              {
+                "value": "discontinued",
+                "nullFields": [
+                  "next_session_date"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-11-c26",
+          "name": "inference_flags",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-11-c27",
+          "name": "first_session_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-11-c28",
+          "name": "last_session_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-11-c29",
+          "name": "next_session_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-11-c30",
+          "name": "computed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-11-c31",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-11-c32",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-12",
+      "name": "intervention_sessions",
+      "columns": [
+        {
+          "id": "tbl-12-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-12-c2",
+          "name": "intervention_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "tbl-13-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c4",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c5",
+          "name": "scheduled_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-12-c6",
+          "name": "scheduled_start_time",
+          "type": "time",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c7",
+          "name": "scheduled_duration_minutes",
+          "type": "int4",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "20",
+              "30",
+              "45",
+              "60"
+            ],
+            "weights": [
+              15,
+              50,
+              25,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-12-c8",
+          "name": "actual_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-12-c9",
+          "name": "actual_start_time",
+          "type": "time",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c10",
+          "name": "actual_duration_minutes",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 15,
+            "max": 60
+          }
+        },
+        {
+          "id": "tbl-12-c11",
+          "name": "status",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "scheduled",
+              "completed",
+              "partial",
+              "cancelled",
+              "no_show",
+              "rescheduled"
+            ],
+            "weights": [
+              15,
+              50,
+              10,
+              10,
+              10,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "actual_date",
+                  "actual_duration_minutes",
+                  "fidelity_score"
+                ]
+              },
+              {
+                "value": "no_show",
+                "nullFields": [
+                  "actual_duration_minutes",
+                  "fidelity_score"
+                ]
+              },
+              {
+                "value": "scheduled",
+                "nullFields": [
+                  "actual_date",
+                  "actual_duration_minutes",
+                  "fidelity_score"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-12-c12",
+          "name": "cancellation_reason",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c13",
+          "name": "delivered_by",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c14",
+          "name": "location",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c15",
+          "name": "modality",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "in_person",
+              "virtual",
+              "hybrid",
+              "async"
+            ],
+            "weights": [
+              60,
+              20,
+              10,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-12-c16",
+          "name": "group_size",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 6
+          }
+        },
+        {
+          "id": "tbl-12-c17",
+          "name": "fidelity_checklist",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c18",
+          "name": "fidelity_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-12-c19",
+          "name": "fidelity_notes",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c20",
+          "name": "student_engaged",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-12-c21",
+          "name": "engagement_notes",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c22",
+          "name": "session_notes",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c23",
+          "name": "skills_practiced",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c24",
+          "name": "homework_assigned",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-12-c25",
+          "name": "parent_communication",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-12-c26",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-12-c27",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-12-c28",
+          "name": "created_by",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-13",
+      "name": "interventions",
+      "columns": [
+        {
+          "id": "tbl-13-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-13-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-13-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-13-c4",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-13-c5",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-13-c6",
+          "name": "created_by_user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-13-c7",
+          "name": "assigned_to_user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-13-c8",
+          "name": "type",
+          "type": "intervention_type",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "academic",
+              "attendance",
+              "behavior",
+              "sel",
+              "family_engagement"
+            ],
+            "weights": [
+              35,
+              25,
+              15,
+              15,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c9",
+          "name": "title",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Reading Fluency Support",
+              "Math Intervention - Tier 2",
+              "Attendance Recovery Plan",
+              "Behavior Support Plan",
+              "SEL Check-in Group",
+              "Tutoring - After School",
+              "Family Engagement Plan",
+              "Academic Recovery - ELA",
+              "Peer Mentoring",
+              "Credit Recovery Program"
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c10",
+          "name": "description",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-13-c11",
+          "name": "status",
+          "type": "intervention_status",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "planned",
+              "in_progress",
+              "completed",
+              "cancelled"
+            ],
+            "weights": [
+              15,
+              45,
+              30,
+              10
+            ],
+            "lifecycleRules": [
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "actual_end_date",
+                  "outcome_summary",
+                  "current_value"
+                ]
+              },
+              {
+                "value": "planned",
+                "nullFields": [
+                  "actual_end_date",
+                  "outcome_summary",
+                  "was_successful"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c12",
+          "name": "priority",
+          "type": "notification_priority",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "urgent"
+            ],
+            "weights": [
+              10,
+              45,
+              30,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c13",
+          "name": "start_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-13-c14",
+          "name": "target_end_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-13-c15",
+          "name": "actual_end_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-13-c16",
+          "name": "goal",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Improve reading fluency by 15%",
+              "Raise math proficiency to grade level",
+              "Reduce absences to <5/month",
+              "Decrease behavior incidents by 50%",
+              "Improve engagement score to 0.8+",
+              "Complete 80% of missing assignments",
+              "Establish weekly family communication"
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c17",
+          "name": "success_criteria",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-13-c18",
+          "name": "baseline_value",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 20,
+            "max": 60
+          }
+        },
+        {
+          "id": "tbl-13-c19",
+          "name": "target_value",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 70,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-13-c20",
+          "name": "current_value",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 30,
+            "max": 85
+          }
+        },
+        {
+          "id": "tbl-13-c21",
+          "name": "progress_notes",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-13-c22",
+          "name": "outcome_summary",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-13-c23",
+          "name": "was_successful",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-13-c24",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-13-c25",
+          "name": "is_stale",
+          "type": "bool",
+          "strategy": "boolean"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-14",
+      "name": "notifications",
+      "columns": [
+        {
+          "id": "tbl-14-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-14-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-14-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-14-c4",
+          "name": "user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-14-c5",
+          "name": "type",
+          "type": "notification_type",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "alert",
+              "insight",
+              "system",
+              "action"
+            ],
+            "weights": [
+              35,
+              25,
+              20,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-14-c6",
+          "name": "priority",
+          "type": "notification_priority",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "urgent"
+            ],
+            "weights": [
+              15,
+              40,
+              30,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-14-c7",
+          "name": "title",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "New at-risk student identified",
+              "Attendance alert",
+              "Intervention review due",
+              "Weekly risk summary ready",
+              "Data sync completed",
+              "Assessment results available",
+              "Behavior incident reported"
+            ]
+          }
+        },
+        {
+          "id": "tbl-14-c8",
+          "name": "message",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-14-c9",
+          "name": "action_url",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-14-c10",
+          "name": "action_label",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-14-c11",
+          "name": "related_student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-14-c12",
+          "name": "related_intervention_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "tbl-13-c1"
+          }
+        },
+        {
+          "id": "tbl-14-c13",
+          "name": "is_read",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-14-c14",
+          "name": "read_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-14-c15",
+          "name": "is_dismissed",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-14-c16",
+          "name": "dismissed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-14-c17",
+          "name": "expires_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-14-c18",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-15",
+      "name": "payments",
+      "columns": [
+        {
+          "id": "tbl-15-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-15-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-15-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-15-c4",
+          "name": "stripe_invoice_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c5",
+          "name": "stripe_subscription_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c6",
+          "name": "stripe_payment_intent_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c7",
+          "name": "stripe_charge_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c8",
+          "name": "amount",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 4900,
+            "max": 49900
+          }
+        },
+        {
+          "id": "tbl-15-c9",
+          "name": "currency",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c10",
+          "name": "status",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "past_due",
+              "canceled",
+              "incomplete"
+            ],
+            "weights": [
+              70,
+              15,
+              10,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-15-c11",
+          "name": "invoice_number",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c12",
+          "name": "invoice_pdf_url",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c13",
+          "name": "hosted_invoice_url",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c14",
+          "name": "period_start",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-15-c15",
+          "name": "period_end",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-15-c16",
+          "name": "subscription_tier",
+          "type": "subscription_tier",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-15-c17",
+          "name": "student_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-15-c18",
+          "name": "paid_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-15-c19",
+          "name": "refunded_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-15-c20",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-16",
+      "name": "resource_progress",
+      "columns": [
+        {
+          "id": "tbl-16-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-16-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-16-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-16-c4",
+          "name": "user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-16-c5",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-16-c6",
+          "name": "module_slug",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-16-c7",
+          "name": "module_category",
+          "type": "resource_category",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-16-c8",
+          "name": "is_started",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-16-c9",
+          "name": "started_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-16-c10",
+          "name": "is_completed",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-16-c11",
+          "name": "completed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-16-c12",
+          "name": "sections_completed",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-16-c13",
+          "name": "total_sections",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-16-c14",
+          "name": "current_section",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-16-c15",
+          "name": "time_spent_minutes",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-16-c16",
+          "name": "is_bookmarked",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-16-c17",
+          "name": "bookmarked_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-16-c18",
+          "name": "user_notes",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-16-c19",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-17",
+      "name": "risk_alerts",
+      "columns": [
+        {
+          "id": "tbl-17-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-17-c2",
+          "name": "evaluation_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-18",
+            "columnId": "tbl-18-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c3",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c4",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c5",
+          "name": "rule_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-17-c6",
+          "name": "alert_type",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "threshold_breach",
+              "rapid_decline",
+              "chronic_absence",
+              "intervention_overdue",
+              "new_risk_detected",
+              "trend_warning",
+              "attendance_drop",
+              "grade_decline",
+              "consecutive_absences"
+            ],
+            "weights": [
+              15,
+              10,
+              15,
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c7",
+          "name": "severity",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "info",
+              "warning",
+              "urgent",
+              "critical"
+            ],
+            "weights": [
+              20,
+              40,
+              25,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c8",
+          "name": "title",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Student at risk of chronic absence",
+              "Rapid decline in math performance",
+              "Behavior incidents increasing",
+              "Intervention overdue for review",
+              "New student identified as at-risk",
+              "Attendance dropped below 90%",
+              "Grade decline detected",
+              "3+ consecutive absences"
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c9",
+          "name": "message",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Immediate attention required. Student metrics indicate elevated risk.",
+              "Review recommended. Multiple risk factors detected.",
+              "Schedule follow-up. Intervention may need adjustment.",
+              "Monitor closely. Trends suggest potential escalation."
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c10",
+          "name": "risk_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-17-c11",
+          "name": "risk_level",
+          "type": "risk_level",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "on_track",
+              "watch",
+              "at_risk",
+              "critical"
+            ],
+            "weights": [
+              10,
+              25,
+              35,
+              30
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c12",
+          "name": "data",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-17-c13",
+          "name": "status",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "new",
+              "acknowledged",
+              "in_review",
+              "resolved",
+              "dismissed"
+            ],
+            "weights": [
+              25,
+              20,
+              15,
+              30,
+              10
+            ],
+            "lifecycleRules": [
+              {
+                "value": "new",
+                "nullFields": [
+                  "acknowledged_at",
+                  "acknowledged_by",
+                  "resolved_at",
+                  "resolved_by",
+                  "resolution_notes"
+                ]
+              },
+              {
+                "value": "acknowledged",
+                "nullFields": [
+                  "resolved_at",
+                  "resolved_by",
+                  "resolution_notes"
+                ]
+              },
+              {
+                "value": "dismissed",
+                "nullFields": [
+                  "resolved_at",
+                  "resolved_by"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c14",
+          "name": "acknowledged_by",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c15",
+          "name": "acknowledged_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-17-c16",
+          "name": "resolved_by",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c17",
+          "name": "resolved_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-17-c18",
+          "name": "resolution_notes",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-17-c19",
+          "name": "intervention_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "tbl-13-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c20",
+          "name": "cooldown_key",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-17-c21",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-17-c22",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 1000
+      }
+    },
+    {
+      "id": "tbl-18",
+      "name": "risk_evaluations",
+      "columns": [
+        {
+          "id": "tbl-18-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-18-c2",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-18-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-18-c4",
+          "name": "config_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-19",
+            "columnId": "tbl-19-c1"
+          }
+        },
+        {
+          "id": "tbl-18-c5",
+          "name": "risk_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-18-c6",
+          "name": "risk_level",
+          "type": "risk_level",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "on_track",
+              "watch",
+              "at_risk",
+              "critical"
+            ],
+            "weights": [
+              55,
+              20,
+              15,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c7",
+          "name": "previous_level",
+          "type": "risk_level",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "on_track",
+              "watch",
+              "at_risk",
+              "critical"
+            ],
+            "weights": [
+              50,
+              25,
+              15,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c8",
+          "name": "level_changed",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-18-c9",
+          "name": "risk_factors",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-18-c10",
+          "name": "trajectory",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "improving",
+              "stable",
+              "declining"
+            ],
+            "weights": [
+              25,
+              50,
+              25
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c11",
+          "name": "confidence_level",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.6,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-18-c12",
+          "name": "recommended_actions",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-18-c13",
+          "name": "metrics_snapshot",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-18-c14",
+          "name": "trigger_type",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "sync_event",
+              "batch_nightly",
+              "manual",
+              "config_change"
+            ],
+            "weights": [
+              20,
+              60,
+              15,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c15",
+          "name": "computed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-18-c16",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 1000
+      }
+    },
+    {
+      "id": "tbl-19",
+      "name": "risk_model_configs",
+      "columns": [
+        {
+          "id": "tbl-19-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-19-c2",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-19-c3",
+          "name": "name",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Default MTSS Model",
+              "Custom Attendance Model",
+              "Academic Focus Model"
+            ]
+          }
+        },
+        {
+          "id": "tbl-19-c4",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-19-c5",
+          "name": "weight_attendance",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.15,
+            "max": 0.35
+          }
+        },
+        {
+          "id": "tbl-19-c6",
+          "name": "weight_academic",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.2,
+            "max": 0.4
+          }
+        },
+        {
+          "id": "tbl-19-c7",
+          "name": "weight_assignments",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.1,
+            "max": 0.3
+          }
+        },
+        {
+          "id": "tbl-19-c8",
+          "name": "weight_behavior",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.1,
+            "max": 0.2
+          }
+        },
+        {
+          "id": "tbl-19-c9",
+          "name": "weight_trend",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.05,
+            "max": 0.15
+          }
+        },
+        {
+          "id": "tbl-19-c10",
+          "name": "threshold_on_track",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-19-c11",
+          "name": "threshold_watch",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-19-c12",
+          "name": "threshold_at_risk",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-19-c13",
+          "name": "attendance_floor",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 88,
+            "max": 92
+          }
+        },
+        {
+          "id": "tbl-19-c14",
+          "name": "attendance_critical",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 72,
+            "max": 78
+          }
+        },
+        {
+          "id": "tbl-19-c15",
+          "name": "assignment_missing_warn",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-19-c16",
+          "name": "behavior_incident_cap",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-19-c17",
+          "name": "assessment_floor_pct",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 40,
+            "max": 60
+          }
+        },
+        {
+          "id": "tbl-19-c18",
+          "name": "trend_lookback_weeks",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 3,
+            "max": 6
+          }
+        },
+        {
+          "id": "tbl-19-c19",
+          "name": "trend_decline_threshold",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-19-c20",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-19-c21",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-19-c22",
+          "name": "created_by",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 1000
+      }
+    },
+    {
+      "id": "tbl-20",
+      "name": "scheduled_reports",
+      "columns": [
+        {
+          "id": "tbl-20-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-20-c2",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-20-c3",
+          "name": "report_type",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c4",
+          "name": "format",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c5",
+          "name": "title",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c6",
+          "name": "frequency",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c7",
+          "name": "day_of_week",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-20-c8",
+          "name": "day_of_month",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-20-c9",
+          "name": "time_of_day",
+          "type": "time",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c10",
+          "name": "timezone",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c11",
+          "name": "filters",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c12",
+          "name": "options",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c13",
+          "name": "recipients",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c14",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-20-c15",
+          "name": "last_run_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-20-c16",
+          "name": "next_run_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-20-c17",
+          "name": "last_error",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-20-c18",
+          "name": "created_by",
+          "type": "uuid",
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-20-c19",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-20-c20",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 1000
+      }
+    },
+    {
+      "id": "tbl-21",
+      "name": "school_integration_settings",
+      "columns": [
+        {
+          "id": "tbl-21-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-21-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-21-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-21-c4",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-21-c5",
+          "name": "pass_costs_to_school",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-21-c6",
+          "name": "billing_contact_email",
+          "type": "text",
+          "strategy": "email"
+        },
+        {
+          "id": "tbl-21-c7",
+          "name": "max_monthly_cost",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-21-c8",
+          "name": "max_syncs_per_day",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-21-c9",
+          "name": "max_concurrent_syncs",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-21-c10",
+          "name": "cost_alert_threshold",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 999.99
+          }
+        },
+        {
+          "id": "tbl-21-c11",
+          "name": "notify_on_sync_failure",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-21-c12",
+          "name": "notify_on_quota_warning",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-21-c13",
+          "name": "allow_manual_sync",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-21-c14",
+          "name": "allow_realtime_sync",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-21-c15",
+          "name": "allow_bulk_operations",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-21-c16",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 1250
+      }
+    },
+    {
+      "id": "tbl-22",
+      "name": "school_memberships",
+      "columns": [
+        {
+          "id": "tbl-22-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-22-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-22-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-22-c4",
+          "name": "user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-22-c5",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-22-c6",
+          "name": "role",
+          "type": "school_role",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "school_admin",
+              "principal",
+              "teacher",
+              "counselor",
+              "data_manager",
+              "viewer"
+            ],
+            "weights": [
+              5,
+              5,
+              50,
+              15,
+              10,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-22-c7",
+          "name": "is_primary",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-22-c8",
+          "name": "sis_staff_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-22-c9",
+          "name": "department",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Math",
+              "ELA",
+              "Science",
+              "Social Studies",
+              "Special Education",
+              "Counseling"
+            ],
+            "weights": [
+              20,
+              20,
+              15,
+              15,
+              15,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-22-c10",
+          "name": "grade_levels",
+          "type": "_int4",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-22-c11",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-22-c12",
+          "name": "invited_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-22-c13",
+          "name": "accepted_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 1250
+      }
+    },
+    {
+      "id": "tbl-23",
+      "name": "schools",
+      "columns": [
+        {
+          "id": "tbl-23-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-23-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-23-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-23-c4",
+          "name": "slug",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c5",
+          "name": "name",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Academy Charter School",
+              "Innovation Prep Academy",
+              "STEM Scholars Charter",
+              "Horizon Leadership Academy",
+              "Phoenix Rising Charter"
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c6",
+          "name": "legal_name",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c7",
+          "name": "domain",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c8",
+          "name": "logo_url",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c9",
+          "name": "primary_color",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "#6366f1",
+              "#8b5cf6",
+              "#0ea5e9",
+              "#059669",
+              "#dc2626"
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c10",
+          "name": "secondary_color",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "#06b6d4",
+              "#10b981",
+              "#f59e0b",
+              "#8b5cf6"
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c11",
+          "name": "accent_color",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "#10b981",
+              "#f59e0b",
+              "#06b6d4",
+              "#ec4899"
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c12",
+          "name": "subscription_tier",
+          "type": "subscription_tier",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "starter",
+              "pro",
+              "enterprise"
+            ],
+            "weights": [
+              34,
+              33,
+              33
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c13",
+          "name": "subscription_status",
+          "type": "subscription_status",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "trialing",
+              "past_due",
+              "canceled"
+            ],
+            "weights": [
+              60,
+              25,
+              10,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c14",
+          "name": "trial_ends_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-23-c15",
+          "name": "bigquery_dataset_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c16",
+          "name": "clever_district_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c17",
+          "name": "classlink_tenant_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c18",
+          "name": "timezone",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "America/New_York",
+              "America/Chicago",
+              "America/Denver",
+              "America/Los_Angeles"
+            ],
+            "weights": [
+              40,
+              25,
+              15,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c19",
+          "name": "academic_year_start_month",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 8,
+            "max": 8
+          }
+        },
+        {
+          "id": "tbl-23-c20",
+          "name": "contact_email",
+          "type": "text",
+          "strategy": "email"
+        },
+        {
+          "id": "tbl-23-c21",
+          "name": "contact_phone",
+          "type": "text",
+          "strategy": "phone"
+        },
+        {
+          "id": "tbl-23-c22",
+          "name": "address",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c23",
+          "name": "authorizer_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-04",
+            "columnId": "tbl-04-c1"
+          }
+        },
+        {
+          "id": "tbl-23-c24",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-23-c25",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c26",
+          "name": "stripe_customer_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c27",
+          "name": "stripe_subscription_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-23-c28",
+          "name": "current_period_start",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-23-c29",
+          "name": "current_period_end",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-23-c30",
+          "name": "cancel_at_period_end",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-23-c31",
+          "name": "canceled_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-23-c32",
+          "name": "student_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 200,
+            "max": 700
+          }
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 1250
+      }
+    },
+    {
+      "id": "tbl-24",
+      "name": "student_metric_history",
+      "columns": [
+        {
+          "id": "tbl-24-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-24-c2",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-24-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-24-c4",
+          "name": "snapshot_date",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-24-c5",
+          "name": "snapshot_week",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 52
+          }
+        },
+        {
+          "id": "tbl-24-c6",
+          "name": "snapshot_year",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 2025,
+            "max": 2026
+          }
+        },
+        {
+          "id": "tbl-24-c7",
+          "name": "attendance_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 75,
+            "max": 99
+          }
+        },
+        {
+          "id": "tbl-24-c8",
+          "name": "gpa_current",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1.5,
+            "max": 4
+          }
+        },
+        {
+          "id": "tbl-24-c9",
+          "name": "math_assessment_pct",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 15,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-24-c10",
+          "name": "reading_assessment_pct",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 15,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-24-c11",
+          "name": "missing_assignment_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 0.4
+          }
+        },
+        {
+          "id": "tbl-24-c12",
+          "name": "behavior_incident_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-24-c13",
+          "name": "proficiency_level",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-24-c14",
+          "name": "growth_percentile",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-24-c15",
+          "name": "engagement_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.3,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-24-c16",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 1250
+      }
+    },
+    {
+      "id": "tbl-25",
+      "name": "student_metrics",
+      "columns": [
+        {
+          "id": "tbl-25-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-25-c2",
+          "name": "student_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-26",
+            "columnId": "tbl-26-c1"
+          }
+        },
+        {
+          "id": "tbl-25-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-25-c4",
+          "name": "attendance_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 75,
+            "max": 99
+          }
+        },
+        {
+          "id": "tbl-25-c5",
+          "name": "attendance_trend",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": -0.05,
+            "max": 0.05
+          }
+        },
+        {
+          "id": "tbl-25-c6",
+          "name": "days_absent_last_30",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10
+          }
+        },
+        {
+          "id": "tbl-25-c7",
+          "name": "chronic_absence_flag",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-25-c8",
+          "name": "gpa_current",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1.5,
+            "max": 4
+          }
+        },
+        {
+          "id": "tbl-25-c9",
+          "name": "gpa_trend",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": -0.3,
+            "max": 0.3
+          }
+        },
+        {
+          "id": "tbl-25-c10",
+          "name": "math_assessment_pct",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 15,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-25-c11",
+          "name": "reading_assessment_pct",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 15,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-25-c12",
+          "name": "assessment_trend",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": -0.1,
+            "max": 0.1
+          }
+        },
+        {
+          "id": "tbl-25-c13",
+          "name": "proficiency_level",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-25-c14",
+          "name": "growth_percentile",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-25-c15",
+          "name": "missing_assignment_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 0.4
+          }
+        },
+        {
+          "id": "tbl-25-c16",
+          "name": "missing_assignments_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 15
+          }
+        },
+        {
+          "id": "tbl-25-c17",
+          "name": "total_assignments_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 20,
+            "max": 80
+          }
+        },
+        {
+          "id": "tbl-25-c18",
+          "name": "assignment_trend",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": -0.1,
+            "max": 0.1
+          }
+        },
+        {
+          "id": "tbl-25-c19",
+          "name": "behavior_incident_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 8
+          }
+        },
+        {
+          "id": "tbl-25-c20",
+          "name": "behavior_incident_trend",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": -0.05,
+            "max": 0.05
+          }
+        },
+        {
+          "id": "tbl-25-c21",
+          "name": "suspensions_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 3
+          }
+        },
+        {
+          "id": "tbl-25-c22",
+          "name": "engagement_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.3,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-25-c23",
+          "name": "data_completeness",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0.4,
+            "max": 1
+          }
+        },
+        {
+          "id": "tbl-25-c24",
+          "name": "last_sis_sync",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-25-c25",
+          "name": "last_lms_sync",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-25-c26",
+          "name": "last_assessment_sync",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-25-c27",
+          "name": "computed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-25-c28",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-25-c29",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 1500
+      }
+    },
+    {
+      "id": "tbl-26",
+      "name": "students",
+      "columns": [
+        {
+          "id": "tbl-26-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-26-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-26-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-26-c4",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-26-c5",
+          "name": "sis_student_id",
+          "type": "text",
+          "strategy": "random_string"
+        },
+        {
+          "id": "tbl-26-c6",
+          "name": "first_name",
+          "type": "text",
+          "strategy": "full_name"
+        },
+        {
+          "id": "tbl-26-c7",
+          "name": "last_name",
+          "type": "text",
+          "strategy": "full_name"
+        },
+        {
+          "id": "tbl-26-c8",
+          "name": "display_name",
+          "type": "text",
+          "strategy": "full_name"
+        },
+        {
+          "id": "tbl-26-c9",
+          "name": "grade_level",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 6,
+            "max": 12
+          }
+        },
+        {
+          "id": "tbl-26-c10",
+          "name": "date_of_birth",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-26-c11",
+          "name": "gender",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Male",
+              "Female",
+              "Non-binary"
+            ],
+            "weights": [
+              48,
+              48,
+              4
+            ]
+          }
+        },
+        {
+          "id": "tbl-26-c12",
+          "name": "ethnicity",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Hispanic/Latino",
+              "Black/African American",
+              "White",
+              "Asian",
+              "Two or More",
+              "Other"
+            ],
+            "weights": [
+              30,
+              25,
+              20,
+              10,
+              10,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-26-c13",
+          "name": "has_iep",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c14",
+          "name": "has_504_plan",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c15",
+          "name": "is_english_learner",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c16",
+          "name": "is_gifted",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c17",
+          "name": "is_free_reduced_lunch",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c18",
+          "name": "homeroom_teacher",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Ms. Johnson",
+              "Mr. Chen",
+              "Ms. Rodriguez",
+              "Mr. Williams",
+              "Ms. Davis",
+              "Mr. Thompson",
+              "Ms. Martinez",
+              "Mr. Lee"
+            ]
+          }
+        },
+        {
+          "id": "tbl-26-c19",
+          "name": "counselor",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Ms. Adams",
+              "Mr. Clark",
+              "Ms. Rivera",
+              "Mr. Parker"
+            ]
+          }
+        },
+        {
+          "id": "tbl-26-c20",
+          "name": "attendance_rate",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 75,
+            "max": 99
+          }
+        },
+        {
+          "id": "tbl-26-c21",
+          "name": "days_present",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 70,
+            "max": 100
+          }
+        },
+        {
+          "id": "tbl-26-c22",
+          "name": "days_absent",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 30
+          }
+        },
+        {
+          "id": "tbl-26-c23",
+          "name": "is_chronically_absent",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c24",
+          "name": "proficiency_level",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 20,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-26-c25",
+          "name": "growth_percentile",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 95
+          }
+        },
+        {
+          "id": "tbl-26-c26",
+          "name": "risk_level",
+          "type": "risk_level",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "on_track",
+              "watch",
+              "at_risk",
+              "critical"
+            ],
+            "weights": [
+              55,
+              20,
+              15,
+              10
+            ],
+            "lifecycleRules": [
+              {
+                "value": "critical",
+                "nullFields": [
+                  "growth_percentile"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-26-c27",
+          "name": "risk_score",
+          "type": "numeric",
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 85
+          }
+        },
+        {
+          "id": "tbl-26-c28",
+          "name": "risk_factors",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-26-c29",
+          "name": "reading_scores",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-26-c30",
+          "name": "math_scores",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-26-c31",
+          "name": "purpose_driven_metrics",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-26-c32",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-26-c33",
+          "name": "enrolled_at",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-26-c34",
+          "name": "withdrawn_at",
+          "type": "date",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-26-c35",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 1500
+      }
+    },
+    {
+      "id": "tbl-27",
+      "name": "sync_history",
+      "columns": [
+        {
+          "id": "tbl-27-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-27-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-27-c3",
+          "name": "school_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-23",
+            "columnId": "tbl-23-c1"
+          }
+        },
+        {
+          "id": "tbl-27-c4",
+          "name": "data_source_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-27-c5",
+          "name": "sync_type",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-27-c6",
+          "name": "started_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-27-c7",
+          "name": "completed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-27-c8",
+          "name": "status",
+          "type": "sync_status",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "syncing",
+              "completed",
+              "failed"
+            ],
+            "weights": [
+              5,
+              5,
+              80,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-27-c9",
+          "name": "error_message",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-27-c10",
+          "name": "records_processed",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 5000
+          }
+        },
+        {
+          "id": "tbl-27-c11",
+          "name": "records_created",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-27-c12",
+          "name": "records_updated",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 500
+          }
+        },
+        {
+          "id": "tbl-27-c13",
+          "name": "records_deleted",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-27-c14",
+          "name": "records_skipped",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        },
+        {
+          "id": "tbl-27-c15",
+          "name": "details",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-27-c16",
+          "name": "errors",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-27-c17",
+          "name": "triggered_by",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-27-c18",
+          "name": "triggered_by_user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-27-c19",
+          "name": "duration_ms",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 1000
+          }
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 1500
+      }
+    },
+    {
+      "id": "tbl-28",
+      "name": "user_preferences",
+      "columns": [
+        {
+          "id": "tbl-28-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-28-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-28-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-28-c4",
+          "name": "user_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-29",
+            "columnId": "tbl-29-c1"
+          }
+        },
+        {
+          "id": "tbl-28-c5",
+          "name": "email_notifications",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c6",
+          "name": "push_notifications",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c7",
+          "name": "digest_frequency",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-28-c8",
+          "name": "alert_critical_students",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c9",
+          "name": "alert_attendance_drops",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c10",
+          "name": "alert_assessment_results",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c11",
+          "name": "alert_intervention_updates",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c12",
+          "name": "alert_system_updates",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c13",
+          "name": "theme",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-28-c14",
+          "name": "compact_mode",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c15",
+          "name": "show_student_photos",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c16",
+          "name": "default_dashboard",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-28-c17",
+          "name": "date_format",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-28-c18",
+          "name": "number_format",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-28-c19",
+          "name": "reduce_motion",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c20",
+          "name": "high_contrast",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c21",
+          "name": "share_usage_data",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-28-c22",
+          "name": "custom_preferences",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 1500
+      }
+    },
+    {
+      "id": "tbl-29",
+      "name": "users",
+      "columns": [
+        {
+          "id": "tbl-29-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-29-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-29-c3",
+          "name": "updated_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-29-c4",
+          "name": "clerk_user_id",
+          "type": "text",
+          "strategy": "random_string"
+        },
+        {
+          "id": "tbl-29-c5",
+          "name": "email",
+          "type": "text",
+          "strategy": "email"
+        },
+        {
+          "id": "tbl-29-c6",
+          "name": "first_name",
+          "type": "text",
+          "strategy": "full_name"
+        },
+        {
+          "id": "tbl-29-c7",
+          "name": "last_name",
+          "type": "text",
+          "strategy": "full_name"
+        },
+        {
+          "id": "tbl-29-c8",
+          "name": "avatar_url",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-29-c9",
+          "name": "platform_role",
+          "type": "platform_role",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-29-c10",
+          "name": "is_active",
+          "type": "bool",
+          "strategy": "boolean"
+        },
+        {
+          "id": "tbl-29-c11",
+          "name": "last_login_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-29-c12",
+          "name": "preferences",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-29-c13",
+          "name": "metadata",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 1750
+      }
+    },
+    {
+      "id": "tbl-30",
+      "name": "webhook_events",
+      "columns": [
+        {
+          "id": "tbl-30-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-30-c2",
+          "name": "created_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-30-c3",
+          "name": "event_id",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-30-c4",
+          "name": "event_type",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "user.created",
+              "user.updated",
+              "session.created",
+              "session.ended",
+              "organization.created"
+            ],
+            "weights": [
+              20,
+              20,
+              30,
+              20,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-30-c5",
+          "name": "status",
+          "type": "text",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "processed",
+              "failed",
+              "pending"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-30-c6",
+          "name": "processed_at",
+          "type": "timestamptz",
+          "strategy": "timestamp"
+        },
+        {
+          "id": "tbl-30-c7",
+          "name": "error_message",
+          "type": "text",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-30-c8",
+          "name": "retry_count",
+          "type": "int4",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-30-c9",
+          "name": "payload",
+          "type": "jsonb",
+          "strategy": "text"
+        },
+        {
+          "id": "tbl-30-c10",
+          "name": "result",
+          "type": "jsonb",
+          "strategy": "text"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 1750
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-01",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-01",
+      "targetColumnId": "tbl-01-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-02",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-02",
+      "targetColumnId": "tbl-02-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-03",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-03",
+      "targetColumnId": "tbl-03-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-04",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-03",
+      "targetColumnId": "tbl-03-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-05",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-05",
+      "targetColumnId": "tbl-05-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-06",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-05",
+      "targetColumnId": "tbl-05-c5",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-07",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-06",
+      "targetColumnId": "tbl-06-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-08",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-07",
+      "targetColumnId": "tbl-07-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-09",
+      "sourceTableId": "tbl-20",
+      "sourceColumnId": "tbl-20-c1",
+      "targetTableId": "tbl-07",
+      "targetColumnId": "tbl-07-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-10",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-11",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-12",
+      "sourceTableId": "tbl-27",
+      "sourceColumnId": "tbl-27-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c5",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-13",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c15",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-14",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-10",
+      "targetColumnId": "tbl-10-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-15",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-10",
+      "targetColumnId": "tbl-10-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-16",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "tbl-13-c1",
+      "targetTableId": "tbl-11",
+      "targetColumnId": "tbl-11-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-17",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-11",
+      "targetColumnId": "tbl-11-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-18",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-11",
+      "targetColumnId": "tbl-11-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-19",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "tbl-13-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-20",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-21",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-22",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c13",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-23",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c28",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-24",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-13",
+      "targetColumnId": "tbl-13-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-25",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-13",
+      "targetColumnId": "tbl-13-c5",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-26",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-13",
+      "targetColumnId": "tbl-13-c6",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-27",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-13",
+      "targetColumnId": "tbl-13-c7",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-28",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-14",
+      "targetColumnId": "tbl-14-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-29",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-14",
+      "targetColumnId": "tbl-14-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-30",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-14",
+      "targetColumnId": "tbl-14-c11",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-31",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "tbl-13-c1",
+      "targetTableId": "tbl-14",
+      "targetColumnId": "tbl-14-c12",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-32",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-15",
+      "targetColumnId": "tbl-15-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-33",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "tbl-16-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-34",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "tbl-16-c5",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-35",
+      "sourceTableId": "tbl-18",
+      "sourceColumnId": "tbl-18-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-36",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-37",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-38",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c14",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-39",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c16",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-40",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "tbl-13-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c19",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-41",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-18",
+      "targetColumnId": "tbl-18-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-42",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-18",
+      "targetColumnId": "tbl-18-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-43",
+      "sourceTableId": "tbl-19",
+      "sourceColumnId": "tbl-19-c1",
+      "targetTableId": "tbl-18",
+      "targetColumnId": "tbl-18-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-44",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-19",
+      "targetColumnId": "tbl-19-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-45",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-19",
+      "targetColumnId": "tbl-19-c22",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-46",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-20",
+      "targetColumnId": "tbl-20-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-47",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-21",
+      "targetColumnId": "tbl-21-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-48",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-22",
+      "targetColumnId": "tbl-22-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-49",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-22",
+      "targetColumnId": "tbl-22-c5",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-50",
+      "sourceTableId": "tbl-04",
+      "sourceColumnId": "tbl-04-c1",
+      "targetTableId": "tbl-23",
+      "targetColumnId": "tbl-23-c23",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-51",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-24",
+      "targetColumnId": "tbl-24-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-52",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-24",
+      "targetColumnId": "tbl-24-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-53",
+      "sourceTableId": "tbl-26",
+      "sourceColumnId": "tbl-26-c1",
+      "targetTableId": "tbl-25",
+      "targetColumnId": "tbl-25-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-54",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-25",
+      "targetColumnId": "tbl-25-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-55",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-26",
+      "targetColumnId": "tbl-26-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-56",
+      "sourceTableId": "tbl-23",
+      "sourceColumnId": "tbl-23-c1",
+      "targetTableId": "tbl-27",
+      "targetColumnId": "tbl-27-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-57",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-27",
+      "targetColumnId": "tbl-27-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-58",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-27",
+      "targetColumnId": "tbl-27-c18",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-59",
+      "sourceTableId": "tbl-29",
+      "sourceColumnId": "tbl-29-c1",
+      "targetTableId": "tbl-28",
+      "targetColumnId": "tbl-28-c4",
+      "type": "one-to-many"
+    }
+  ]
+}

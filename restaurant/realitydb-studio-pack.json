@@ -1,0 +1,950 @@
+{
+  "tables": [
+    {
+      "id": "tbl-001",
+      "name": "restaurants",
+      "columns": [
+        {
+          "id": "tbl-001-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c2",
+          "name": "name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "company_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c3",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "closed",
+              "busy"
+            ],
+            "weights": [
+              70,
+              20,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-001-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-002",
+      "name": "menus",
+      "columns": [
+        {
+          "id": "tbl-002-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-002-c2",
+          "name": "restaurant_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-002-c3",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-003",
+      "name": "menu_items",
+      "columns": [
+        {
+          "id": "tbl-003-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-003-c2",
+          "name": "menu_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-002",
+            "columnId": "tbl-002-c1"
+          }
+        },
+        {
+          "id": "tbl-003-c3",
+          "name": "price",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {
+            "min": 5,
+            "max": 50
+          }
+        },
+        {
+          "id": "tbl-003-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 740,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-004",
+      "name": "customers",
+      "columns": [
+        {
+          "id": "tbl-004-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-004-c2",
+          "name": "email",
+          "type": "email",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "email",
+          "options": {}
+        },
+        {
+          "id": "tbl-004-c3",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1060,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-005",
+      "name": "marketing_campaigns",
+      "columns": [
+        {
+          "id": "tbl-005-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-005-c2",
+          "name": "channel",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "email",
+              "social",
+              "push"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-005-c3",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-006",
+      "name": "coupons",
+      "columns": [
+        {
+          "id": "tbl-006-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-006-c2",
+          "name": "campaign_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-005",
+            "columnId": "tbl-005-c1"
+          }
+        },
+        {
+          "id": "tbl-006-c3",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-007",
+      "name": "orders",
+      "columns": [
+        {
+          "id": "tbl-007-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-007-c2",
+          "name": "restaurant_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c3",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-004",
+            "columnId": "tbl-004-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c4",
+          "name": "coupon_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-006",
+            "columnId": "tbl-006-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c5",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "delivered",
+              "cancelled"
+            ],
+            "weights": [
+              95,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "completed_at"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-007-c6",
+          "name": "completed_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-007-c7",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 740,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-008",
+      "name": "payments",
+      "columns": [
+        {
+          "id": "tbl-008-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-008-c2",
+          "name": "order_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-007",
+            "columnId": "tbl-007-c1"
+          }
+        },
+        {
+          "id": "tbl-008-c3",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "captured",
+              "failed"
+            ],
+            "weights": [
+              90,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-008-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1060,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-009",
+      "name": "deliveries",
+      "columns": [
+        {
+          "id": "tbl-009-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-009-c2",
+          "name": "order_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-007",
+            "columnId": "tbl-007-c1"
+          }
+        },
+        {
+          "id": "tbl-009-c3",
+          "name": "vehicle",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "bike",
+              "car"
+            ],
+            "weights": [
+              70,
+              30
+            ]
+          }
+        },
+        {
+          "id": "tbl-009-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-010",
+      "name": "loyalty_accounts",
+      "columns": [
+        {
+          "id": "tbl-010-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-010-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-004",
+            "columnId": "tbl-004-c1"
+          }
+        },
+        {
+          "id": "tbl-010-c3",
+          "name": "tier",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "silver",
+              "gold"
+            ],
+            "weights": [
+              80,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-010-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-011",
+      "name": "subscriptions",
+      "columns": [
+        {
+          "id": "tbl-011-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-011-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-004",
+            "columnId": "tbl-004-c1"
+          }
+        },
+        {
+          "id": "tbl-011-c3",
+          "name": "plan",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "monthly",
+              "annual"
+            ],
+            "weights": [
+              90,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-011-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 740,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-012",
+      "name": "referrals",
+      "columns": [
+        {
+          "id": "tbl-012-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-012-c2",
+          "name": "referrer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-004",
+            "columnId": "tbl-004-c1"
+          }
+        },
+        {
+          "id": "tbl-012-c3",
+          "name": "reward",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {
+            "min": 5,
+            "max": 20
+          }
+        },
+        {
+          "id": "tbl-012-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1060,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-013",
+      "name": "shift_logs",
+      "columns": [
+        {
+          "id": "tbl-013-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-013-c2",
+          "name": "restaurant_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-013-c3",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 1000
+      }
+    },
+    {
+      "id": "tbl-014",
+      "name": "reviews",
+      "columns": [
+        {
+          "id": "tbl-014-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-014-c2",
+          "name": "order_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-007",
+            "columnId": "tbl-007-c1"
+          }
+        },
+        {
+          "id": "tbl-014-c3",
+          "name": "rating",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 5
+          }
+        },
+        {
+          "id": "tbl-014-c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 1000
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-01",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-002",
+      "targetColumnId": "tbl-002-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-02",
+      "sourceTableId": "tbl-002",
+      "sourceColumnId": "tbl-002-c1",
+      "targetTableId": "tbl-003",
+      "targetColumnId": "tbl-003-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-03",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-04",
+      "sourceTableId": "tbl-004",
+      "sourceColumnId": "tbl-004-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c3",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-05",
+      "sourceTableId": "tbl-006",
+      "sourceColumnId": "tbl-006-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c4",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-06",
+      "sourceTableId": "tbl-007",
+      "sourceColumnId": "tbl-007-c1",
+      "targetTableId": "tbl-008",
+      "targetColumnId": "tbl-008-c2",
+      "type": "one-to-one",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-07",
+      "sourceTableId": "tbl-007",
+      "sourceColumnId": "tbl-007-c1",
+      "targetTableId": "tbl-009",
+      "targetColumnId": "tbl-009-c2",
+      "type": "one-to-one",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-08",
+      "sourceTableId": "tbl-004",
+      "sourceColumnId": "tbl-004-c1",
+      "targetTableId": "tbl-010",
+      "targetColumnId": "tbl-010-c2",
+      "type": "one-to-one",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-09",
+      "sourceTableId": "tbl-004",
+      "sourceColumnId": "tbl-004-c1",
+      "targetTableId": "tbl-011",
+      "targetColumnId": "tbl-011-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-10",
+      "sourceTableId": "tbl-004",
+      "sourceColumnId": "tbl-004-c1",
+      "targetTableId": "tbl-012",
+      "targetColumnId": "tbl-012-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-11",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-013",
+      "targetColumnId": "tbl-013-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-12",
+      "sourceTableId": "tbl-007",
+      "sourceColumnId": "tbl-007-c1",
+      "targetTableId": "tbl-014",
+      "targetColumnId": "tbl-014-c2",
+      "type": "one-to-one",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-13",
+      "sourceTableId": "tbl-005",
+      "sourceColumnId": "tbl-005-c1",
+      "targetTableId": "tbl-006",
+      "targetColumnId": "tbl-006-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    }
+  ],
+  "simulation": {
+    "seed": 42,
+    "timelineDays": 365,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.05
+  },
+  "version": "1.0.0",
+  "exportedAt": "2026-04-04T08:22:48.460Z"
+}

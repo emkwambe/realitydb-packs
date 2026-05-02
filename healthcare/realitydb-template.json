@@ -1,0 +1,452 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Exported from RealityDB Studio",
+  "tables": {
+    "Patients": {
+      "match": "Patients",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "string"
+        },
+        "date_of_birth": {
+          "strategy": "timestamp"
+        },
+        "gender": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "male",
+              "female",
+              "other"
+            ],
+            "weights": [
+              50,
+              48,
+              2
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Doctors": {
+      "match": "Doctors",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "specialty": {
+          "strategy": "string"
+        },
+        "license_number": {
+          "strategy": "string"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Appointments": {
+      "match": "Appointments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Patients",
+            "column": "id"
+          }
+        },
+        "doctor_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Doctors",
+            "column": "id"
+          }
+        },
+        "appointment_date": {
+          "strategy": "timestamp"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "cancelled",
+              "no_show"
+            ],
+            "weights": [
+              73,
+              21,
+              6
+            ],
+            "lifecycleRules": [
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "completed_at"
+                ]
+              }
+            ]
+          }
+        },
+        "completed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "appointment_date",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Prescriptions": {
+      "match": "Prescriptions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Patients",
+            "column": "id"
+          }
+        },
+        "medication_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Medications",
+            "column": "id"
+          }
+        },
+        "prescribed_at": {
+          "strategy": "timestamp"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "filled",
+              "unfilled"
+            ],
+            "weights": [
+              44,
+              56
+            ],
+            "lifecycleRules": [
+              {
+                "value": "unfilled",
+                "nullFields": [
+                  "dispensed_at"
+                ]
+              }
+            ]
+          }
+        },
+        "dispensed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "prescribed_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Medications": {
+      "match": "Medications",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "string"
+        },
+        "dosage": {
+          "strategy": "string"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Pharmacy_Inventory": {
+      "match": "Pharmacy_Inventory",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "medication_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Medications",
+            "column": "id"
+          }
+        },
+        "quantity": {
+          "strategy": "integer"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Medical_Records": {
+      "match": "Medical_Records",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Patients",
+            "column": "id"
+          }
+        },
+        "diagnosis": {
+          "strategy": "string"
+        },
+        "test_results": {
+          "strategy": "string"
+        },
+        "discharge_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "routine",
+              "other_care",
+              "deceased"
+            ],
+            "weights": [
+              74,
+              25,
+              1
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Lab_Tests": {
+      "match": "Lab_Tests",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Patients",
+            "column": "id"
+          }
+        },
+        "test_type": {
+          "strategy": "string"
+        },
+        "result": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "normal",
+              "abnormal"
+            ],
+            "weights": [
+              95,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Billing_Invoices": {
+      "match": "Billing_Invoices",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Patients",
+            "column": "id"
+          }
+        },
+        "amount": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "paid",
+              "unpaid"
+            ],
+            "weights": [
+              60,
+              40
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Insurance_Claims": {
+      "match": "Insurance_Claims",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Patients",
+            "column": "id"
+          }
+        },
+        "claim_amount": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "approved",
+              "denied"
+            ],
+            "weights": [
+              81,
+              19
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Staff": {
+      "match": "Staff",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "string"
+        },
+        "role": {
+          "strategy": "string"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Departments": {
+      "match": "Departments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "string"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Hospital_Wards": {
+      "match": "Hospital_Wards",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "department_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Departments",
+            "column": "id"
+          }
+        },
+        "bed_count": {
+          "strategy": "integer"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "Shift_Schedules": {
+      "match": "Shift_Schedules",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "staff_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "Staff",
+            "column": "id"
+          }
+        },
+        "shift_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "morning",
+              "evening",
+              "night"
+            ],
+            "weights": [
+              52,
+              36,
+              12
+            ]
+          }
+        },
+        "shift_date": {
+          "strategy": "timestamp"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    }
+  },
+  "simulation": {
+    "seed": 123,
+    "timelineDays": 180,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.08
+  },
+  "generationConfig": {
+    "database": {
+      "client": "postgres"
+    },
+    "seed": {
+      "defaultRecords": 1000,
+      "randomSeed": 123
+    }
+  }
+}

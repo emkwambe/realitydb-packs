@@ -1,0 +1,1926 @@
+{
+  "tables": [
+    {
+      "id": "tbl-001",
+      "name": "patients",
+      "columns": [
+        {
+          "id": "tbl-001-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c2",
+          "name": "mrn",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "template",
+          "options": {
+            "template": "MRN-{{rowIndex}}"
+          }
+        },
+        {
+          "id": "tbl-001-c3",
+          "name": "full_name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "full_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-001-c4",
+          "name": "date_of_birth",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 30,
+            "maxYearsAgo": 85
+          }
+        },
+        {
+          "id": "tbl-001-c5",
+          "name": "sex",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "female",
+              "male"
+            ],
+            "weights": [
+              99,
+              1
+            ],
+            "_citation": "ACS 2024: <1% of breast cancers occur in males. ~99% female."
+          }
+        },
+        {
+          "id": "tbl-001-c6",
+          "name": "race_ethnicity",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "non_hispanic_white",
+              "non_hispanic_black",
+              "hispanic",
+              "asian_pacific_islander",
+              "american_indian",
+              "other"
+            ],
+            "weights": [
+              60,
+              14,
+              15,
+              7,
+              1,
+              3
+            ],
+            "_citation": "ACS 2024 Table 3: Breast cancer patient demographics by race/ethnicity. SEER 2017-2021."
+          }
+        },
+        {
+          "id": "tbl-001-c7",
+          "name": "menopausal_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "premenopausal",
+              "perimenopausal",
+              "postmenopausal"
+            ],
+            "weights": [
+              25,
+              10,
+              65
+            ],
+            "_citation": "ACS 2024: Median age at diagnosis 62. ~65% postmenopausal, ~25% premenopausal."
+          }
+        },
+        {
+          "id": "tbl-001-c8",
+          "name": "family_history",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "none",
+              "first_degree",
+              "second_degree",
+              "brca1",
+              "brca2",
+              "other_genetic"
+            ],
+            "weights": [
+              65,
+              15,
+              10,
+              3,
+              3,
+              4
+            ],
+            "_citation": "ACS 2024 Table 3: ~15% have first-degree relative. BRCA1/2 carriers ~5-6% of breast cancers."
+          }
+        },
+        {
+          "id": "tbl-001-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-002",
+      "name": "tumor_biomarkers",
+      "columns": [
+        {
+          "id": "tbl-002-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-002-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-002-c3",
+          "name": "molecular_subtype",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "HR+/HER2-",
+              "HR+/HER2+",
+              "HR-/HER2+",
+              "Triple-Negative"
+            ],
+            "weights": [
+              73,
+              10,
+              5,
+              12
+            ],
+            "_citation": "Howlader JNCI 2014: HR+/HER2- 72.7%, TNBC 12.2%, HR+/HER2+ 10.3%, HR-/HER2+ 4.6%. Queensland 2025 confirms."
+          }
+        },
+        {
+          "id": "tbl-002-c4",
+          "name": "er_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "positive",
+              "negative"
+            ],
+            "weights": [
+              80,
+              20
+            ],
+            "_citation": "ACS 2024: ~80% ER+. HR+/HER2- (73%) + HR+/HER2+ (10%) = 83% ER+."
+          }
+        },
+        {
+          "id": "tbl-002-c5",
+          "name": "pr_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "positive",
+              "negative"
+            ],
+            "weights": [
+              65,
+              35
+            ],
+            "_citation": "ACS 2024: PR positivity slightly lower than ER. ~65% PR+."
+          }
+        },
+        {
+          "id": "tbl-002-c6",
+          "name": "her2_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "negative",
+              "positive",
+              "equivocal"
+            ],
+            "weights": [
+              82,
+              15,
+              3
+            ],
+            "_citation": "Howlader JNCI 2014: HER2+ subtypes 10.3%+4.6%=14.9%. Equivocal ~3% require FISH."
+          }
+        },
+        {
+          "id": "tbl-002-c7",
+          "name": "ki67_level",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "intermediate",
+              "high"
+            ],
+            "weights": [
+              35,
+              30,
+              35
+            ],
+            "_citation": "PMC11796511 Tuscan Registry: Ki-67 cutoff 14%. Luminal A (low) ~35%, Luminal B high ~35%."
+          }
+        },
+        {
+          "id": "tbl-002-c8",
+          "name": "tumor_grade",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Grade_1",
+              "Grade_2",
+              "Grade_3"
+            ],
+            "weights": [
+              25,
+              40,
+              35
+            ],
+            "_citation": "ACS 2024: White 24% high grade, Black 38%. Avg ~35% Grade 3, ~25% Grade 1, ~40% Grade 2."
+          }
+        },
+        {
+          "id": "tbl-002-c9",
+          "name": "specimen_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "8e03eeae-cf24-4458-a592-78e626aed1b9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-003",
+      "name": "diagnoses",
+      "columns": [
+        {
+          "id": "tbl-003-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-003-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-003-c3",
+          "name": "icd10_code",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "C50.1",
+              "C50.2",
+              "C50.3",
+              "C50.4",
+              "C50.5",
+              "C50.8",
+              "C50.9"
+            ],
+            "weights": [
+              15,
+              10,
+              8,
+              30,
+              20,
+              7,
+              10
+            ],
+            "_citation": "WHO ICD-10: C50.4 (upper-outer quadrant) most common ~30%. C50.5 (lower-outer) ~20%. C50.1 (central) ~15%."
+          }
+        },
+        {
+          "id": "tbl-003-c4",
+          "name": "stage_at_diagnosis",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Stage_0",
+              "Stage_IA",
+              "Stage_IB",
+              "Stage_IIA",
+              "Stage_IIB",
+              "Stage_IIIA",
+              "Stage_IIIB",
+              "Stage_IIIC",
+              "Stage_IV"
+            ],
+            "weights": [
+              15,
+              25,
+              10,
+              18,
+              10,
+              8,
+              4,
+              3,
+              6
+            ],
+            "_citation": "SEER 2024: 64% localized (0+I+IIA), 27% regional (IIB+III), 6% distant (IV). ACS 2024 confirms."
+          }
+        },
+        {
+          "id": "tbl-003-c5",
+          "name": "laterality",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "left",
+              "right",
+              "bilateral"
+            ],
+            "weights": [
+              51,
+              47,
+              2
+            ],
+            "_citation": "SEER data: Left breast slightly more common ~51% vs right ~47%. Bilateral ~2%."
+          }
+        },
+        {
+          "id": "tbl-003-c6",
+          "name": "histology",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "invasive_ductal",
+              "invasive_lobular",
+              "dcis",
+              "mixed",
+              "inflammatory",
+              "other"
+            ],
+            "weights": [
+              55,
+              15,
+              15,
+              5,
+              3,
+              7
+            ],
+            "_citation": "ACS 2024: Invasive ductal carcinoma ~55% of invasive. Lobular ~15%. DCIS ~15% of all breast cancers."
+          }
+        },
+        {
+          "id": "tbl-003-c7",
+          "name": "diagnosis_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "272f36c8-d4a6-4ce1-b1c8-55d911960239",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 740,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-004",
+      "name": "surgical_procedures",
+      "columns": [
+        {
+          "id": "tbl-004-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-004-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-004-c3",
+          "name": "procedure_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "lumpectomy",
+              "mastectomy",
+              "bilateral_mastectomy",
+              "sentinel_node_biopsy",
+              "axillary_dissection",
+              "reconstruction"
+            ],
+            "weights": [
+              35,
+              25,
+              10,
+              15,
+              8,
+              7
+            ],
+            "_citation": "ACS 2024: Breast-conserving surgery (lumpectomy) ~60% of early-stage. Mastectomy rising in younger women."
+          }
+        },
+        {
+          "id": "tbl-004-c4",
+          "name": "margin_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "negative",
+              "positive",
+              "close"
+            ],
+            "weights": [
+              80,
+              10,
+              10
+            ],
+            "_citation": "SSO/ASTRO guidelines: ~80% achieve negative margins on first excision. Re-excision rate ~10-20%."
+          }
+        },
+        {
+          "id": "tbl-004-c5",
+          "name": "lymph_nodes_examined",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 30
+          }
+        },
+        {
+          "id": "tbl-004-c6",
+          "name": "lymph_nodes_positive",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 15
+          }
+        },
+        {
+          "id": "tbl-004-c7",
+          "name": "procedure_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "85509948-5f89-40ff-b0ab-7192ff51edc6",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1060,
+        "y": 100
+      }
+    },
+    {
+      "id": "tbl-005",
+      "name": "systemic_therapy",
+      "columns": [
+        {
+          "id": "tbl-005-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-005-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-005-c3",
+          "name": "therapy_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "endocrine_therapy",
+              "chemotherapy",
+              "targeted_therapy",
+              "immunotherapy",
+              "combination"
+            ],
+            "weights": [
+              35,
+              25,
+              20,
+              5,
+              15
+            ],
+            "_citation": "NCCN: Endocrine standard for HR+ (~73%). Chemo for TNBC/high-risk. Targeted (trastuzumab) for HER2+. IO emerging for TNBC."
+          }
+        },
+        {
+          "id": "tbl-005-c4",
+          "name": "regimen_name",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "tamoxifen",
+              "letrozole",
+              "anastrozole",
+              "AC-T",
+              "TC",
+              "trastuzumab",
+              "pertuzumab_trastuzumab",
+              "TDM1",
+              "pembrolizumab_chemo",
+              "capecitabine",
+              "abemaciclib_letrozole",
+              "other"
+            ],
+            "weights": [
+              12,
+              10,
+              8,
+              12,
+              10,
+              10,
+              8,
+              5,
+              5,
+              5,
+              8,
+              7
+            ],
+            "_citation": "NCCN BC v2.2025: Regimen selection based on subtype and stage. Endocrine agents for HR+, taxane-based chemo, anti-HER2 targeted."
+          }
+        },
+        {
+          "id": "tbl-005-c5",
+          "name": "intent",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "neoadjuvant",
+              "adjuvant",
+              "palliative",
+              "curative"
+            ],
+            "weights": [
+              20,
+              45,
+              25,
+              10
+            ],
+            "_citation": "NCCN: Adjuvant most common (~45%). Neoadjuvant increasing (~20%). Palliative for Stage IV (~25%)."
+          }
+        },
+        {
+          "id": "tbl-005-c6",
+          "name": "response",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "complete_response",
+              "partial_response",
+              "stable_disease",
+              "progressive_disease",
+              "not_evaluable"
+            ],
+            "weights": [
+              15,
+              35,
+              25,
+              20,
+              5
+            ],
+            "_citation": "RECIST v1.1: Overall response rates vary by subtype/therapy. CR ~15%, PR ~35%, SD ~25%, PD ~20%."
+          }
+        },
+        {
+          "id": "tbl-005-c7",
+          "name": "cycles_completed",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 8
+          }
+        },
+        {
+          "id": "tbl-005-c8",
+          "name": "start_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "tbl-005-c9",
+          "name": "end_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        },
+        {
+          "id": "32b948f1-a121-48ba-bad4-fde787354fda",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-006",
+      "name": "radiation_therapy",
+      "columns": [
+        {
+          "id": "tbl-006-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-006-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-006-c3",
+          "name": "modality",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "whole_breast",
+              "partial_breast",
+              "chest_wall",
+              "boost",
+              "regional_nodal"
+            ],
+            "weights": [
+              40,
+              15,
+              20,
+              15,
+              10
+            ],
+            "_citation": "NCCN: Whole breast irradiation standard post-lumpectomy. Chest wall post-mastectomy for node-positive."
+          }
+        },
+        {
+          "id": "tbl-006-c4",
+          "name": "total_dose_gy",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "number",
+          "options": {
+            "min": 40,
+            "max": 66,
+            "precision": 1
+          }
+        },
+        {
+          "id": "tbl-006-c5",
+          "name": "fractions",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 5,
+            "max": 33
+          }
+        },
+        {
+          "id": "tbl-006-c6",
+          "name": "start_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "tbl-006-c7",
+          "name": "completion_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "ongoing",
+              "discontinued",
+              "not_started"
+            ],
+            "weights": [
+              70,
+              15,
+              10,
+              5
+            ],
+            "_citation": "Clinical practice: ~70% complete full course. ~10% discontinue (toxicity/progression)."
+          }
+        },
+        {
+          "id": "bbda6545-44b6-4cf2-8484-d24c7a8199f8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-007",
+      "name": "adverse_events",
+      "columns": [
+        {
+          "id": "tbl-007-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-007-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c3",
+          "name": "therapy_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-005",
+            "columnId": "tbl-005-c1"
+          }
+        },
+        {
+          "id": "tbl-007-c4",
+          "name": "event_term",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "fatigue",
+              "nausea",
+              "alopecia",
+              "neutropenia",
+              "neuropathy",
+              "arthralgia",
+              "hot_flashes",
+              "diarrhea",
+              "rash",
+              "cardiotoxicity",
+              "lymphedema",
+              "mucositis"
+            ],
+            "weights": [
+              18,
+              12,
+              10,
+              10,
+              8,
+              8,
+              8,
+              7,
+              6,
+              4,
+              5,
+              4
+            ],
+            "_citation": "Clinical trials: Fatigue most common (~18%). Nausea/alopecia with chemo. Hot flashes with endocrine. Cardiotoxicity with trastuzumab (~4%)."
+          }
+        },
+        {
+          "id": "tbl-007-c5",
+          "name": "ctcae_grade",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "weights": [
+              40,
+              30,
+              20,
+              8,
+              2
+            ],
+            "_citation": "PMC8144509: Grade 3+ AEs ~17.7% ICI monotherapy. Chemo higher. CTCAE v5.0."
+          }
+        },
+        {
+          "id": "tbl-007-c6",
+          "name": "onset_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        },
+        {
+          "id": "tbl-007-c7",
+          "name": "resolved",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "yes",
+              "no",
+              "ongoing",
+              "with_sequelae"
+            ],
+            "weights": [
+              55,
+              10,
+              25,
+              10
+            ],
+            "_citation": "Clinical practice: Most Grade 1-2 AEs resolve. Some chronic (neuropathy, lymphedema)."
+          }
+        },
+        {
+          "id": "7a3e3e72-92e1-4df6-8f6a-31dcc8821230",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 740,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-008",
+      "name": "imaging_studies",
+      "columns": [
+        {
+          "id": "tbl-008-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-008-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-008-c3",
+          "name": "modality",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "mammogram",
+              "ultrasound",
+              "mri_breast",
+              "ct_chest_abd",
+              "pet_ct",
+              "bone_scan",
+              "brain_mri"
+            ],
+            "weights": [
+              30,
+              20,
+              15,
+              12,
+              10,
+              8,
+              5
+            ],
+            "_citation": "NCCN: Mammogram for screening/surveillance. MRI for high-risk. CT/PET for staging metastatic."
+          }
+        },
+        {
+          "id": "tbl-008-c4",
+          "name": "birads_score",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6"
+            ],
+            "weights": [
+              10,
+              25,
+              25,
+              12,
+              12,
+              6,
+              10
+            ],
+            "_citation": "ACR BI-RADS: 1 (negative) and 2 (benign) most common. 4-5 suspicious. 6 = known cancer."
+          }
+        },
+        {
+          "id": "tbl-008-c5",
+          "name": "finding",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "no_evidence_disease",
+              "stable",
+              "partial_response",
+              "progressive_disease",
+              "new_lesion",
+              "indeterminate"
+            ],
+            "weights": [
+              30,
+              25,
+              15,
+              12,
+              8,
+              10
+            ],
+            "_citation": "RECIST/clinical: NED most common in surveillance. Progression ~12% at any single scan."
+          }
+        },
+        {
+          "id": "tbl-008-c6",
+          "name": "study_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "721e801d-b84d-43db-879b-be1d1840661a",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1060,
+        "y": 400
+      }
+    },
+    {
+      "id": "tbl-009",
+      "name": "follow_up_visits",
+      "columns": [
+        {
+          "id": "tbl-009-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-009-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-009-c3",
+          "name": "visit_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "routine_surveillance",
+              "treatment_followup",
+              "symptom_evaluation",
+              "imaging_review",
+              "lab_review",
+              "multidisciplinary_consult"
+            ],
+            "weights": [
+              30,
+              25,
+              15,
+              12,
+              10,
+              8
+            ],
+            "_citation": "NCCN survivorship: Routine surveillance most common. Every 3-6mo for first 5 years."
+          }
+        },
+        {
+          "id": "tbl-009-c4",
+          "name": "ecog_performance",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "weights": [
+              35,
+              35,
+              18,
+              8,
+              4
+            ],
+            "_citation": "ECOG scale: 0 (fully active) and 1 (restricted) most common in breast cancer patients. 3-4 in advanced disease."
+          }
+        },
+        {
+          "id": "tbl-009-c5",
+          "name": "disease_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "no_evidence_disease",
+              "stable_disease",
+              "progressive_disease",
+              "recurrence",
+              "new_primary"
+            ],
+            "weights": [
+              50,
+              20,
+              15,
+              10,
+              5
+            ],
+            "_citation": "SEER: Overall 5-year survival ~91%. Majority NED at follow-up. Recurrence ~10-15% within 5 years."
+          }
+        },
+        {
+          "id": "tbl-009-c6",
+          "name": "visit_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "5546cfb1-47a9-44ce-b745-ca1560e66738",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 100,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-010",
+      "name": "recurrence_events",
+      "columns": [
+        {
+          "id": "tbl-010-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-010-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-010-c3",
+          "name": "recurrence_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "local",
+              "regional",
+              "distant_bone",
+              "distant_liver",
+              "distant_lung",
+              "distant_brain",
+              "distant_multiple"
+            ],
+            "weights": [
+              20,
+              15,
+              20,
+              15,
+              12,
+              8,
+              10
+            ],
+            "_citation": "SEER/ACS: Bone most common distant site (~20%). Local recurrence ~20%. Brain less common (~8%)."
+          }
+        },
+        {
+          "id": "tbl-010-c4",
+          "name": "time_to_recurrence_months",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 6,
+            "max": 120
+          }
+        },
+        {
+          "id": "tbl-010-c5",
+          "name": "detection_method",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "imaging",
+              "clinical_exam",
+              "patient_reported",
+              "lab_marker",
+              "biopsy_confirmed"
+            ],
+            "weights": [
+              35,
+              20,
+              15,
+              15,
+              15
+            ],
+            "_citation": "Clinical practice: Most recurrences detected on imaging (~35%). Some on routine exam or rising tumor markers."
+          }
+        },
+        {
+          "id": "tbl-010-c6",
+          "name": "detection_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "0f75d41b-0831-4779-9918-7e15772382b3",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 420,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-011",
+      "name": "outcomes",
+      "columns": [
+        {
+          "id": "tbl-011-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-011-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-011-c3",
+          "name": "vital_status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "alive_no_disease",
+              "alive_with_disease",
+              "deceased_cancer",
+              "deceased_other",
+              "lost_to_followup"
+            ],
+            "weights": [
+              55,
+              20,
+              10,
+              5,
+              10
+            ],
+            "_citation": "SEER: Overall 5-year relative survival ~91%. Varies by stage: localized 100%, regional 87%, distant 32%."
+          }
+        },
+        {
+          "id": "tbl-011-c4",
+          "name": "survival_months",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 120
+          }
+        },
+        {
+          "id": "tbl-011-c5",
+          "name": "cause_of_death",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "breast_cancer",
+              "other_cancer",
+              "cardiovascular",
+              "infection",
+              "other",
+              "not_applicable"
+            ],
+            "weights": [
+              40,
+              10,
+              15,
+              5,
+              10,
+              20
+            ],
+            "_citation": "SEER: Breast cancer leading cause of cancer death in women. Cardiovascular second most common in long-term survivors."
+          }
+        },
+        {
+          "id": "tbl-011-c6",
+          "name": "last_known_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 1
+          }
+        },
+        {
+          "id": "be197232-15ff-48b7-993e-014982dab579",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 740,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-012",
+      "name": "pathology_reports",
+      "columns": [
+        {
+          "id": "tbl-012-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-012-c2",
+          "name": "patient_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-001",
+            "columnId": "tbl-001-c1"
+          }
+        },
+        {
+          "id": "tbl-012-c3",
+          "name": "specimen_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "core_biopsy",
+              "excisional_biopsy",
+              "mastectomy_specimen",
+              "sentinel_node",
+              "axillary_dissection",
+              "fine_needle_aspirate"
+            ],
+            "weights": [
+              35,
+              20,
+              20,
+              12,
+              8,
+              5
+            ],
+            "_citation": "Clinical practice: Core biopsy standard initial diagnostic. Excisional/mastectomy for definitive path."
+          }
+        },
+        {
+          "id": "tbl-012-c4",
+          "name": "tumor_size_cm",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "number",
+          "options": {
+            "min": 0.1,
+            "max": 10,
+            "precision": 1
+          }
+        },
+        {
+          "id": "tbl-012-c5",
+          "name": "lymphovascular_invasion",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "present",
+              "absent",
+              "indeterminate"
+            ],
+            "weights": [
+              25,
+              65,
+              10
+            ],
+            "_citation": "Clinical data: LVI present in ~25% of invasive breast cancers. Prognostic factor for recurrence."
+          }
+        },
+        {
+          "id": "tbl-012-c6",
+          "name": "report_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        {
+          "id": "1e3b1095-67a7-4d83-b3f3-32499e28cf18",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "past_date",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1060,
+        "y": 700
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-001",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-002",
+      "targetColumnId": "tbl-002-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-002",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-003",
+      "targetColumnId": "tbl-003-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-003",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-004",
+      "targetColumnId": "tbl-004-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-004",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-005",
+      "targetColumnId": "tbl-005-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-005",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-006",
+      "targetColumnId": "tbl-006-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-006",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-007",
+      "sourceTableId": "tbl-005",
+      "sourceColumnId": "tbl-005-c1",
+      "targetTableId": "tbl-007",
+      "targetColumnId": "tbl-007-c3",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-008",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-008",
+      "targetColumnId": "tbl-008-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-009",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-009",
+      "targetColumnId": "tbl-009-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-010",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-010",
+      "targetColumnId": "tbl-010-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-011",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-011",
+      "targetColumnId": "tbl-011-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-012",
+      "sourceTableId": "tbl-001",
+      "sourceColumnId": "tbl-001-c1",
+      "targetTableId": "tbl-012",
+      "targetColumnId": "tbl-012-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    }
+  ],
+  "simulation": {
+    "seed": 42,
+    "timelineDays": 365,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.05
+  },
+  "version": "1.0.0",
+  "exportedAt": "2026-04-25T20:28:19.393Z"
+}

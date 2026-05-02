@@ -1,0 +1,112 @@
+{
+  "version": "5.0.0",
+  "tables": [
+    {
+      "id": "T1", "name": "patients",
+      "columns": [
+        { "id": "T1C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "T1C2", "name": "full_name", "type": "string", "strategy": "name" },
+        { "id": "T1C3", "name": "blood_type", "type": "enum", "strategy": "enum", "options": { "values": ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"], "weights": [38, 7, 34, 6, 9, 2, 3, 1] } },
+        { "id": "T1C4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+      ],
+      "position": { "x": 0, "y": 0 }
+    },
+    {
+      "id": "T2", "name": "doctors",
+      "columns": [
+        { "id": "T2C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "T2C2", "name": "name", "type": "string", "strategy": "name" },
+        { "id": "T2C3", "name": "specialty", "type": "enum", "strategy": "enum", "options": { "values": ["Internal Medicine", "Surgery", "Pediatrics", "Cardiology", "Oncology", "Neurology", "Emergency"], "weights": [30, 15, 15, 10, 10, 10, 10] } },
+        { "id": "T2C4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+      ],
+      "position": { "x": 400, "y": 0 }
+    },
+    {
+      "id": "T3", "name": "appointments",
+      "columns": [
+        { "id": "T3C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "T3C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } },
+        { "id": "T3C3", "name": "doctor_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T2", "columnId": "T2C1" } },
+        { "id": "T3C4", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["scheduled", "completed", "cancelled", "no_show"], "weights": [20, 65, 10, 5], "lifecycleRules": [{ "value": "cancelled", "nullFields": ["check_in_time"] }] } },
+        { "id": "T3C5", "name": "check_in_time", "type": "timestamp", "nullable": true, "strategy": "past_date", "options": { "dependsOn": "created_at", "dependencyRule": "after" } },
+        { "id": "T3C6", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+      ],
+      "position": { "x": 800, "y": 0 }
+    },
+    {
+      "id": "T4", "name": "diagnoses",
+      "columns": [
+        { "id": "T4C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "T4C2", "name": "appointment_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T3", "columnId": "T3C1" } },
+        { "id": "T4C3", "name": "icd_10_code", "type": "string", "strategy": "random_string" },
+        { "id": "T4C4", "name": "severity", "type": "enum", "strategy": "enum", "options": { "values": ["mild", "moderate", "acute", "chronic"], "weights": [40, 30, 15, 15] } },
+        { "id": "T4C5", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+      ],
+      "position": { "x": 0, "y": 400 }
+    },
+    {
+      "id": "T5", "name": "prescriptions",
+      "columns": [
+        { "id": "T5C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "T5C2", "name": "diagnosis_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T4", "columnId": "T4C1" } },
+        { "id": "T5C3", "name": "medication_name", "type": "string", "strategy": "company_name" },
+        { "id": "T5C4", "name": "dosage", "type": "string", "strategy": "random_string" },
+        { "id": "T5C5", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+      ],
+      "position": { "x": 400, "y": 400 }
+    },
+    {
+      "id": "T6", "name": "billing_invoices",
+      "columns": [
+        { "id": "T6C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+        { "id": "T6C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } },
+        { "id": "T6C3", "name": "total_amount", "type": "number", "strategy": "float", "options": { "min": 100, "max": 50000 } },
+        { "id": "T6C4", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["unpaid", "partially_paid", "paid", "sent_to_collections"], "weights": [20, 15, 60, 5] } },
+        { "id": "T6C5", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+      ],
+      "position": { "x": 800, "y": 400 }
+    },
+    { "id": "T7", "name": "insurance_claims", "columns": [{ "id": "T7C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T7C2", "name": "invoice_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T6", "columnId": "T6C1" } }, { "id": "T7C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T8", "name": "wards", "columns": [{ "id": "T8C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T8C2", "name": "name", "type": "string", "strategy": "company_name" }, { "id": "T8C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T9", "name": "admissions", "columns": [{ "id": "T9C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T9C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T9C3", "name": "ward_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T8", "columnId": "T8C1" } }, { "id": "T9C4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T10", "name": "surgeries", "columns": [{ "id": "T10C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T10C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T10C3", "name": "doctor_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T2", "columnId": "T2C1" } }, { "id": "T10C4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T11", "name": "lab_orders", "columns": [{ "id": "T11C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T11C2", "name": "appointment_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T3", "columnId": "T3C1" } }, { "id": "T11C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T12", "name": "lab_results", "columns": [{ "id": "T12C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T12C2", "name": "lab_order_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T11", "columnId": "T11C1" } }, { "id": "T12C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T13", "name": "vital_signs", "columns": [{ "id": "T13C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T13C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T13C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T14", "name": "pharmacy_inventory", "columns": [{ "id": "T14C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T14C2", "name": "med_name", "type": "string", "strategy": "company_name" }, { "id": "T14C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T15", "name": "presc_dispensing", "columns": [{ "id": "T15C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T15C2", "name": "prescription_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T5", "columnId": "T5C1" } }, { "id": "T15C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T16", "name": "staff", "columns": [{ "id": "T16C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T16C2", "name": "name", "type": "string", "strategy": "name" }, { "id": "T16C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T17", "name": "staff_shifts", "columns": [{ "id": "T17C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T17C2", "name": "staff_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T16", "columnId": "T16C1" } }, { "id": "T17C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T18", "name": "radiology_images", "columns": [{ "id": "T18C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T18C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T18C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T19", "name": "imaging_reports", "columns": [{ "id": "T19C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T19C2", "name": "image_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T18", "columnId": "T18C1" } }, { "id": "T19C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T20", "name": "medical_devices", "columns": [{ "id": "T20C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T20C2", "name": "device_name", "type": "string", "strategy": "company_name" }, { "id": "T20C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T21", "name": "device_maintenance", "columns": [{ "id": "T21C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T21C2", "name": "device_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T20", "columnId": "T20C1" } }, { "id": "T21C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T22", "name": "patient_feedback", "columns": [{ "id": "T22C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T22C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T22C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T23", "name": "emergency_logs", "columns": [{ "id": "T23C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T23C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T23C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T24", "name": "referrals", "columns": [{ "id": "T24C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T24C2", "name": "patient_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } }, { "id": "T24C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]},
+    { "id": "T25", "name": "audit_logs", "columns": [{ "id": "T25C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" }, { "id": "T25C2", "name": "table_name", "type": "string", "strategy": "random_string" }, { "id": "T25C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }]}
+  ],
+  "relationships": [
+    { "id": "r1", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T3", "targetColumnId": "T3C2", "type": "one-to-many" },
+    { "id": "r2", "sourceTableId": "T2", "sourceColumnId": "T2C1", "targetTableId": "T3", "targetColumnId": "T3C3", "type": "one-to-many" },
+    { "id": "r3", "sourceTableId": "T3", "sourceColumnId": "T3C1", "targetTableId": "T4", "targetColumnId": "T4C2", "type": "one-to-one" },
+    { "id": "r4", "sourceTableId": "T4", "sourceColumnId": "T4C1", "targetTableId": "T5", "targetColumnId": "T5C2", "type": "one-to-many" },
+    { "id": "r5", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T6", "targetColumnId": "T6C2", "type": "one-to-many" },
+    { "id": "r6", "sourceTableId": "T6", "sourceColumnId": "T6C1", "targetTableId": "T7", "targetColumnId": "T7C2", "type": "one-to-one" },
+    { "id": "r7", "sourceTableId": "T8", "sourceColumnId": "T8C1", "targetTableId": "T9", "targetColumnId": "T9C3", "type": "one-to-many" },
+    { "id": "r8", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T9", "targetColumnId": "T9C2", "type": "one-to-many" },
+    { "id": "r9", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T10", "targetColumnId": "T10C2", "type": "one-to-many" },
+    { "id": "r10", "sourceTableId": "T2", "sourceColumnId": "T2C1", "targetTableId": "T10", "targetColumnId": "T10C3", "type": "one-to-many" },
+    { "id": "r11", "sourceTableId": "T3", "sourceColumnId": "T3C1", "targetTableId": "T11", "targetColumnId": "T11C2", "type": "one-to-many" },
+    { "id": "r12", "sourceTableId": "T11", "sourceColumnId": "T11C1", "targetTableId": "T12", "targetColumnId": "T12C2", "type": "one-to-one" },
+    { "id": "r13", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T13", "targetColumnId": "T13C2", "type": "one-to-many" },
+    { "id": "r14", "sourceTableId": "T5", "sourceColumnId": "T5C1", "targetTableId": "T15", "targetColumnId": "T15C2", "type": "one-to-one" },
+    { "id": "r15", "sourceTableId": "T16", "sourceColumnId": "T16C1", "targetTableId": "T17", "targetColumnId": "T17C2", "type": "one-to-many" },
+    { "id": "r16", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T18", "targetColumnId": "T18C2", "type": "one-to-many" },
+    { "id": "r17", "sourceTableId": "T18", "sourceColumnId": "T18C1", "targetTableId": "T19", "targetColumnId": "T19C2", "type": "one-to-one" },
+    { "id": "r18", "sourceTableId": "T20", "sourceColumnId": "T20C1", "targetTableId": "T21", "targetColumnId": "T21C2", "type": "one-to-many" },
+    { "id": "r19", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T22", "targetColumnId": "T22C2", "type": "one-to-many" },
+    { "id": "r20", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T23", "targetColumnId": "T23C2", "type": "one-to-many" },
+    { "id": "r21", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T24", "targetColumnId": "T24C2", "type": "one-to-many" }
+  ]
+}

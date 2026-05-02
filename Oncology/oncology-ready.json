@@ -1,0 +1,495 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Converted from Studio v4 by realitydb doctor",
+  "tables": {
+    "patients": {
+      "match": "patients",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "age_at_diagnosis": {
+          "strategy": "integer",
+          "options": {
+            "min": 18,
+            "max": 90
+          }
+        },
+        "smoking_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "never",
+              "former",
+              "current"
+            ],
+            "weights": [
+              40,
+              40,
+              20
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "diagnoses": {
+      "match": "diagnoses",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "cancer_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "NSCLC",
+              "Breast_IDC",
+              "Colorectal"
+            ],
+            "weights": [
+              40,
+              30,
+              30
+            ]
+          }
+        },
+        "date_of_diagnosis": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "genomics": {
+      "match": "genomics",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "diagnosis_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "diagnoses",
+            "column": "id"
+          }
+        },
+        "mutation": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "EGFR",
+              "KRAS",
+              "BRAF",
+              "WT"
+            ],
+            "weights": [
+              20,
+              20,
+              20,
+              40
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "treatments": {
+      "match": "treatments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "line_of_therapy": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 5
+          }
+        },
+        "start_date": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "treatment_cycles": {
+      "match": "treatment_cycles",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "treatment_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "treatments",
+            "column": "id"
+          }
+        },
+        "cycle_number": {
+          "strategy": "integer"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "imaging_results": {
+      "match": "imaging_results",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "recist_response": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "CR",
+              "PR",
+              "SD",
+              "PD"
+            ],
+            "weights": [
+              25,
+              25,
+              25,
+              25
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "lab_results": {
+      "match": "lab_results",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "value": {
+          "strategy": "decimal"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "adverse_events": {
+      "match": "adverse_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "treatment_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "treatments",
+            "column": "id"
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "G1",
+              "G2",
+              "G3",
+              "G4",
+              "G5"
+            ],
+            "weights": [
+              20,
+              20,
+              20,
+              20,
+              20
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "progression_events": {
+      "match": "progression_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "diagnosis_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "diagnoses",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "outcomes": {
+      "match": "outcomes",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "biomarkers": {
+      "match": "biomarkers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "diagnosis_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "diagnoses",
+            "column": "id"
+          }
+        },
+        "marker": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "HER2",
+              "PD-L1",
+              "ALK"
+            ],
+            "weights": [
+              33,
+              33,
+              33
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "vital_signs": {
+      "match": "vital_signs",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "concomitant_medications": {
+      "match": "concomitant_medications",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "med_name": {
+          "strategy": "company_name"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "sites": {
+      "match": "sites",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "site_name": {
+          "strategy": "company_name"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "clinical_trials": {
+      "match": "clinical_trials",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_name": {
+          "strategy": "company_name"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "enrollments": {
+      "match": "enrollments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "clinical_trials",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "consent_records": {
+      "match": "consent_records",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "enrollment_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "enrollments",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "regulatory_submissions": {
+      "match": "regulatory_submissions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "clinical_trials",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "audit_logs": {
+      "match": "audit_logs",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "action": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "INSERT",
+              "UPDATE",
+              "DELETE"
+            ],
+            "weights": [
+              33,
+              33,
+              33
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "site_monitoring": {
+      "match": "site_monitoring",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    }
+  }
+}

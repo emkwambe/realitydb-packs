@@ -1,0 +1,224 @@
+{
+  "tables": [
+    {
+      "id": "tbl-001",
+      "name": "patients",
+      "columns": [
+        { "id": "tbl-001-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-001-c2", "name": "mrn", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "template", "options": { "template": "LC-{{rowIndex}}" } },
+        { "id": "tbl-001-c3", "name": "full_name", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "full_name", "options": {} },
+        { "id": "tbl-001-c4", "name": "date_of_birth", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 40, "maxYearsAgo": 85 } },
+        { "id": "tbl-001-c5", "name": "sex", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["male", "female"], "weights": [54, 46], "_citation": "ACS 2024: Lung cancer slightly more common in males. Male 54%, Female 46% of new cases." } },
+        { "id": "tbl-001-c6", "name": "smoking_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["current_smoker", "former_smoker", "never_smoker", "unknown"], "weights": [20, 45, 30, 5], "_citation": "SEER/ACS: ~15-20% current, ~45% former, ~25-30% never-smokers (rising in adenocarcinoma). Never-smoker NSCLC increasing." } },
+        { "id": "tbl-001-c7", "name": "pack_years", "type": "integer", "isPK": false, "isFK": false, "nullable": true, "strategy": "integer", "options": { "min": 0, "max": 80 } },
+        { "id": "tbl-001-c8", "name": "ecog_baseline", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["0", "1", "2", "3", "4"], "weights": [25, 40, 20, 10, 5], "_citation": "Clinical trials: ECOG 0-1 most common enrollment criteria. Real-world includes ECOG 2-3. ECOG 4 rare at presentation." } },
+        { "id": "tbl-001-c9", "name": "created_at", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 100, "y": 100 }
+    },
+    {
+      "id": "tbl-002",
+      "name": "mutation_panel",
+      "columns": [
+        { "id": "tbl-002-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-002-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-002-c3", "name": "testing_method", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["NGS_panel", "PCR", "FISH", "IHC", "liquid_biopsy"], "weights": [45, 20, 15, 10, 10], "_citation": "NCCN: NGS recommended as standard. PCR for targeted EGFR. FISH for ALK/ROS1. Liquid biopsy increasing." } },
+        { "id": "tbl-002-c4", "name": "driver_mutation", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["KRAS", "EGFR", "ALK", "ROS1", "BRAF", "MET", "RET", "HER2", "NTRK", "none_detected"], "weights": [25, 20, 6, 2, 3, 4, 2, 2, 1, 35], "_citation": "PMC8085514: KRAS ~30%, EGFR ~15-48% (ethnicity). PMC12416486: ALK 7.9%, EGFR 24%, KRAS 19.7%, ROS1 2.2%, MET 4.7%, BRAF 3.7%. Averaged for US population." } },
+        { "id": "tbl-002-c5", "name": "egfr_variant", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["exon_19_deletion", "exon_21_L858R", "exon_20_insertion", "T790M", "other_uncommon", "not_applicable"], "weights": [20, 21, 2, 1, 2, 54], "_citation": "Frontiers 2024: Among EGFR+ cases: exon 19 del 42.79%, L858R 45.97%. Scaled to full population where ~46% are EGFR-." } },
+        { "id": "tbl-002-c6", "name": "kras_variant", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["G12C", "G12V", "G12D", "G13D", "other", "not_applicable"], "weights": [10, 5, 5, 3, 2, 75], "_citation": "KRAS G12C most common actionable (~40% of KRAS mutations). G12V ~20%, G12D ~15%. Only ~25% of patients are KRAS+." } },
+        { "id": "tbl-002-c7", "name": "pd_l1_tps", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["negative_0", "low_1_49", "high_50_plus"], "weights": [45, 30, 25], "_citation": "EARLY-EGFR JTO 2024: PD-L1 >=1% in 35.6%. >=50% in ~25%. Negative ~45%." } },
+        { "id": "tbl-002-c8", "name": "tmb_category", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["low", "intermediate", "high"], "weights": [50, 30, 20], "_citation": "FDA: TMB-High >=10 mut/Mb. ~20% of NSCLC are TMB-H. Foundation Medicine data." } },
+        { "id": "tbl-002-c9", "name": "report_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 420, "y": 100 }
+    },
+    {
+      "id": "tbl-003",
+      "name": "diagnoses",
+      "columns": [
+        { "id": "tbl-003-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-003-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-003-c3", "name": "icd10_code", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["C34.1", "C34.2", "C34.3", "C34.8", "C34.9"], "weights": [30, 15, 25, 10, 20], "_citation": "WHO ICD-10: C34.1 upper lobe most common (~30%). C34.3 lower lobe ~25%. C34.9 unspecified ~20%." } },
+        { "id": "tbl-003-c4", "name": "histology", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["adenocarcinoma", "squamous_cell", "large_cell", "nsclc_nos", "adenosquamous"], "weights": [50, 30, 5, 10, 5], "_citation": "PMC8085514: NSCLC ~85% of lung cancers. Adenocarcinoma ~50%, squamous ~30%, large cell ~5%." } },
+        { "id": "tbl-003-c5", "name": "tnm_stage", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["IA1", "IA2", "IA3", "IB", "IIA", "IIB", "IIIA", "IIIB", "IIIC", "IVA", "IVB"], "weights": [3, 4, 3, 8, 5, 7, 10, 8, 5, 30, 17], "_citation": "SEER: ~50% NSCLC diagnosed distant stage (IVA/IVB). Regional ~25% (II-III). Localized ~18% (I)." } },
+        { "id": "tbl-003-c6", "name": "laterality", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["right", "left", "bilateral"], "weights": [55, 42, 3], "_citation": "SEER: Right lung slightly more common (~55%) due to 3 lobes vs 2 on left." } },
+        { "id": "tbl-003-c7", "name": "diagnosis_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 740, "y": 100 }
+    },
+    {
+      "id": "tbl-004",
+      "name": "systemic_therapy",
+      "columns": [
+        { "id": "tbl-004-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-004-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-004-c3", "name": "therapy_class", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["immunotherapy", "targeted_therapy", "chemotherapy", "chemo_immunotherapy", "combination_targeted"], "weights": [25, 20, 20, 25, 10], "_citation": "NCCN NSCLC v2.2025: IO+chemo most common 1L for non-driver. TKIs for EGFR/ALK. Chemo declining as monotherapy." } },
+        { "id": "tbl-004-c4", "name": "regimen_name", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["pembrolizumab_mono", "pembrolizumab_carboplatin_pemetrexed", "nivolumab_ipilimumab", "atezolizumab", "osimertinib", "alectinib", "sotorasib", "carboplatin_paclitaxel", "docetaxel", "durvalumab", "other"], "weights": [12, 18, 8, 7, 10, 5, 4, 12, 6, 8, 10], "_citation": "NCCN: Pembro+carbo+pem most common 1L non-squamous. Osimertinib standard EGFR+. Alectinib standard ALK+. Sotorasib for KRAS G12C." } },
+        { "id": "tbl-004-c5", "name": "line_of_therapy", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["first_line", "second_line", "third_line", "fourth_plus"], "weights": [45, 30, 15, 10], "_citation": "Clinical practice: Most patients receive 1L. ~60-70% progress to 2L. Fewer reach 3L+." } },
+        { "id": "tbl-004-c6", "name": "best_response", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["complete_response", "partial_response", "stable_disease", "progressive_disease", "not_evaluable"], "weights": [5, 30, 35, 25, 5], "_citation": "RECIST v1.1: ICI monotherapy ORR ~20-35% in NSCLC. CR rare (~5%). SD common. PD ~25-30%." } },
+        { "id": "tbl-004-c7", "name": "cycles_administered", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 1, "max": 35 } },
+        { "id": "tbl-004-c8", "name": "start_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 4 } },
+        { "id": "tbl-004-c9", "name": "end_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": true, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 3 } },
+        { "id": "tbl-004-c10", "name": "discontinuation_reason", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["completed_protocol", "progressive_disease", "adverse_event", "patient_choice", "death", "physician_decision", "other"], "weights": [20, 30, 15, 8, 10, 10, 7], "_citation": "Clinical trials: PD most common reason ~30%. AE ~15%. Completed protocol ~20%. Death ~10% in advanced." } }
+      ],
+      "position": { "x": 1060, "y": 100 }
+    },
+    {
+      "id": "tbl-005",
+      "name": "immunotherapy_sessions",
+      "columns": [
+        { "id": "tbl-005-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-005-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-005-c3", "name": "therapy_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-004", "columnId": "tbl-004-c1" } },
+        { "id": "tbl-005-c4", "name": "cycle_number", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 1, "max": 35 } },
+        { "id": "tbl-005-c5", "name": "cycle_outcome", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["completed_on_schedule", "delayed", "dose_reduced", "held", "discontinued"], "weights": [55, 15, 5, 15, 10], "_citation": "Clinical trials: ~55% IO cycles on schedule. ~15% delayed (AE resolution). ~10% discontinued." } },
+        { "id": "tbl-005-c6", "name": "infusion_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 4 } },
+        { "id": "tbl-005-c7", "name": "infusion_duration_min", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 30, "max": 120 } }
+      ],
+      "position": { "x": 100, "y": 400 }
+    },
+    {
+      "id": "tbl-006",
+      "name": "adverse_events",
+      "columns": [
+        { "id": "tbl-006-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-006-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-006-c3", "name": "therapy_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-004", "columnId": "tbl-004-c1" } },
+        { "id": "tbl-006-c4", "name": "event_term", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["fatigue", "nausea", "diarrhea", "rash", "pneumonitis", "hepatotoxicity", "thyroid_dysfunction", "colitis", "nephritis", "neuropathy", "anemia", "neutropenia"], "weights": [18, 10, 9, 8, 10, 6, 6, 5, 3, 8, 10, 7], "_citation": "PMC11757769: Fatigue most frequent (~20%). Pneumonitis higher in lung (~10%). PMC8144509 confirms. Heme toxicity with chemo." } },
+        { "id": "tbl-006-c5", "name": "ctcae_grade", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["1", "2", "3", "4", "5"], "weights": [38, 30, 18, 6, 1], "_citation": "PMC8144509: Grade 3+ AEs 17.7% ICI monotherapy. Grade 5 ~1%. CTCAE v5.0." } },
+        { "id": "tbl-006-c6", "name": "relatedness", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["related", "possibly_related", "unlikely_related", "unrelated"], "weights": [15, 30, 20, 35], "_citation": "ICH E2A: ~45% deemed related/possibly related. Unrelated most common single category." } },
+        { "id": "tbl-006-c7", "name": "action_taken", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["none", "dose_interrupted", "dose_reduced", "treatment_discontinued", "supportive_medication", "hospitalization"], "weights": [30, 15, 10, 12, 20, 13], "_citation": "FDA guidance: Dose modifications in ~40% of IO patients. Discontinuation ~10-15%." } },
+        { "id": "tbl-006-c8", "name": "onset_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 3 } },
+        { "id": "tbl-006-c9", "name": "resolution_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["resolved", "resolving", "not_resolved", "fatal", "unknown"], "weights": [50, 15, 25, 2, 8], "_citation": "Clinical practice: Most AEs resolve (~50%). Chronic toxicities (neuropathy, endocrine) may not resolve." } }
+      ],
+      "position": { "x": 420, "y": 400 }
+    },
+    {
+      "id": "tbl-007",
+      "name": "imaging_response",
+      "columns": [
+        { "id": "tbl-007-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-007-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-007-c3", "name": "modality", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["ct_chest", "pet_ct", "brain_mri", "bone_scan", "ct_abd_pelvis"], "weights": [40, 25, 15, 10, 10], "_citation": "NCCN: CT chest standard restaging. PET-CT for initial staging and equivocal findings. Brain MRI for all Stage III-IV." } },
+        { "id": "tbl-007-c4", "name": "recist_response", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["complete_response", "partial_response", "stable_disease", "progressive_disease", "pseudo_progression"], "weights": [5, 25, 35, 28, 7], "_citation": "RECIST v1.1/iRECIST: CR ~5%, PR ~25%, SD ~35%, PD ~28%. Pseudo-progression ~5-10% with IO." } },
+        { "id": "tbl-007-c5", "name": "target_lesion_change_pct", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": -100, "max": 80, "precision": 1 } },
+        { "id": "tbl-007-c6", "name": "new_lesions", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["none", "equivocal", "unequivocal"], "weights": [65, 15, 20], "_citation": "RECIST: New lesions = PD. Equivocal requires confirmation. ~65% no new lesions at any scan." } },
+        { "id": "tbl-007-c7", "name": "scan_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 4 } }
+      ],
+      "position": { "x": 740, "y": 400 }
+    },
+    {
+      "id": "tbl-008",
+      "name": "radiation_plans",
+      "columns": [
+        { "id": "tbl-008-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-008-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-008-c3", "name": "technique", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["IMRT", "SBRT", "3D_conformal", "proton_therapy", "VMAT"], "weights": [30, 25, 20, 5, 20], "_citation": "NCCN: IMRT and VMAT standard for locally advanced. SBRT for early-stage inoperable. Proton therapy emerging." } },
+        { "id": "tbl-008-c4", "name": "intent", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["definitive", "adjuvant", "neoadjuvant", "palliative", "consolidation"], "weights": [30, 10, 5, 35, 20], "_citation": "NCCN: Palliative RT common in Stage IV (bone/brain mets ~35%). Definitive for Stage III with concurrent chemo. Consolidation with durvalumab." } },
+        { "id": "tbl-008-c5", "name": "total_dose_gy", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 20, "max": 70, "precision": 1 } },
+        { "id": "tbl-008-c6", "name": "fractions", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 1, "max": 35 } },
+        { "id": "tbl-008-c7", "name": "start_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 4 } },
+        { "id": "tbl-008-c8", "name": "completion_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["completed", "ongoing", "discontinued", "not_started"], "weights": [65, 15, 12, 8], "_citation": "Clinical practice: ~65% complete RT course. Higher discontinuation in lung due to pneumonitis/esophagitis." } }
+      ],
+      "position": { "x": 1060, "y": 400 }
+    },
+    {
+      "id": "tbl-009",
+      "name": "surgical_procedures",
+      "columns": [
+        { "id": "tbl-009-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-009-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-009-c3", "name": "procedure_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["lobectomy", "pneumonectomy", "wedge_resection", "segmentectomy", "sleeve_resection", "mediastinoscopy", "thoracoscopy_biopsy"], "weights": [35, 8, 20, 12, 5, 10, 10], "_citation": "NCCN: Lobectomy standard for resectable NSCLC (~35%). Wedge/segmentectomy for small tumors or poor function. Pneumonectomy declining." } },
+        { "id": "tbl-009-c4", "name": "margin_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["R0_negative", "R1_microscopic", "R2_macroscopic"], "weights": [85, 10, 5], "_citation": "Surgical series: R0 ~85% in experienced centers. R1 ~10%. R2 ~5% (incomplete resection)." } },
+        { "id": "tbl-009-c5", "name": "lymph_nodes_sampled", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 3, "max": 25 } },
+        { "id": "tbl-009-c6", "name": "n_stage_pathologic", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["N0", "N1", "N2", "N3"], "weights": [45, 20, 25, 10], "_citation": "SEER: ~45% N0 at resection. N2 (mediastinal) ~25%. N3 rarely resected (~10% of surgical cases)." } },
+        { "id": "tbl-009-c7", "name": "procedure_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 5 } }
+      ],
+      "position": { "x": 100, "y": 700 }
+    },
+    {
+      "id": "tbl-010",
+      "name": "lab_results",
+      "columns": [
+        { "id": "tbl-010-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-010-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-010-c3", "name": "test_name", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["CBC", "CMP", "LDH", "CEA", "TSH", "liver_function", "renal_function", "coagulation", "albumin", "CRP"], "weights": [20, 15, 10, 10, 8, 10, 8, 7, 6, 6], "_citation": "NCCN: CBC/CMP standard before each cycle. LDH prognostic in NSCLC. CEA tumor marker. TSH monitoring with IO." } },
+        { "id": "tbl-010-c4", "name": "result_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["normal", "low", "high", "critical_low", "critical_high"], "weights": [55, 12, 20, 3, 10], "_citation": "Clinical practice: Majority normal (~55%). Elevated values common during treatment. Critical values rare but actionable." } },
+        { "id": "tbl-010-c5", "name": "numeric_value", "type": "decimal", "isPK": false, "isFK": false, "nullable": false, "strategy": "number", "options": { "min": 0.1, "max": 500, "precision": 1 } },
+        { "id": "tbl-010-c6", "name": "collection_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 4 } }
+      ],
+      "position": { "x": 420, "y": 700 }
+    },
+    {
+      "id": "tbl-011",
+      "name": "outcomes",
+      "columns": [
+        { "id": "tbl-011-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-011-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-011-c3", "name": "vital_status", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["alive_no_disease", "alive_with_disease", "deceased_cancer", "deceased_other", "lost_to_followup"], "weights": [20, 25, 35, 8, 12], "_citation": "SEER: 5-year overall survival NSCLC ~28%. Stage IV ~8%. Higher mortality than breast. ~35% deceased from cancer." } },
+        { "id": "tbl-011-c4", "name": "survival_months", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 1, "max": 60 } },
+        { "id": "tbl-011-c5", "name": "progression_free_months", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 1, "max": 36 } },
+        { "id": "tbl-011-c6", "name": "cause_of_death", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["lung_cancer", "treatment_complication", "other_cancer", "cardiovascular", "respiratory_failure", "other", "not_applicable"], "weights": [40, 5, 5, 8, 10, 7, 25], "_citation": "SEER: Lung cancer leading cause of cancer death. Respiratory failure common in advanced. ~25% still alive (not applicable)." } },
+        { "id": "tbl-011-c7", "name": "last_contact_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 1 } }
+      ],
+      "position": { "x": 740, "y": 700 }
+    },
+    {
+      "id": "tbl-012",
+      "name": "brain_metastases",
+      "columns": [
+        { "id": "tbl-012-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-012-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-012-c3", "name": "number_of_lesions", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["1", "2-3", "4-10", "more_than_10"], "weights": [30, 30, 25, 15], "_citation": "Neuro-oncology data: Single met ~30%, oligomets (2-3) ~30%. Multiple >10 ~15%." } },
+        { "id": "tbl-012-c4", "name": "max_diameter_mm", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 3, "max": 50 } },
+        { "id": "tbl-012-c5", "name": "treatment", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["SRS", "WBRT", "surgery_plus_SRS", "surgery_plus_WBRT", "observation", "systemic_only"], "weights": [30, 15, 15, 10, 10, 20], "_citation": "NCCN CNS: SRS preferred for limited mets. WBRT declining. Systemic therapy (osimertinib, alectinib) with CNS activity increasing." } },
+        { "id": "tbl-012-c6", "name": "symptomatic", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["yes", "no"], "weights": [40, 60], "_citation": "Clinical data: ~40% of brain mets symptomatic at detection. Rest found on screening MRI." } },
+        { "id": "tbl-012-c7", "name": "detection_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 3 } }
+      ],
+      "position": { "x": 1060, "y": 700 }
+    },
+    {
+      "id": "tbl-013",
+      "name": "ctdna_monitoring",
+      "columns": [
+        { "id": "tbl-013-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-013-c2", "name": "patient_id", "type": "uuid", "isPK": false, "isFK": true, "nullable": false, "strategy": "uuid", "options": {}, "fkTarget": { "tableId": "tbl-001", "columnId": "tbl-001-c1" } },
+        { "id": "tbl-013-c3", "name": "ctdna_detected", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["detected", "not_detected", "indeterminate"], "weights": [55, 35, 10], "_citation": "Liquid biopsy studies: ctDNA detectable in ~55-60% of advanced NSCLC. Clearance associated with response." } },
+        { "id": "tbl-013-c4", "name": "variant_allele_freq", "type": "decimal", "isPK": false, "isFK": false, "nullable": true, "strategy": "number", "options": { "min": 0.01, "max": 50, "precision": 2 } },
+        { "id": "tbl-013-c5", "name": "mutations_found", "type": "integer", "isPK": false, "isFK": false, "nullable": false, "strategy": "integer", "options": { "min": 0, "max": 15 } },
+        { "id": "tbl-013-c6", "name": "resistance_mutation", "type": "enum", "isPK": false, "isFK": false, "nullable": true, "strategy": "enum", "options": { "values": ["T790M", "C797S", "MET_amp", "HER2_amp", "BRAF_V600E", "none", "other"], "weights": [15, 5, 8, 4, 3, 55, 10], "_citation": "EGFR resistance: T790M most common (~50% of EGFR TKI resistance). C797S emerges on osimertinib. MET amp bypass ~10%." } },
+        { "id": "tbl-013-c7", "name": "collection_date", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 0, "maxYearsAgo": 3 } }
+      ],
+      "position": { "x": 100, "y": 1000 }
+    },
+    {
+      "id": "tbl-014",
+      "name": "clinical_sites",
+      "columns": [
+        { "id": "tbl-014-c1", "name": "id", "type": "uuid", "isPK": true, "isFK": false, "nullable": false, "strategy": "uuid", "options": {} },
+        { "id": "tbl-014-c2", "name": "site_name", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "company_name", "options": {} },
+        { "id": "tbl-014-c3", "name": "site_type", "type": "enum", "isPK": false, "isFK": false, "nullable": false, "strategy": "enum", "options": { "values": ["academic_medical_center", "community_oncology", "comprehensive_cancer_center", "va_hospital", "community_hospital"], "weights": [25, 35, 15, 10, 15], "_citation": "NCI: Community oncology treats majority of cancer patients (~35%). Academic centers ~25%. NCI-designated comprehensive centers ~15%." } },
+        { "id": "tbl-014-c4", "name": "state", "type": "string", "isPK": false, "isFK": false, "nullable": false, "strategy": "state", "options": {} },
+        { "id": "tbl-014-c5", "name": "created_at", "type": "timestamp", "isPK": false, "isFK": false, "nullable": false, "strategy": "past_date", "options": { "minYearsAgo": 1, "maxYearsAgo": 10 } }
+      ],
+      "position": { "x": 420, "y": 1000 }
+    }
+  ],
+  "relationships": [
+    { "id": "rel-001", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-002", "targetColumnId": "tbl-002-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-002", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-003", "targetColumnId": "tbl-003-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-003", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-004", "targetColumnId": "tbl-004-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-004", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-005", "targetColumnId": "tbl-005-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-005", "sourceTableId": "tbl-004", "sourceColumnId": "tbl-004-c1", "targetTableId": "tbl-005", "targetColumnId": "tbl-005-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-006", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-006", "targetColumnId": "tbl-006-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-007", "sourceTableId": "tbl-004", "sourceColumnId": "tbl-004-c1", "targetTableId": "tbl-006", "targetColumnId": "tbl-006-c3", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-008", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-007", "targetColumnId": "tbl-007-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-009", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-008", "targetColumnId": "tbl-008-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-010", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-009", "targetColumnId": "tbl-009-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-011", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-010", "targetColumnId": "tbl-010-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-012", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-011", "targetColumnId": "tbl-011-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-013", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-012", "targetColumnId": "tbl-012-c2", "type": "one-to-many", "semantic": "connection" },
+    { "id": "rel-014", "sourceTableId": "tbl-001", "sourceColumnId": "tbl-001-c1", "targetTableId": "tbl-013", "targetColumnId": "tbl-013-c2", "type": "one-to-many", "semantic": "connection" }
+  ],
+  "version": "1.0.0"
+}

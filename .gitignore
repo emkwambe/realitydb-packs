@@ -1,0 +1,77 @@
+# === Generated dataset output (regeneratable from pack JSON) ===
+*.csv
+*.sql
+*.zip
+
+# Size-suffix output JSON - both underscore (banking_2m.json) and hyphen (healthcare-2m.json)
+*_5k.json
+*_10k.json
+*_100k.json
+*_500k.json
+*_1m.json
+*_2m.json
+*_5m.json
+*_10m.json
+*_5k_v2.json
+*_10k_v2.json
+*_100k_v2.json
+*_500k_v2.json
+*_1m_v2.json
+*_2m_v2.json
+*_5m_v2.json
+*-5k.json
+*-10k.json
+*-100k.json
+*-500k.json
+*-1m.json
+*-2m.json
+*-5m.json
+*-10m.json
+*-5k-v2.json
+*-10k-v2.json
+*-100k-v2.json
+*-500k-v2.json
+*-1m-v2.json
+*-2m-v2.json
+*-5m-v2.json
+
+# Studio output snapshots
+studio_*.json
+
+# Test and debug outputs
+test1.json
+test-*.json
+*-test.json
+core-test.json
+free-test.json
+bug-*.json
+edunode-test.json
+
+# Engine output dumps with timestamps
+realitydb_output_*.json
+
+# Crisis/scratch generation
+banking-crisis.json
+
+# === Backup files (preserved separately in engine-backups/) ===
+*.bak
+*.bak-*
+
+# === Output directories ===
+output/
+generated/
+exports/
+dist/
+
+# === Editor scratch ===
+*.swp
+*.swo
+*~
+
+# === Node ===
+node_modules/
+
+# === OS junk ===
+.DS_Store
+Thumbs.db
+desktop.ini

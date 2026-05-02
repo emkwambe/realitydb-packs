@@ -1,0 +1,2267 @@
+{
+  "tables": [
+    {
+      "id": "tbl-01",
+      "name": "suppliers",
+      "columns": [
+        {
+          "id": "tbl-01-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-01-c2",
+          "name": "name",
+          "type": "string",
+          "strategy": "company_name"
+        },
+        {
+          "id": "tbl-01-c3",
+          "name": "country",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "China",
+              "USA",
+              "Germany",
+              "Mexico",
+              "India",
+              "Vietnam",
+              "Japan",
+              "Brazil",
+              "South Korea",
+              "Taiwan"
+            ],
+            "weights": [
+              25,
+              15,
+              12,
+              10,
+              10,
+              8,
+              7,
+              5,
+              4,
+              4
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c4",
+          "name": "rating",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "weights": [
+              20,
+              45,
+              25,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": -37.89291416275995,
+        "y": -403.1806066917659
+      }
+    },
+    {
+      "id": "tbl-02",
+      "name": "products",
+      "columns": [
+        {
+          "id": "tbl-02-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-02-c2",
+          "name": "sku",
+          "type": "string",
+          "strategy": "random_string"
+        },
+        {
+          "id": "tbl-02-c3",
+          "name": "name",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Hydraulic Pump",
+              "Steel Beam",
+              "Circuit Board",
+              "Bearing Assembly",
+              "Control Valve",
+              "Power Supply Unit",
+              "Gasket Set",
+              "Drive Belt",
+              "Pressure Sensor",
+              "Motor Controller",
+              "Heat Exchanger",
+              "Filter Cartridge",
+              "Coupling Adapter",
+              "Relay Module",
+              "Actuator Arm",
+              "Transformer Core",
+              "Wiring Harness",
+              "Compressor Unit",
+              "Thermostat Assembly",
+              "Brake Pad Set"
+            ]
+          }
+        },
+        {
+          "id": "tbl-02-c4",
+          "name": "category",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "electronics",
+              "mechanical",
+              "hydraulics",
+              "electrical",
+              "consumables"
+            ],
+            "weights": [
+              25,
+              30,
+              15,
+              20,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-02-c5",
+          "name": "weight_kg",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 0.1,
+            "max": 250
+          }
+        },
+        {
+          "id": "tbl-02-c6",
+          "name": "unit_cost",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 5,
+            "max": 2500
+          }
+        },
+        {
+          "id": "tbl-02-c7",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-03",
+      "name": "supplier_products",
+      "columns": [
+        {
+          "id": "tbl-03-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-03-c2",
+          "name": "supplier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-03-c3",
+          "name": "product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-03-c4",
+          "name": "lead_time_days",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 3,
+            "max": 90
+          }
+        },
+        {
+          "id": "tbl-03-c5",
+          "name": "moq",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 5000
+          }
+        },
+        {
+          "id": "tbl-03-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 175,
+        "y": 175
+      }
+    },
+    {
+      "id": "tbl-04",
+      "name": "purchase_orders",
+      "columns": [
+        {
+          "id": "tbl-04-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-04-c2",
+          "name": "supplier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-04-c3",
+          "name": "status",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "draft",
+              "submitted",
+              "confirmed",
+              "shipped",
+              "received",
+              "cancelled"
+            ],
+            "weights": [
+              5,
+              10,
+              20,
+              25,
+              35,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "draft",
+                "nullFields": [
+                  "expected_delivery"
+                ]
+              },
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "expected_delivery"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-04-c4",
+          "name": "expected_delivery",
+          "type": "timestamp",
+          "strategy": "future_date"
+        },
+        {
+          "id": "tbl-04-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-05",
+      "name": "po_lines",
+      "columns": [
+        {
+          "id": "tbl-05-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-05-c2",
+          "name": "po_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-04",
+            "columnId": "tbl-04-c1"
+          }
+        },
+        {
+          "id": "tbl-05-c3",
+          "name": "product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-05-c4",
+          "name": "quantity",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 10,
+            "max": 5000
+          }
+        },
+        {
+          "id": "tbl-05-c5",
+          "name": "unit_price",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 5,
+            "max": 2500
+          }
+        },
+        {
+          "id": "tbl-05-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-06",
+      "name": "warehouses",
+      "columns": [
+        {
+          "id": "tbl-06-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-06-c2",
+          "name": "name",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte DC",
+              "Chicago Hub",
+              "Dallas Fulfillment",
+              "Newark Terminal",
+              "LA Distribution",
+              "Atlanta Gateway",
+              "Seattle Warehouse",
+              "Miami Port Depot",
+              "Phoenix Center",
+              "Denver Logistics"
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c3",
+          "name": "city",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte",
+              "Chicago",
+              "Dallas",
+              "Newark",
+              "Los Angeles",
+              "Atlanta",
+              "Seattle",
+              "Miami",
+              "Phoenix",
+              "Denver"
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c4",
+          "name": "region",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Southeast",
+              "Northwest",
+              "Southeast",
+              "Southwest",
+              "Mountain"
+            ],
+            "weights": [
+              15,
+              15,
+              15,
+              15,
+              10,
+              10,
+              7,
+              5,
+              4,
+              4
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c5",
+          "name": "capacity_units",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 5000,
+            "max": 100000
+          }
+        },
+        {
+          "id": "tbl-06-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-07",
+      "name": "warehouse_zones",
+      "columns": [
+        {
+          "id": "tbl-07-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-07-c2",
+          "name": "warehouse_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-07-c3",
+          "name": "zone_type",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "bulk_storage",
+              "pick_pack",
+              "cold_chain",
+              "hazmat",
+              "staging",
+              "returns"
+            ],
+            "weights": [
+              30,
+              25,
+              15,
+              5,
+              15,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-07-c4",
+          "name": "capacity",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 500,
+            "max": 20000
+          }
+        },
+        {
+          "id": "tbl-07-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 525
+      }
+    },
+    {
+      "id": "tbl-08",
+      "name": "inventory",
+      "columns": [
+        {
+          "id": "tbl-08-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-08-c2",
+          "name": "product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-08-c3",
+          "name": "warehouse_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-08-c4",
+          "name": "quantity_on_hand",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "tbl-08-c5",
+          "name": "reorder_point",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 50,
+            "max": 2000
+          }
+        },
+        {
+          "id": "tbl-08-c6",
+          "name": "last_counted",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-09",
+      "name": "inventory_transactions",
+      "columns": [
+        {
+          "id": "tbl-09-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-09-c2",
+          "name": "inventory_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-08",
+            "columnId": "tbl-08-c1"
+          }
+        },
+        {
+          "id": "tbl-09-c3",
+          "name": "txn_type",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "inbound",
+              "outbound",
+              "adjustment",
+              "transfer",
+              "return"
+            ],
+            "weights": [
+              30,
+              35,
+              10,
+              15,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-09-c4",
+          "name": "quantity_change",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": -500,
+            "max": 2000
+          }
+        },
+        {
+          "id": "tbl-09-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 525
+      }
+    },
+    {
+      "id": "tbl-10",
+      "name": "customers",
+      "columns": [
+        {
+          "id": "tbl-10-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-10-c2",
+          "name": "name",
+          "type": "string",
+          "strategy": "company_name"
+        },
+        {
+          "id": "tbl-10-c3",
+          "name": "email",
+          "type": "string",
+          "strategy": "email"
+        },
+        {
+          "id": "tbl-10-c4",
+          "name": "city",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "New York",
+              "Los Angeles",
+              "Chicago",
+              "Houston",
+              "Phoenix",
+              "Philadelphia",
+              "San Antonio",
+              "San Diego",
+              "Dallas",
+              "Charlotte",
+              "Atlanta",
+              "Miami",
+              "Denver",
+              "Seattle",
+              "Portland"
+            ]
+          }
+        },
+        {
+          "id": "tbl-10-c5",
+          "name": "segment",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "enterprise",
+              "mid_market",
+              "small_business",
+              "wholesale",
+              "retail"
+            ],
+            "weights": [
+              10,
+              20,
+              30,
+              25,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-10-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-11",
+      "name": "orders",
+      "columns": [
+        {
+          "id": "tbl-11-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-11-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-10",
+            "columnId": "tbl-10-c1"
+          }
+        },
+        {
+          "id": "tbl-11-c3",
+          "name": "status",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled",
+              "returned"
+            ],
+            "weights": [
+              10,
+              15,
+              20,
+              40,
+              10,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "pending",
+                "nullFields": [
+                  "shipped_at"
+                ]
+              },
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "shipped_at"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-11-c4",
+          "name": "priority",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "standard",
+              "express",
+              "overnight",
+              "freight"
+            ],
+            "weights": [
+              50,
+              25,
+              10,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-11-c5",
+          "name": "total_amount",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 50,
+            "max": 75000
+          }
+        },
+        {
+          "id": "tbl-11-c6",
+          "name": "shipped_at",
+          "type": "timestamp",
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-11-c7",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 525
+      }
+    },
+    {
+      "id": "tbl-12",
+      "name": "order_items",
+      "columns": [
+        {
+          "id": "tbl-12-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-12-c2",
+          "name": "order_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-11",
+            "columnId": "tbl-11-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c3",
+          "name": "product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c4",
+          "name": "quantity",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 500
+          }
+        },
+        {
+          "id": "tbl-12-c5",
+          "name": "line_total",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 25,
+            "max": 25000
+          }
+        },
+        {
+          "id": "tbl-12-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 525
+      }
+    },
+    {
+      "id": "tbl-13",
+      "name": "carriers",
+      "columns": [
+        {
+          "id": "tbl-13-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-13-c2",
+          "name": "name",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "FastFreight Inc",
+              "Continental Carriers",
+              "Pacific Logistics",
+              "Eagle Transport",
+              "Summit Shipping",
+              "Coastal Express",
+              "Heartland Haulers",
+              "Pinnacle Freight"
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c3",
+          "name": "mode",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "truck",
+              "rail",
+              "air",
+              "ocean",
+              "intermodal"
+            ],
+            "weights": [
+              40,
+              20,
+              15,
+              10,
+              15
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c4",
+          "name": "coverage",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "domestic",
+              "international",
+              "regional"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        {
+          "id": "tbl-13-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-14",
+      "name": "routes",
+      "columns": [
+        {
+          "id": "tbl-14-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-14-c2",
+          "name": "origin_region",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Northwest",
+              "Mountain"
+            ]
+          }
+        },
+        {
+          "id": "tbl-14-c3",
+          "name": "dest_region",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Northwest",
+              "Mountain"
+            ]
+          }
+        },
+        {
+          "id": "tbl-14-c4",
+          "name": "avg_transit_days",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 14
+          }
+        },
+        {
+          "id": "tbl-14-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-15",
+      "name": "carrier_rates",
+      "columns": [
+        {
+          "id": "tbl-15-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-15-c2",
+          "name": "carrier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "tbl-13-c1"
+          }
+        },
+        {
+          "id": "tbl-15-c3",
+          "name": "route_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-14",
+            "columnId": "tbl-14-c1"
+          }
+        },
+        {
+          "id": "tbl-15-c4",
+          "name": "rate_per_kg",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 15
+          }
+        },
+        {
+          "id": "tbl-15-c5",
+          "name": "flat_fee",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 25,
+            "max": 500
+          }
+        },
+        {
+          "id": "tbl-15-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 175,
+        "y": 875
+      }
+    },
+    {
+      "id": "tbl-16",
+      "name": "shipments",
+      "columns": [
+        {
+          "id": "tbl-16-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-16-c2",
+          "name": "order_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-11",
+            "columnId": "tbl-11-c1"
+          }
+        },
+        {
+          "id": "tbl-16-c3",
+          "name": "warehouse_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-16-c4",
+          "name": "carrier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "tbl-13-c1"
+          }
+        },
+        {
+          "id": "tbl-16-c5",
+          "name": "route_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-14",
+            "columnId": "tbl-14-c1"
+          }
+        },
+        {
+          "id": "tbl-16-c6",
+          "name": "status",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "picked",
+              "packed",
+              "dispatched",
+              "in_transit",
+              "at_hub",
+              "out_for_delivery",
+              "delivered",
+              "exception"
+            ],
+            "weights": [
+              5,
+              5,
+              10,
+              15,
+              10,
+              10,
+              40,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "picked",
+                "nullFields": [
+                  "shipped_at",
+                  "delivered_at"
+                ]
+              },
+              {
+                "value": "packed",
+                "nullFields": [
+                  "shipped_at",
+                  "delivered_at"
+                ]
+              },
+              {
+                "value": "exception",
+                "nullFields": [
+                  "delivered_at"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-16-c7",
+          "name": "shipped_at",
+          "type": "timestamp",
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-16-c8",
+          "name": "delivered_at",
+          "type": "timestamp",
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "shipped_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-16-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-17",
+      "name": "shipment_events",
+      "columns": [
+        {
+          "id": "tbl-17-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-17-c2",
+          "name": "shipment_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-16",
+            "columnId": "tbl-16-c1"
+          }
+        },
+        {
+          "id": "tbl-17-c3",
+          "name": "event_type",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "scan_pickup",
+              "depart_facility",
+              "arrive_hub",
+              "depart_hub",
+              "out_for_delivery",
+              "delivered",
+              "exception_weather",
+              "exception_address",
+              "return_to_sender"
+            ],
+            "weights": [
+              15,
+              15,
+              15,
+              12,
+              12,
+              20,
+              4,
+              4,
+              3
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c4",
+          "name": "location",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte NC",
+              "Chicago IL",
+              "Dallas TX",
+              "Newark NJ",
+              "Los Angeles CA",
+              "Atlanta GA",
+              "Seattle WA",
+              "Miami FL",
+              "Phoenix AZ",
+              "Denver CO",
+              "Memphis TN",
+              "Louisville KY",
+              "Indianapolis IN",
+              "Columbus OH",
+              "Kansas City MO"
+            ]
+          }
+        },
+        {
+          "id": "tbl-17-c5",
+          "name": "occurred_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-18",
+      "name": "delivery_exceptions",
+      "columns": [
+        {
+          "id": "tbl-18-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-18-c2",
+          "name": "shipment_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-16",
+            "columnId": "tbl-16-c1"
+          }
+        },
+        {
+          "id": "tbl-18-c3",
+          "name": "reason",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "weather_delay",
+              "address_not_found",
+              "customer_unavailable",
+              "damaged_in_transit",
+              "customs_hold",
+              "vehicle_breakdown",
+              "incorrect_routing",
+              "security_hold"
+            ],
+            "weights": [
+              20,
+              15,
+              20,
+              10,
+              10,
+              8,
+              10,
+              7
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c4",
+          "name": "severity",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              30,
+              40,
+              20,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c5",
+          "name": "resolved",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "true",
+              "false"
+            ],
+            "weights": [
+              75,
+              25
+            ]
+          }
+        },
+        {
+          "id": "tbl-18-c6",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 875
+      }
+    },
+    {
+      "id": "tbl-19",
+      "name": "supplier_contacts",
+      "columns": [
+        {
+          "id": "tbl-19-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-19-c2",
+          "name": "supplier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-19-c3",
+          "name": "contact_name",
+          "type": "string",
+          "strategy": "full_name"
+        },
+        {
+          "id": "tbl-19-c4",
+          "name": "role",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "account_manager",
+              "logistics_coordinator",
+              "quality_lead",
+              "sales_rep",
+              "compliance_officer"
+            ],
+            "weights": [
+              30,
+              25,
+              15,
+              20,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-19-c5",
+          "name": "email",
+          "type": "string",
+          "strategy": "email"
+        },
+        {
+          "id": "tbl-19-c6",
+          "name": "phone",
+          "type": "string",
+          "strategy": "phone"
+        },
+        {
+          "id": "tbl-19-c7",
+          "name": "is_primary",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "true",
+              "false"
+            ],
+            "weights": [
+              30,
+              70
+            ]
+          }
+        },
+        {
+          "id": "tbl-19-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 175
+      }
+    },
+    {
+      "id": "tbl-20",
+      "name": "supplier_ratings",
+      "columns": [
+        {
+          "id": "tbl-20-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-20-c2",
+          "name": "supplier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-20-c3",
+          "name": "period",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "2024-Q1",
+              "2024-Q2",
+              "2024-Q3",
+              "2024-Q4",
+              "2025-Q1",
+              "2025-Q2",
+              "2025-Q3",
+              "2025-Q4"
+            ]
+          }
+        },
+        {
+          "id": "tbl-20-c4",
+          "name": "quality_score",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        {
+          "id": "tbl-20-c5",
+          "name": "delivery_score",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        {
+          "id": "tbl-20-c6",
+          "name": "cost_score",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        {
+          "id": "tbl-20-c7",
+          "name": "risk_level",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              40,
+              35,
+              18,
+              7
+            ]
+          }
+        },
+        {
+          "id": "tbl-20-c8",
+          "name": "evaluated_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 376.59030334588294,
+        "y": -409.2434729578076
+      }
+    },
+    {
+      "id": "tbl-21",
+      "name": "compliance_records",
+      "columns": [
+        {
+          "id": "tbl-21-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-21-c2",
+          "name": "supplier_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-21-c3",
+          "name": "certification",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ISO_9001",
+              "ISO_14001",
+              "ISO_45001",
+              "REACH",
+              "RoHS",
+              "CTPAT",
+              "SA8000",
+              "IATF_16949"
+            ],
+            "weights": [
+              25,
+              15,
+              10,
+              15,
+              15,
+              8,
+              5,
+              7
+            ]
+          }
+        },
+        {
+          "id": "tbl-21-c4",
+          "name": "status",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "expired",
+              "pending_renewal",
+              "revoked"
+            ],
+            "weights": [
+              60,
+              15,
+              20,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-21-c5",
+          "name": "issued_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        },
+        {
+          "id": "tbl-21-c6",
+          "name": "expires_at",
+          "type": "timestamp",
+          "strategy": "future_date"
+        },
+        {
+          "id": "tbl-21-c7",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 525,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-22",
+      "name": "product_components",
+      "columns": [
+        {
+          "id": "tbl-22-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-22-c2",
+          "name": "parent_product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-22-c3",
+          "name": "child_product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-22-c4",
+          "name": "quantity_per_unit",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 50
+          }
+        },
+        {
+          "id": "tbl-22-c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 525,
+        "y": 175
+      }
+    },
+    {
+      "id": "tbl-23",
+      "name": "demand_forecasts",
+      "columns": [
+        {
+          "id": "tbl-23-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-23-c2",
+          "name": "product_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-23-c3",
+          "name": "region",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Southeast",
+              "Midwest",
+              "Southwest",
+              "Northeast",
+              "West",
+              "Northwest",
+              "Mountain"
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c4",
+          "name": "period",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "2025-W01",
+              "2025-W02",
+              "2025-W03",
+              "2025-W04",
+              "2025-W05",
+              "2025-W06",
+              "2025-W07",
+              "2025-W08",
+              "2025-W09",
+              "2025-W10",
+              "2025-W11",
+              "2025-W12"
+            ]
+          }
+        },
+        {
+          "id": "tbl-23-c5",
+          "name": "forecast_qty",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 50,
+            "max": 5000
+          }
+        },
+        {
+          "id": "tbl-23-c6",
+          "name": "actual_qty",
+          "type": "number",
+          "strategy": "integer",
+          "options": {
+            "min": 20,
+            "max": 5500
+          }
+        },
+        {
+          "id": "tbl-23-c7",
+          "name": "confidence",
+          "type": "number",
+          "strategy": "float",
+          "options": {
+            "min": 0.5,
+            "max": 0.99
+          }
+        },
+        {
+          "id": "tbl-23-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-24",
+      "name": "order_status_history",
+      "columns": [
+        {
+          "id": "tbl-24-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "tbl-24-c2",
+          "name": "order_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-11",
+            "columnId": "tbl-11-c1"
+          }
+        },
+        {
+          "id": "tbl-24-c3",
+          "name": "old_status",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled",
+              "returned"
+            ],
+            "weights": [
+              20,
+              20,
+              20,
+              15,
+              15,
+              10
+            ]
+          }
+        },
+        {
+          "id": "tbl-24-c4",
+          "name": "new_status",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "processing",
+              "shipped",
+              "delivered",
+              "cancelled",
+              "returned",
+              "pending"
+            ],
+            "weights": [
+              25,
+              25,
+              20,
+              15,
+              10,
+              5
+            ]
+          }
+        },
+        {
+          "id": "tbl-24-c5",
+          "name": "changed_by",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "system",
+              "warehouse_ops",
+              "customer_service",
+              "logistics_team",
+              "manager"
+            ],
+            "weights": [
+              40,
+              25,
+              15,
+              12,
+              8
+            ]
+          }
+        },
+        {
+          "id": "tbl-24-c6",
+          "name": "reason",
+          "type": "string",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "auto_progression",
+              "manual_override",
+              "customer_request",
+              "quality_hold",
+              "payment_issue",
+              "stock_unavailable",
+              "address_correction"
+            ],
+            "weights": [
+              35,
+              15,
+              15,
+              10,
+              10,
+              8,
+              7
+            ]
+          }
+        },
+        {
+          "id": "tbl-24-c7",
+          "name": "changed_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 875
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-01",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-03",
+      "targetColumnId": "tbl-03-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-02",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-03",
+      "targetColumnId": "tbl-03-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-03",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-04",
+      "targetColumnId": "tbl-04-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-04",
+      "sourceTableId": "tbl-04",
+      "sourceColumnId": "tbl-04-c1",
+      "targetTableId": "tbl-05",
+      "targetColumnId": "tbl-05-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-05",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-05",
+      "targetColumnId": "tbl-05-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-06",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-07",
+      "targetColumnId": "tbl-07-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-07",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-08",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-09",
+      "sourceTableId": "tbl-08",
+      "sourceColumnId": "tbl-08-c1",
+      "targetTableId": "tbl-09",
+      "targetColumnId": "tbl-09-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-10",
+      "sourceTableId": "tbl-10",
+      "sourceColumnId": "tbl-10-c1",
+      "targetTableId": "tbl-11",
+      "targetColumnId": "tbl-11-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-11",
+      "sourceTableId": "tbl-11",
+      "sourceColumnId": "tbl-11-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-12",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-13",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "tbl-13-c1",
+      "targetTableId": "tbl-15",
+      "targetColumnId": "tbl-15-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-14",
+      "sourceTableId": "tbl-14",
+      "sourceColumnId": "tbl-14-c1",
+      "targetTableId": "tbl-15",
+      "targetColumnId": "tbl-15-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-15",
+      "sourceTableId": "tbl-11",
+      "sourceColumnId": "tbl-11-c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "tbl-16-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-16",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "tbl-16-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-17",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "tbl-13-c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "tbl-16-c4",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-18",
+      "sourceTableId": "tbl-14",
+      "sourceColumnId": "tbl-14-c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "tbl-16-c5",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-19",
+      "sourceTableId": "tbl-16",
+      "sourceColumnId": "tbl-16-c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "tbl-17-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-20",
+      "sourceTableId": "tbl-16",
+      "sourceColumnId": "tbl-16-c1",
+      "targetTableId": "tbl-18",
+      "targetColumnId": "tbl-18-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-21",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-19",
+      "targetColumnId": "tbl-19-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-22",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-20",
+      "targetColumnId": "tbl-20-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-23",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-21",
+      "targetColumnId": "tbl-21-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-24",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-22",
+      "targetColumnId": "tbl-22-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-25",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-22",
+      "targetColumnId": "tbl-22-c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-26",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-23",
+      "targetColumnId": "tbl-23-c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "rel-27",
+      "sourceTableId": "tbl-11",
+      "sourceColumnId": "tbl-11-c1",
+      "targetTableId": "tbl-24",
+      "targetColumnId": "tbl-24-c2",
+      "type": "one-to-many"
+    }
+  ],
+  "simulation": {
+    "seed": 42,
+    "timelineDays": 365,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.05
+  },
+  "version": "1.0.0",
+  "exportedAt": "2026-04-05T10:14:53.281Z"
+}

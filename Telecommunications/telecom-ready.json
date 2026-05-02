@@ -1,0 +1,558 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Converted from Studio v4 by realitydb doctor",
+  "tables": {
+    "subscribers": {
+      "match": "subscribers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "full_name": {
+          "strategy": "name"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "suspended",
+              "churned"
+            ],
+            "weights": [
+              80,
+              5,
+              15
+            ]
+          }
+        },
+        "churn_date": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "accounts": {
+      "match": "accounts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "account_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "prepaid",
+              "postpaid",
+              "enterprise"
+            ],
+            "weights": [
+              40,
+              50,
+              10
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "plans": {
+      "match": "plans",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "plan_name": {
+          "strategy": "name"
+        },
+        "monthly_data_gb": {
+          "strategy": "integer",
+          "options": {
+            "min": 5,
+            "max": 200
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "subscriptions": {
+      "match": "subscriptions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "plan_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "plans",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "devices": {
+      "match": "devices",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "imei": {
+          "strategy": "random_string"
+        },
+        "model": {
+          "strategy": "company_name"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "voice_usage": {
+      "match": "voice_usage",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "duration_seconds": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 3600
+          }
+        },
+        "created_at": {
+          "strategy": "past_date",
+          "options": {
+            "dependsOnTable": "tbl-01",
+            "dependsOnColumn": "churn_date"
+          }
+        }
+      }
+    },
+    "data_usage": {
+      "match": "data_usage",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "mb_consumed": {
+          "strategy": "decimal"
+        },
+        "created_at": {
+          "strategy": "past_date",
+          "options": {
+            "dependsOnTable": "tbl-01",
+            "dependsOnColumn": "churn_date"
+          }
+        }
+      }
+    },
+    "sms_logs": {
+      "match": "sms_logs",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "invoices": {
+      "match": "invoices",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "amount_due": {
+          "strategy": "decimal"
+        },
+        "due_date": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "payments": {
+      "match": "payments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "invoice_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "invoices",
+            "column": "id"
+          }
+        },
+        "payment_date": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "support_tickets": {
+      "match": "support_tickets",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "resolved"
+            ],
+            "weights": [
+              30,
+              70
+            ]
+          }
+        },
+        "resolved_at": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "ticket_updates": {
+      "match": "ticket_updates",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "ticket_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "support_tickets",
+            "column": "id"
+          }
+        },
+        "update_text": {
+          "strategy": "random_string"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "cell_towers": {
+      "match": "cell_towers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "tower_name": {
+          "strategy": "company_name"
+        },
+        "latitude": {
+          "strategy": "decimal"
+        },
+        "longitude": {
+          "strategy": "decimal"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "tower_sectors": {
+      "match": "tower_sectors",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "tower_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "cell_towers",
+            "column": "id"
+          }
+        },
+        "frequency_band": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "700MHz",
+              "1800MHz",
+              "2100MHz",
+              "3500MHz"
+            ],
+            "weights": [
+              25,
+              25,
+              25,
+              25
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "handovers": {
+      "match": "handovers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "device_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "devices",
+            "column": "id"
+          }
+        },
+        "source_sector_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "tower_sectors",
+            "column": "id"
+          }
+        },
+        "target_sector_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "tower_sectors",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "signal_quality": {
+      "match": "signal_quality",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "sector_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "tower_sectors",
+            "column": "id"
+          }
+        },
+        "dbm_strength": {
+          "strategy": "integer",
+          "options": {
+            "min": -120,
+            "max": -50
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "churn_predictions": {
+      "match": "churn_predictions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "churn_probability": {
+          "strategy": "decimal",
+          "options": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "retention_offers": {
+      "match": "retention_offers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "prediction_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "churn_predictions",
+            "column": "id"
+          }
+        },
+        "offer_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "discount",
+              "data_boost",
+              "new_device"
+            ],
+            "weights": [
+              33,
+              33,
+              33
+            ]
+          }
+        },
+        "is_accepted": {
+          "strategy": "boolean"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "roaming_records": {
+      "match": "roaming_records",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subscribers",
+            "column": "id"
+          }
+        },
+        "country_code": {
+          "strategy": "random_string"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "billing_disputes": {
+      "match": "billing_disputes",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "invoice_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "invoices",
+            "column": "id"
+          }
+        },
+        "dispute_reason": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "overcharge",
+              "incorrect_usage",
+              "roaming_fees"
+            ],
+            "weights": [
+              33,
+              33,
+              33
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "device_inventory": {
+      "match": "device_inventory",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "model_name": {
+          "strategy": "company_name"
+        },
+        "stock_quantity": {
+          "strategy": "integer"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    }
+  }
+}

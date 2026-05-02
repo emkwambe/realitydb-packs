@@ -1,0 +1,1297 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Converted from Studio v4 by realitydb doctor",
+  "tables": {
+    "patients": {
+      "match": "patients",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "mrn": {
+          "strategy": "template",
+          "options": {
+            "template": "LC-{{rowIndex}}"
+          }
+        },
+        "full_name": {
+          "strategy": "full_name"
+        },
+        "date_of_birth": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 40,
+            "maxYearsAgo": 85
+          }
+        },
+        "sex": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "male",
+              "female"
+            ],
+            "weights": [
+              54,
+              46
+            ]
+          }
+        },
+        "smoking_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "current_smoker",
+              "former_smoker",
+              "never_smoker",
+              "unknown"
+            ],
+            "weights": [
+              20,
+              45,
+              30,
+              5
+            ]
+          }
+        },
+        "pack_years": {
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 80
+          }
+        },
+        "ecog_baseline": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "weights": [
+              25,
+              40,
+              20,
+              10,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      }
+    },
+    "mutation_panel": {
+      "match": "mutation_panel",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "testing_method": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "NGS_panel",
+              "PCR",
+              "FISH",
+              "IHC",
+              "liquid_biopsy"
+            ],
+            "weights": [
+              45,
+              20,
+              15,
+              10,
+              10
+            ]
+          }
+        },
+        "driver_mutation": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "KRAS",
+              "EGFR",
+              "ALK",
+              "ROS1",
+              "BRAF",
+              "MET",
+              "RET",
+              "HER2",
+              "NTRK",
+              "none_detected"
+            ],
+            "weights": [
+              25,
+              20,
+              6,
+              2,
+              3,
+              4,
+              2,
+              2,
+              1,
+              35
+            ]
+          }
+        },
+        "egfr_variant": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "exon_19_deletion",
+              "exon_21_L858R",
+              "exon_20_insertion",
+              "T790M",
+              "other_uncommon",
+              "not_applicable"
+            ],
+            "weights": [
+              20,
+              21,
+              2,
+              1,
+              2,
+              54
+            ]
+          }
+        },
+        "kras_variant": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "G12C",
+              "G12V",
+              "G12D",
+              "G13D",
+              "other",
+              "not_applicable"
+            ],
+            "weights": [
+              10,
+              5,
+              5,
+              3,
+              2,
+              75
+            ]
+          }
+        },
+        "pd_l1_tps": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "negative_0",
+              "low_1_49",
+              "high_50_plus"
+            ],
+            "weights": [
+              45,
+              30,
+              25
+            ]
+          }
+        },
+        "tmb_category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "intermediate",
+              "high"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        "report_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      }
+    },
+    "diagnoses": {
+      "match": "diagnoses",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "icd10_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "C34.1",
+              "C34.2",
+              "C34.3",
+              "C34.8",
+              "C34.9"
+            ],
+            "weights": [
+              30,
+              15,
+              25,
+              10,
+              20
+            ]
+          }
+        },
+        "histology": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "adenocarcinoma",
+              "squamous_cell",
+              "large_cell",
+              "nsclc_nos",
+              "adenosquamous"
+            ],
+            "weights": [
+              50,
+              30,
+              5,
+              10,
+              5
+            ]
+          }
+        },
+        "tnm_stage": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "IA1",
+              "IA2",
+              "IA3",
+              "IB",
+              "IIA",
+              "IIB",
+              "IIIA",
+              "IIIB",
+              "IIIC",
+              "IVA",
+              "IVB"
+            ],
+            "weights": [
+              3,
+              4,
+              3,
+              8,
+              5,
+              7,
+              10,
+              8,
+              5,
+              30,
+              17
+            ]
+          }
+        },
+        "laterality": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "right",
+              "left",
+              "bilateral"
+            ],
+            "weights": [
+              55,
+              42,
+              3
+            ]
+          }
+        },
+        "diagnosis_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      }
+    },
+    "systemic_therapy": {
+      "match": "systemic_therapy",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "therapy_class": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "immunotherapy",
+              "targeted_therapy",
+              "chemotherapy",
+              "chemo_immunotherapy",
+              "combination_targeted"
+            ],
+            "weights": [
+              25,
+              20,
+              20,
+              25,
+              10
+            ]
+          }
+        },
+        "regimen_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pembrolizumab_mono",
+              "pembrolizumab_carboplatin_pemetrexed",
+              "nivolumab_ipilimumab",
+              "atezolizumab",
+              "osimertinib",
+              "alectinib",
+              "sotorasib",
+              "carboplatin_paclitaxel",
+              "docetaxel",
+              "durvalumab",
+              "other"
+            ],
+            "weights": [
+              12,
+              18,
+              8,
+              7,
+              10,
+              5,
+              4,
+              12,
+              6,
+              8,
+              10
+            ]
+          }
+        },
+        "line_of_therapy": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "first_line",
+              "second_line",
+              "third_line",
+              "fourth_plus"
+            ],
+            "weights": [
+              45,
+              30,
+              15,
+              10
+            ]
+          }
+        },
+        "best_response": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "complete_response",
+              "partial_response",
+              "stable_disease",
+              "progressive_disease",
+              "not_evaluable"
+            ],
+            "weights": [
+              5,
+              30,
+              35,
+              25,
+              5
+            ]
+          }
+        },
+        "cycles_administered": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 35
+          }
+        },
+        "start_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        },
+        "end_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        },
+        "discontinuation_reason": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed_protocol",
+              "progressive_disease",
+              "adverse_event",
+              "patient_choice",
+              "death",
+              "physician_decision",
+              "other"
+            ],
+            "weights": [
+              20,
+              30,
+              15,
+              8,
+              10,
+              10,
+              7
+            ]
+          }
+        }
+      }
+    },
+    "immunotherapy_sessions": {
+      "match": "immunotherapy_sessions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "therapy_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "systemic_therapy",
+            "column": "id"
+          }
+        },
+        "cycle_number": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 35
+          }
+        },
+        "cycle_outcome": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed_on_schedule",
+              "delayed",
+              "dose_reduced",
+              "held",
+              "discontinued"
+            ],
+            "weights": [
+              55,
+              15,
+              5,
+              15,
+              10
+            ]
+          }
+        },
+        "infusion_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        },
+        "infusion_duration_min": {
+          "strategy": "integer",
+          "options": {
+            "min": 30,
+            "max": 120
+          }
+        }
+      }
+    },
+    "adverse_events": {
+      "match": "adverse_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "therapy_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "systemic_therapy",
+            "column": "id"
+          }
+        },
+        "event_term": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "fatigue",
+              "nausea",
+              "diarrhea",
+              "rash",
+              "pneumonitis",
+              "hepatotoxicity",
+              "thyroid_dysfunction",
+              "colitis",
+              "nephritis",
+              "neuropathy",
+              "anemia",
+              "neutropenia"
+            ],
+            "weights": [
+              18,
+              10,
+              9,
+              8,
+              10,
+              6,
+              6,
+              5,
+              3,
+              8,
+              10,
+              7
+            ]
+          }
+        },
+        "ctcae_grade": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "weights": [
+              38,
+              30,
+              18,
+              6,
+              1
+            ]
+          }
+        },
+        "relatedness": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "related",
+              "possibly_related",
+              "unlikely_related",
+              "unrelated"
+            ],
+            "weights": [
+              15,
+              30,
+              20,
+              35
+            ]
+          }
+        },
+        "action_taken": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "none",
+              "dose_interrupted",
+              "dose_reduced",
+              "treatment_discontinued",
+              "supportive_medication",
+              "hospitalization"
+            ],
+            "weights": [
+              30,
+              15,
+              10,
+              12,
+              20,
+              13
+            ]
+          }
+        },
+        "onset_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        },
+        "resolution_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "resolved",
+              "resolving",
+              "not_resolved",
+              "fatal",
+              "unknown"
+            ],
+            "weights": [
+              50,
+              15,
+              25,
+              2,
+              8
+            ]
+          }
+        }
+      }
+    },
+    "imaging_response": {
+      "match": "imaging_response",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "modality": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ct_chest",
+              "pet_ct",
+              "brain_mri",
+              "bone_scan",
+              "ct_abd_pelvis"
+            ],
+            "weights": [
+              40,
+              25,
+              15,
+              10,
+              10
+            ]
+          }
+        },
+        "recist_response": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "complete_response",
+              "partial_response",
+              "stable_disease",
+              "progressive_disease",
+              "pseudo_progression"
+            ],
+            "weights": [
+              5,
+              25,
+              35,
+              28,
+              7
+            ]
+          }
+        },
+        "target_lesion_change_pct": {
+          "strategy": "number",
+          "options": {
+            "min": -100,
+            "max": 80,
+            "precision": 1
+          }
+        },
+        "new_lesions": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "none",
+              "equivocal",
+              "unequivocal"
+            ],
+            "weights": [
+              65,
+              15,
+              20
+            ]
+          }
+        },
+        "scan_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "radiation_plans": {
+      "match": "radiation_plans",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "technique": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "IMRT",
+              "SBRT",
+              "3D_conformal",
+              "proton_therapy",
+              "VMAT"
+            ],
+            "weights": [
+              30,
+              25,
+              20,
+              5,
+              20
+            ]
+          }
+        },
+        "intent": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "definitive",
+              "adjuvant",
+              "neoadjuvant",
+              "palliative",
+              "consolidation"
+            ],
+            "weights": [
+              30,
+              10,
+              5,
+              35,
+              20
+            ]
+          }
+        },
+        "total_dose_gy": {
+          "strategy": "number",
+          "options": {
+            "min": 20,
+            "max": 70,
+            "precision": 1
+          }
+        },
+        "fractions": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 35
+          }
+        },
+        "start_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        },
+        "completion_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "ongoing",
+              "discontinued",
+              "not_started"
+            ],
+            "weights": [
+              65,
+              15,
+              12,
+              8
+            ]
+          }
+        }
+      }
+    },
+    "surgical_procedures": {
+      "match": "surgical_procedures",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "procedure_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "lobectomy",
+              "pneumonectomy",
+              "wedge_resection",
+              "segmentectomy",
+              "sleeve_resection",
+              "mediastinoscopy",
+              "thoracoscopy_biopsy"
+            ],
+            "weights": [
+              35,
+              8,
+              20,
+              12,
+              5,
+              10,
+              10
+            ]
+          }
+        },
+        "margin_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "R0_negative",
+              "R1_microscopic",
+              "R2_macroscopic"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ]
+          }
+        },
+        "lymph_nodes_sampled": {
+          "strategy": "integer",
+          "options": {
+            "min": 3,
+            "max": 25
+          }
+        },
+        "n_stage_pathologic": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "N0",
+              "N1",
+              "N2",
+              "N3"
+            ],
+            "weights": [
+              45,
+              20,
+              25,
+              10
+            ]
+          }
+        },
+        "procedure_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      }
+    },
+    "lab_results": {
+      "match": "lab_results",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "test_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "CBC",
+              "CMP",
+              "LDH",
+              "CEA",
+              "TSH",
+              "liver_function",
+              "renal_function",
+              "coagulation",
+              "albumin",
+              "CRP"
+            ],
+            "weights": [
+              20,
+              15,
+              10,
+              10,
+              8,
+              10,
+              8,
+              7,
+              6,
+              6
+            ]
+          }
+        },
+        "result_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "normal",
+              "low",
+              "high",
+              "critical_low",
+              "critical_high"
+            ],
+            "weights": [
+              55,
+              12,
+              20,
+              3,
+              10
+            ]
+          }
+        },
+        "numeric_value": {
+          "strategy": "number",
+          "options": {
+            "min": 0.1,
+            "max": 500,
+            "precision": 1
+          }
+        },
+        "collection_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "outcomes": {
+      "match": "outcomes",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "vital_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "alive_no_disease",
+              "alive_with_disease",
+              "deceased_cancer",
+              "deceased_other",
+              "lost_to_followup"
+            ],
+            "weights": [
+              20,
+              25,
+              35,
+              8,
+              12
+            ]
+          }
+        },
+        "survival_months": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 60
+          }
+        },
+        "progression_free_months": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 36
+          }
+        },
+        "cause_of_death": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "lung_cancer",
+              "treatment_complication",
+              "other_cancer",
+              "cardiovascular",
+              "respiratory_failure",
+              "other",
+              "not_applicable"
+            ],
+            "weights": [
+              40,
+              5,
+              5,
+              8,
+              10,
+              7,
+              25
+            ]
+          }
+        },
+        "last_contact_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 1
+          }
+        }
+      }
+    },
+    "brain_metastases": {
+      "match": "brain_metastases",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "number_of_lesions": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1",
+              "2-3",
+              "4-10",
+              "more_than_10"
+            ],
+            "weights": [
+              30,
+              30,
+              25,
+              15
+            ]
+          }
+        },
+        "max_diameter_mm": {
+          "strategy": "integer",
+          "options": {
+            "min": 3,
+            "max": 50
+          }
+        },
+        "treatment": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "SRS",
+              "WBRT",
+              "surgery_plus_SRS",
+              "surgery_plus_WBRT",
+              "observation",
+              "systemic_only"
+            ],
+            "weights": [
+              30,
+              15,
+              15,
+              10,
+              10,
+              20
+            ]
+          }
+        },
+        "symptomatic": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "yes",
+              "no"
+            ],
+            "weights": [
+              40,
+              60
+            ]
+          }
+        },
+        "detection_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        }
+      }
+    },
+    "ctdna_monitoring": {
+      "match": "ctdna_monitoring",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "ctdna_detected": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "detected",
+              "not_detected",
+              "indeterminate"
+            ],
+            "weights": [
+              55,
+              35,
+              10
+            ]
+          }
+        },
+        "variant_allele_freq": {
+          "strategy": "number",
+          "options": {
+            "min": 0.01,
+            "max": 50,
+            "precision": 2
+          }
+        },
+        "mutations_found": {
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 15
+          }
+        },
+        "resistance_mutation": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "T790M",
+              "C797S",
+              "MET_amp",
+              "HER2_amp",
+              "BRAF_V600E",
+              "none",
+              "other"
+            ],
+            "weights": [
+              15,
+              5,
+              8,
+              4,
+              3,
+              55,
+              10
+            ]
+          }
+        },
+        "collection_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        }
+      }
+    },
+    "clinical_sites": {
+      "match": "clinical_sites",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "site_name": {
+          "strategy": "company_name"
+        },
+        "site_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "academic_medical_center",
+              "community_oncology",
+              "comprehensive_cancer_center",
+              "va_hospital",
+              "community_hospital"
+            ],
+            "weights": [
+              25,
+              35,
+              15,
+              10,
+              15
+            ]
+          }
+        },
+        "state": {
+          "strategy": "state"
+        },
+        "created_at": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 1,
+            "maxYearsAgo": 10
+          }
+        }
+      }
+    }
+  }
+}

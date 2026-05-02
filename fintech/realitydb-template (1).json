@@ -1,0 +1,777 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Exported from RealityDB Studio",
+  "tables": {
+    "countries": {
+      "match": "countries",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "code": {
+          "strategy": "text"
+        },
+        "name": {
+          "strategy": "text"
+        },
+        "currency_code": {
+          "strategy": "text"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "cities": {
+      "match": "cities",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "text"
+        },
+        "country_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "countries",
+            "column": "id"
+          }
+        },
+        "latitude": {
+          "strategy": "float",
+          "options": {
+            "min": -90,
+            "max": 90
+          }
+        },
+        "longitude": {
+          "strategy": "float",
+          "options": {
+            "min": -180,
+            "max": 180
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "customers": {
+      "match": "customers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "first_name": {
+          "strategy": "full_name"
+        },
+        "last_name": {
+          "strategy": "full_name"
+        },
+        "email": {
+          "strategy": "email"
+        },
+        "phone": {
+          "strategy": "phone"
+        },
+        "date_of_birth": {
+          "strategy": "timestamp"
+        },
+        "city_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "cities",
+            "column": "id"
+          }
+        },
+        "address_line1": {
+          "strategy": "text"
+        },
+        "address_line2": {
+          "strategy": "text"
+        },
+        "postcode": {
+          "strategy": "text"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "suspended",
+              "closed"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "closed",
+                "nullFields": [
+                  "phone"
+                ]
+              }
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "account_types": {
+      "match": "account_types",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "text"
+        },
+        "description": {
+          "strategy": "text"
+        },
+        "minimum_balance": {
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 1000
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "accounts": {
+      "match": "accounts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "account_type_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "account_types",
+            "column": "id"
+          }
+        },
+        "account_number": {
+          "strategy": "text"
+        },
+        "balance": {
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 1000000
+          }
+        },
+        "opening_date": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "closing_date": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "opening_date",
+            "dependencyRule": "after"
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "frozen",
+              "closed"
+            ],
+            "weights": [
+              80,
+              15,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "closed",
+                "nullFields": []
+              }
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "merchant_categories": {
+      "match": "merchant_categories",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "text"
+        },
+        "code": {
+          "strategy": "text"
+        },
+        "risk_score": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 10
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "merchants": {
+      "match": "merchants",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "company_name"
+        },
+        "merchant_code": {
+          "strategy": "text"
+        },
+        "category_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "merchant_categories",
+            "column": "id"
+          }
+        },
+        "city_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "cities",
+            "column": "id"
+          }
+        },
+        "address": {
+          "strategy": "text"
+        },
+        "latitude": {
+          "strategy": "float",
+          "options": {
+            "min": -90,
+            "max": 90
+          }
+        },
+        "longitude": {
+          "strategy": "float",
+          "options": {
+            "min": -180,
+            "max": 180
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "suspended",
+              "closed"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "transaction_types": {
+      "match": "transaction_types",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "text"
+        },
+        "code": {
+          "strategy": "text"
+        },
+        "direction": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "debit",
+              "credit"
+            ],
+            "weights": [
+              60,
+              40
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "transactions": {
+      "match": "transactions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "transaction_type_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "transaction_types",
+            "column": "id"
+          }
+        },
+        "merchant_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "merchants",
+            "column": "id"
+          }
+        },
+        "amount": {
+          "strategy": "float",
+          "options": {
+            "min": 0.01,
+            "max": 50000
+          }
+        },
+        "currency": {
+          "strategy": "text"
+        },
+        "transaction_date": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "reference": {
+          "strategy": "text"
+        },
+        "description": {
+          "strategy": "text"
+        },
+        "ip_address": {
+          "strategy": "text"
+        },
+        "transaction_latitude": {
+          "strategy": "float",
+          "options": {
+            "min": -90,
+            "max": 90
+          }
+        },
+        "transaction_longitude": {
+          "strategy": "float",
+          "options": {
+            "min": -180,
+            "max": 180
+          }
+        },
+        "is_fraud": {
+          "strategy": "boolean"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "pending",
+              "failed",
+              "cancelled"
+            ],
+            "weights": [
+              85,
+              8,
+              4,
+              3
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "fraud_rules": {
+      "match": "fraud_rules",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "text"
+        },
+        "description": {
+          "strategy": "text"
+        },
+        "rule_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "amount_threshold",
+              "velocity",
+              "location",
+              "pattern"
+            ],
+            "weights": [
+              25,
+              25,
+              25,
+              25
+            ]
+          }
+        },
+        "threshold_value": {
+          "strategy": "float",
+          "options": {
+            "min": 100,
+            "max": 10000
+          }
+        },
+        "is_active": {
+          "strategy": "boolean"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "fraud_alerts": {
+      "match": "fraud_alerts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "transaction_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "transactions",
+            "column": "id"
+          }
+        },
+        "fraud_rule_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "fraud_rules",
+            "column": "id"
+          }
+        },
+        "alert_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "weights": [
+              20,
+              50,
+              30
+            ]
+          }
+        },
+        "risk_score": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 100
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "investigating",
+              "resolved",
+              "false_positive"
+            ],
+            "weights": [
+              30,
+              25,
+              35,
+              10
+            ]
+          }
+        },
+        "investigation_notes": {
+          "strategy": "text"
+        },
+        "resolved_date": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "transaction_limits": {
+      "match": "transaction_limits",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_type_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "account_types",
+            "column": "id"
+          }
+        },
+        "transaction_type_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "transaction_types",
+            "column": "id"
+          }
+        },
+        "daily_limit": {
+          "strategy": "float",
+          "options": {
+            "min": 100,
+            "max": 50000
+          }
+        },
+        "monthly_limit": {
+          "strategy": "float",
+          "options": {
+            "min": 1000,
+            "max": 500000
+          }
+        },
+        "single_transaction_limit": {
+          "strategy": "float",
+          "options": {
+            "min": 50,
+            "max": 25000
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "audit_logs": {
+      "match": "audit_logs",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "table_name": {
+          "strategy": "text"
+        },
+        "record_id": {
+          "strategy": "uuid"
+        },
+        "action": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "insert",
+              "update",
+              "delete"
+            ],
+            "weights": [
+              40,
+              50,
+              10
+            ]
+          }
+        },
+        "old_values": {
+          "strategy": "text"
+        },
+        "new_values": {
+          "strategy": "text"
+        },
+        "user_id": {
+          "strategy": "uuid"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "account_balances_history": {
+      "match": "account_balances_history",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "transaction_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "transactions",
+            "column": "id"
+          }
+        },
+        "previous_balance": {
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 1000000
+          }
+        },
+        "new_balance": {
+          "strategy": "float",
+          "options": {
+            "min": 0,
+            "max": 1000000
+          }
+        },
+        "balance_date": {
+          "strategy": "timestamp"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "exchange_rates": {
+      "match": "exchange_rates",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "from_currency": {
+          "strategy": "text"
+        },
+        "to_currency": {
+          "strategy": "text"
+        },
+        "rate": {
+          "strategy": "float",
+          "options": {
+            "min": 0.001,
+            "max": 1000
+          }
+        },
+        "rate_date": {
+          "strategy": "timestamp"
+        },
+        "source": {
+          "strategy": "text"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "customer_risk_profiles": {
+      "match": "customer_risk_profiles",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "risk_level": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              60,
+              25,
+              12,
+              3
+            ]
+          }
+        },
+        "risk_score": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 100
+          }
+        },
+        "last_review_date": {
+          "strategy": "timestamp"
+        },
+        "next_review_date": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "last_review_date",
+            "dependencyRule": "after"
+          }
+        },
+        "notes": {
+          "strategy": "text"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    }
+  },
+  "simulation": {
+    "seed": 123,
+    "timelineDays": 180,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.08
+  },
+  "generationConfig": {
+    "database": {
+      "client": "postgres"
+    },
+    "seed": {
+      "defaultRecords": 1000,
+      "randomSeed": 123
+    }
+  }
+}

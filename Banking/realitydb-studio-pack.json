@@ -1,0 +1,2151 @@
+{
+  "tables": [
+    {
+      "id": "tbl-01",
+      "name": "customers",
+      "columns": [
+        {
+          "id": "tbl-01-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-01-c2",
+          "name": "first_name",
+          "type": "name",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "name",
+          "options": {}
+        },
+        {
+          "id": "tbl-01-c3",
+          "name": "last_name",
+          "type": "name",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "name",
+          "options": {}
+        },
+        {
+          "id": "tbl-01-c4",
+          "name": "email",
+          "type": "email",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "email",
+          "options": {}
+        },
+        {
+          "id": "tbl-01-c5",
+          "name": "phone",
+          "type": "phone",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "phone",
+          "options": {}
+        },
+        {
+          "id": "tbl-01-c6",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "suspended",
+              "closed"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "closed",
+                "nullFields": [
+                  "phone"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-01-c7",
+          "name": "date_of_birth",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        },
+        {
+          "id": "tbl-01-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-02",
+      "name": "branches",
+      "columns": [
+        {
+          "id": "tbl-02-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-02-c2",
+          "name": "name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "company_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-02-c3",
+          "name": "address",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-02-c4",
+          "name": "city",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-02-c5",
+          "name": "state",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-02-c6",
+          "name": "zip_code",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-02-c7",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "closed"
+            ],
+            "weights": [
+              90,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-02-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-03",
+      "name": "accounts",
+      "columns": [
+        {
+          "id": "tbl-03-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-03-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-03-c3",
+          "name": "branch_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-03-c4",
+          "name": "account_number",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-03-c5",
+          "name": "account_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "checking",
+              "savings",
+              "business",
+              "money_market"
+            ],
+            "weights": [
+              40,
+              35,
+              15,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-03-c6",
+          "name": "balance",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-03-c7",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "frozen",
+              "closed"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "closed",
+                "nullFields": [
+                  "balance"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-03-c8",
+          "name": "opened_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-03-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-04",
+      "name": "transactions",
+      "columns": [
+        {
+          "id": "tbl-04-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-04-c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-03",
+            "columnId": "tbl-03-c1"
+          }
+        },
+        {
+          "id": "tbl-04-c3",
+          "name": "transaction_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "debit",
+              "credit",
+              "transfer",
+              "fee"
+            ],
+            "weights": [
+              35,
+              35,
+              25,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-04-c4",
+          "name": "amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-04-c5",
+          "name": "description",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-04-c6",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "weights": [
+              10,
+              80,
+              5,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-04-c7",
+          "name": "processed_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-04-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-05",
+      "name": "credit_cards",
+      "columns": [
+        {
+          "id": "tbl-05-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-05-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-05-c3",
+          "name": "card_number",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-05-c4",
+          "name": "card_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "visa",
+              "mastercard",
+              "american_express",
+              "discover"
+            ],
+            "weights": [
+              40,
+              35,
+              15,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-05-c5",
+          "name": "credit_limit",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-05-c6",
+          "name": "current_balance",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-05-c7",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "blocked",
+              "cancelled",
+              "expired"
+            ],
+            "weights": [
+              80,
+              10,
+              5,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "credit_limit"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-05-c8",
+          "name": "expiry_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "future_date",
+          "options": {}
+        },
+        {
+          "id": "tbl-05-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-06",
+      "name": "loans",
+      "columns": [
+        {
+          "id": "tbl-06-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-06-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-06-c3",
+          "name": "loan_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "personal",
+              "mortgage",
+              "auto",
+              "business"
+            ],
+            "weights": [
+              30,
+              35,
+              25,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-06-c4",
+          "name": "principal_amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-06-c5",
+          "name": "outstanding_balance",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-06-c6",
+          "name": "interest_rate",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-06-c7",
+          "name": "term_months",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {}
+        },
+        {
+          "id": "tbl-06-c8",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "paid_off",
+              "defaulted",
+              "restructured"
+            ],
+            "weights": [
+              70,
+              20,
+              5,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "paid_off",
+                "nullFields": [
+                  "outstanding_balance"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tbl-06-c9",
+          "name": "maturity_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "future_date",
+          "options": {}
+        },
+        {
+          "id": "tbl-06-c10",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-07",
+      "name": "atms",
+      "columns": [
+        {
+          "id": "tbl-07-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-07-c2",
+          "name": "branch_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "tbl-02-c1"
+          }
+        },
+        {
+          "id": "tbl-07-c3",
+          "name": "location_name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "company_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-07-c4",
+          "name": "address",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-07-c5",
+          "name": "city",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-07-c6",
+          "name": "state",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-07-c7",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "operational",
+              "out_of_service",
+              "maintenance"
+            ],
+            "weights": [
+              85,
+              10,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-07-c8",
+          "name": "cash_level",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-07-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-08",
+      "name": "customer_service_tickets",
+      "columns": [
+        {
+          "id": "tbl-08-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-08-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-08-c3",
+          "name": "subject",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-08-c4",
+          "name": "description",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-08-c5",
+          "name": "priority",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "urgent"
+            ],
+            "weights": [
+              40,
+              35,
+              20,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-08-c6",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "in_progress",
+              "resolved",
+              "closed"
+            ],
+            "weights": [
+              20,
+              30,
+              25,
+              25
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-08-c7",
+          "name": "assigned_agent",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "name",
+          "options": {}
+        },
+        {
+          "id": "tbl-08-c8",
+          "name": "resolved_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-08-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 250
+      }
+    },
+    {
+      "id": "tbl-09",
+      "name": "fraud_alerts",
+      "columns": [
+        {
+          "id": "tbl-09-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-09-c2",
+          "name": "transaction_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-04",
+            "columnId": "tbl-04-c1"
+          }
+        },
+        {
+          "id": "tbl-09-c3",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-09-c4",
+          "name": "alert_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "suspicious_transaction",
+              "unusual_location",
+              "high_amount",
+              "velocity_check"
+            ],
+            "weights": [
+              30,
+              25,
+              25,
+              20
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-09-c5",
+          "name": "risk_score",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {}
+        },
+        {
+          "id": "tbl-09-c6",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "investigated",
+              "confirmed_fraud",
+              "false_positive"
+            ],
+            "weights": [
+              30,
+              20,
+              15,
+              35
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-09-c7",
+          "name": "investigated_by",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "name",
+          "options": {}
+        },
+        {
+          "id": "tbl-09-c8",
+          "name": "resolution_notes",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-09-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-10",
+      "name": "card_transactions",
+      "columns": [
+        {
+          "id": "tbl-10-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-10-c2",
+          "name": "credit_card_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-05",
+            "columnId": "tbl-05-c1"
+          }
+        },
+        {
+          "id": "tbl-10-c3",
+          "name": "merchant_name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "company_name",
+          "options": {}
+        },
+        {
+          "id": "tbl-10-c4",
+          "name": "amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-10-c5",
+          "name": "transaction_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "purchase",
+              "cash_advance",
+              "payment",
+              "refund"
+            ],
+            "weights": [
+              70,
+              10,
+              15,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-10-c6",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "posted",
+              "declined",
+              "disputed"
+            ],
+            "weights": [
+              15,
+              75,
+              7,
+              3
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-10-c7",
+          "name": "location",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-10-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-11",
+      "name": "loan_payments",
+      "columns": [
+        {
+          "id": "tbl-11-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-11-c2",
+          "name": "loan_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-06",
+            "columnId": "tbl-06-c1"
+          }
+        },
+        {
+          "id": "tbl-11-c3",
+          "name": "payment_amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-11-c4",
+          "name": "principal_amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-11-c5",
+          "name": "interest_amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-11-c6",
+          "name": "payment_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "scheduled",
+              "extra",
+              "late",
+              "prepayment"
+            ],
+            "weights": [
+              80,
+              10,
+              7,
+              3
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-11-c7",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "pending",
+              "processed",
+              "failed",
+              "reversed"
+            ],
+            "weights": [
+              10,
+              85,
+              3,
+              2
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-11-c8",
+          "name": "due_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "future_date",
+          "options": {}
+        },
+        {
+          "id": "tbl-11-c9",
+          "name": "paid_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "tbl-11-c10",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-12",
+      "name": "atm_transactions",
+      "columns": [
+        {
+          "id": "tbl-12-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-12-c2",
+          "name": "atm_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-07",
+            "columnId": "tbl-07-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c3",
+          "name": "account_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-03",
+            "columnId": "tbl-03-c1"
+          }
+        },
+        {
+          "id": "tbl-12-c4",
+          "name": "transaction_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "withdrawal",
+              "deposit",
+              "balance_inquiry",
+              "transfer"
+            ],
+            "weights": [
+              60,
+              25,
+              10,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-12-c5",
+          "name": "amount",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-12-c6",
+          "name": "fee",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-12-c7",
+          "name": "status",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "weights": [
+              90,
+              7,
+              3
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-12-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 500
+      }
+    },
+    {
+      "id": "tbl-13",
+      "name": "account_audit_log",
+      "columns": [
+        {
+          "id": "tbl-13-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-13-c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-03",
+            "columnId": "tbl-03-c1"
+          }
+        },
+        {
+          "id": "tbl-13-c3",
+          "name": "action",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "created",
+              "updated",
+              "frozen",
+              "unfrozen",
+              "closed"
+            ],
+            "weights": [
+              20,
+              50,
+              10,
+              10,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-13-c4",
+          "name": "old_values",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-13-c5",
+          "name": "new_values",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-13-c6",
+          "name": "performed_by",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "name",
+          "options": {}
+        },
+        {
+          "id": "tbl-13-c7",
+          "name": "reason",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-13-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-14",
+      "name": "fraud_rules",
+      "columns": [
+        {
+          "id": "tbl-14-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-14-c2",
+          "name": "rule_name",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "name",
+          "options": {}
+        },
+        {
+          "id": "tbl-14-c3",
+          "name": "rule_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "amount_threshold",
+              "velocity",
+              "location",
+              "merchant",
+              "time_based"
+            ],
+            "weights": [
+              25,
+              20,
+              20,
+              20,
+              15
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-14-c4",
+          "name": "threshold_value",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-14-c5",
+          "name": "risk_weight",
+          "type": "integer",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "integer",
+          "options": {}
+        },
+        {
+          "id": "tbl-14-c6",
+          "name": "is_active",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {}
+        },
+        {
+          "id": "tbl-14-c7",
+          "name": "description",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-14-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-15",
+      "name": "customer_addresses",
+      "columns": [
+        {
+          "id": "tbl-15-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-15-c2",
+          "name": "customer_id",
+          "type": "uuid",
+          "isPK": false,
+          "isFK": true,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {},
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "tbl-01-c1"
+          }
+        },
+        {
+          "id": "tbl-15-c3",
+          "name": "address_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "home",
+              "work",
+              "mailing",
+              "billing"
+            ],
+            "weights": [
+              50,
+              25,
+              15,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-15-c4",
+          "name": "street_address",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-15-c5",
+          "name": "city",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-15-c6",
+          "name": "state",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-15-c7",
+          "name": "zip_code",
+          "type": "string",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "random_string",
+          "options": {}
+        },
+        {
+          "id": "tbl-15-c8",
+          "name": "is_primary",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {}
+        },
+        {
+          "id": "tbl-15-c9",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 750
+      }
+    },
+    {
+      "id": "tbl-16",
+      "name": "interest_rates",
+      "columns": [
+        {
+          "id": "tbl-16-c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "uuid",
+          "options": {}
+        },
+        {
+          "id": "tbl-16-c2",
+          "name": "product_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "savings",
+              "checking",
+              "cd",
+              "money_market",
+              "personal_loan",
+              "mortgage",
+              "auto_loan",
+              "credit_card"
+            ],
+            "weights": [
+              15,
+              10,
+              10,
+              10,
+              15,
+              20,
+              15,
+              5
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-16-c3",
+          "name": "rate_type",
+          "type": "enum",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "fixed",
+              "variable",
+              "promotional"
+            ],
+            "weights": [
+              60,
+              30,
+              10
+            ],
+            "lifecycleRules": []
+          }
+        },
+        {
+          "id": "tbl-16-c4",
+          "name": "interest_rate",
+          "type": "decimal",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "decimal",
+          "options": {}
+        },
+        {
+          "id": "tbl-16-c5",
+          "name": "effective_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        },
+        {
+          "id": "tbl-16-c6",
+          "name": "end_date",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": true,
+          "strategy": "future_date",
+          "options": {}
+        },
+        {
+          "id": "tbl-16-c7",
+          "name": "is_active",
+          "type": "boolean",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "boolean",
+          "options": {}
+        },
+        {
+          "id": "tbl-16-c8",
+          "name": "created_at",
+          "type": "timestamp",
+          "isPK": false,
+          "isFK": false,
+          "nullable": false,
+          "strategy": "timestamp",
+          "options": {}
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 750
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-01",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-03",
+      "targetColumnId": "tbl-03-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-02",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-03",
+      "targetColumnId": "tbl-03-c3",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-03",
+      "sourceTableId": "tbl-03",
+      "sourceColumnId": "tbl-03-c1",
+      "targetTableId": "tbl-04",
+      "targetColumnId": "tbl-04-c2",
+      "type": "one-to-many",
+      "semantic": "activity"
+    },
+    {
+      "id": "rel-04",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-05",
+      "targetColumnId": "tbl-05-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-05",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-06",
+      "targetColumnId": "tbl-06-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-06",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "tbl-02-c1",
+      "targetTableId": "tbl-07",
+      "targetColumnId": "tbl-07-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-07",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-08",
+      "targetColumnId": "tbl-08-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    },
+    {
+      "id": "rel-08",
+      "sourceTableId": "tbl-04",
+      "sourceColumnId": "tbl-04-c1",
+      "targetTableId": "tbl-09",
+      "targetColumnId": "tbl-09-c2",
+      "type": "one-to-many",
+      "semantic": "risk"
+    },
+    {
+      "id": "rel-09",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-09",
+      "targetColumnId": "tbl-09-c3",
+      "type": "one-to-many",
+      "semantic": "risk"
+    },
+    {
+      "id": "rel-10",
+      "sourceTableId": "tbl-05",
+      "sourceColumnId": "tbl-05-c1",
+      "targetTableId": "tbl-10",
+      "targetColumnId": "tbl-10-c2",
+      "type": "one-to-many",
+      "semantic": "activity"
+    },
+    {
+      "id": "rel-11",
+      "sourceTableId": "tbl-06",
+      "sourceColumnId": "tbl-06-c1",
+      "targetTableId": "tbl-11",
+      "targetColumnId": "tbl-11-c2",
+      "type": "one-to-many",
+      "semantic": "activity"
+    },
+    {
+      "id": "rel-12",
+      "sourceTableId": "tbl-07",
+      "sourceColumnId": "tbl-07-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c2",
+      "type": "one-to-many",
+      "semantic": "activity"
+    },
+    {
+      "id": "rel-13",
+      "sourceTableId": "tbl-03",
+      "sourceColumnId": "tbl-03-c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "tbl-12-c3",
+      "type": "one-to-many",
+      "semantic": "activity"
+    },
+    {
+      "id": "rel-14",
+      "sourceTableId": "tbl-03",
+      "sourceColumnId": "tbl-03-c1",
+      "targetTableId": "tbl-13",
+      "targetColumnId": "tbl-13-c2",
+      "type": "one-to-many",
+      "semantic": "lifecycle"
+    },
+    {
+      "id": "rel-15",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "tbl-01-c1",
+      "targetTableId": "tbl-15",
+      "targetColumnId": "tbl-15-c2",
+      "type": "one-to-many",
+      "semantic": "connection"
+    }
+  ],
+  "simulation": {
+    "seed": 123,
+    "timelineDays": 180,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.08
+  },
+  "version": "1.0.0",
+  "exportedAt": "2026-04-06T18:35:30.563Z"
+}

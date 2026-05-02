@@ -1,0 +1,1105 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Exported from RealityDB Studio",
+  "tables": {
+    "customers": {
+      "match": "customers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "first_name": {
+          "strategy": "full_name"
+        },
+        "last_name": {
+          "strategy": "full_name"
+        },
+        "email": {
+          "strategy": "email"
+        },
+        "phone_number": {
+          "strategy": "phone"
+        },
+        "kyc_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "verified",
+              "pending",
+              "failed",
+              "expired"
+            ],
+            "weights": [
+              72,
+              15,
+              8,
+              5
+            ]
+          }
+        },
+        "risk_score": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              55,
+              30,
+              12,
+              3
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "branches": {
+      "match": "branches",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "company_name"
+        },
+        "branch_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "retail",
+              "commercial",
+              "private_banking",
+              "digital_only"
+            ],
+            "weights": [
+              55,
+              25,
+              10,
+              10
+            ]
+          }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "northeast",
+              "southeast",
+              "midwest",
+              "southwest",
+              "west"
+            ],
+            "weights": [
+              22,
+              20,
+              18,
+              15,
+              25
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "temporarily_closed",
+              "permanently_closed"
+            ],
+            "weights": [
+              88,
+              7,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "accounts": {
+      "match": "accounts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "branch_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "branches",
+            "column": "id"
+          }
+        },
+        "account_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "checking",
+              "savings",
+              "money_market",
+              "cd",
+              "ira"
+            ],
+            "weights": [
+              40,
+              35,
+              12,
+              8,
+              5
+            ]
+          }
+        },
+        "balance": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "dormant",
+              "frozen",
+              "closed"
+            ],
+            "weights": [
+              75,
+              12,
+              5,
+              8
+            ],
+            "lifecycleRules": [
+              {
+                "value": "closed",
+                "nullFields": [
+                  "closed_at"
+                ]
+              }
+            ]
+          }
+        },
+        "closed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "transactions": {
+      "match": "transactions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "transaction_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "deposit",
+              "withdrawal",
+              "transfer_in",
+              "transfer_out",
+              "fee",
+              "interest",
+              "refund"
+            ],
+            "weights": [
+              28,
+              25,
+              15,
+              15,
+              8,
+              6,
+              3
+            ]
+          }
+        },
+        "amount": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "pending",
+              "failed",
+              "reversed"
+            ],
+            "weights": [
+              82,
+              10,
+              5,
+              3
+            ],
+            "lifecycleRules": [
+              {
+                "value": "completed",
+                "nullFields": [
+                  "settled_at"
+                ]
+              }
+            ]
+          }
+        },
+        "channel": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "online",
+              "mobile",
+              "atm",
+              "branch",
+              "wire"
+            ],
+            "weights": [
+              30,
+              35,
+              15,
+              12,
+              8
+            ]
+          }
+        },
+        "settled_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "loans": {
+      "match": "loans",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "loan_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "mortgage",
+              "auto",
+              "personal",
+              "student",
+              "business",
+              "home_equity"
+            ],
+            "weights": [
+              30,
+              22,
+              20,
+              12,
+              10,
+              6
+            ]
+          }
+        },
+        "principal_amount": {
+          "strategy": "float"
+        },
+        "interest_rate": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "current",
+              "delinquent_30",
+              "delinquent_60",
+              "delinquent_90",
+              "default",
+              "paid_off",
+              "restructured"
+            ],
+            "weights": [
+              60,
+              12,
+              6,
+              4,
+              3,
+              12,
+              3
+            ],
+            "lifecycleRules": [
+              {
+                "value": "default",
+                "nullFields": [
+                  "defaulted_at"
+                ]
+              }
+            ]
+          }
+        },
+        "defaulted_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "credit_cards": {
+      "match": "credit_cards",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "card_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "visa_standard",
+              "visa_gold",
+              "visa_platinum",
+              "mastercard_standard",
+              "mastercard_world",
+              "amex"
+            ],
+            "weights": [
+              30,
+              20,
+              10,
+              20,
+              12,
+              8
+            ]
+          }
+        },
+        "credit_limit": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "suspended",
+              "cancelled",
+              "expired",
+              "lost_stolen"
+            ],
+            "weights": [
+              70,
+              8,
+              10,
+              7,
+              5
+            ],
+            "lifecycleRules": [
+              {
+                "value": "cancelled",
+                "nullFields": [
+                  "cancelled_at"
+                ]
+              }
+            ]
+          }
+        },
+        "cancelled_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "atms": {
+      "match": "atms",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "branch_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "branches",
+            "column": "id"
+          }
+        },
+        "location": {
+          "strategy": "text"
+        },
+        "atm_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "full_service",
+              "cash_only",
+              "drive_through",
+              "in_branch"
+            ],
+            "weights": [
+              40,
+              30,
+              15,
+              15
+            ]
+          }
+        },
+        "operational_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "online",
+              "offline",
+              "maintenance",
+              "out_of_cash"
+            ],
+            "weights": [
+              80,
+              8,
+              7,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "fraud_reports": {
+      "match": "fraud_reports",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "fraud_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "identity_theft",
+              "transaction_fraud",
+              "account_takeover",
+              "card_not_present",
+              "phishing"
+            ],
+            "weights": [
+              25,
+              25,
+              20,
+              20,
+              10
+            ]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              30,
+              35,
+              25,
+              10
+            ]
+          }
+        },
+        "resolution_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "confirmed_fraud",
+              "false_positive",
+              "under_review",
+              "customer_verified",
+              "escalated"
+            ],
+            "weights": [
+              18,
+              40,
+              15,
+              20,
+              7
+            ],
+            "lifecycleRules": [
+              {
+                "value": "confirmed_fraud",
+                "nullFields": [
+                  "resolved_at"
+                ]
+              },
+              {
+                "value": "false_positive",
+                "nullFields": [
+                  "resolved_at"
+                ]
+              }
+            ]
+          }
+        },
+        "resolved_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "loan_payments": {
+      "match": "loan_payments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "loan_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "loans",
+            "column": "id"
+          }
+        },
+        "amount": {
+          "strategy": "float"
+        },
+        "payment_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "scheduled",
+              "extra",
+              "lump_sum",
+              "insurance_payout"
+            ],
+            "weights": [
+              75,
+              15,
+              7,
+              3
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "returned",
+              "late"
+            ],
+            "weights": [
+              85,
+              5,
+              10
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "card_transactions": {
+      "match": "card_transactions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "card_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "credit_cards",
+            "column": "id"
+          }
+        },
+        "merchant_category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "grocery",
+              "restaurant",
+              "gas_station",
+              "retail",
+              "online",
+              "travel",
+              "healthcare",
+              "entertainment"
+            ],
+            "weights": [
+              18,
+              14,
+              10,
+              16,
+              20,
+              6,
+              9,
+              7
+            ]
+          }
+        },
+        "amount": {
+          "strategy": "float"
+        },
+        "is_international": {
+          "strategy": "boolean"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "approved",
+              "declined",
+              "disputed",
+              "reversed"
+            ],
+            "weights": [
+              88,
+              6,
+              4,
+              2
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "atm_transactions": {
+      "match": "atm_transactions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "atm_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "atms",
+            "column": "id"
+          }
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "transaction_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "withdrawal",
+              "deposit",
+              "balance_inquiry",
+              "transfer",
+              "mini_statement"
+            ],
+            "weights": [
+              45,
+              20,
+              18,
+              10,
+              7
+            ]
+          }
+        },
+        "amount": {
+          "strategy": "float"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "failed",
+              "card_retained"
+            ],
+            "weights": [
+              90,
+              8,
+              2
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "customer_service_tickets": {
+      "match": "customer_service_tickets",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "billing_dispute",
+              "card_issue",
+              "account_access",
+              "fraud_report",
+              "loan_inquiry",
+              "general",
+              "complaint"
+            ],
+            "weights": [
+              18,
+              15,
+              14,
+              12,
+              10,
+              20,
+              11
+            ]
+          }
+        },
+        "priority": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "urgent"
+            ],
+            "weights": [
+              25,
+              40,
+              25,
+              10
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "in_progress",
+              "waiting_customer",
+              "resolved",
+              "closed"
+            ],
+            "weights": [
+              15,
+              25,
+              10,
+              30,
+              20
+            ],
+            "lifecycleRules": [
+              {
+                "value": "resolved",
+                "nullFields": [
+                  "resolved_at"
+                ]
+              },
+              {
+                "value": "closed",
+                "nullFields": [
+                  "resolved_at"
+                ]
+              }
+            ]
+          }
+        },
+        "resolved_at": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "account_audit_log": {
+      "match": "account_audit_log",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "action": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "opened",
+              "status_change",
+              "balance_adjustment",
+              "interest_applied",
+              "fee_charged",
+              "limit_updated",
+              "kyc_updated",
+              "closed"
+            ],
+            "weights": [
+              8,
+              20,
+              25,
+              15,
+              12,
+              8,
+              7,
+              5
+            ]
+          }
+        },
+        "old_value": {
+          "strategy": "text"
+        },
+        "new_value": {
+          "strategy": "text"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "interest_rates": {
+      "match": "interest_rates",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "product_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "checking",
+              "savings",
+              "money_market",
+              "cd_6mo",
+              "cd_12mo",
+              "mortgage_15yr",
+              "mortgage_30yr",
+              "auto",
+              "personal"
+            ],
+            "weights": [
+              12,
+              15,
+              10,
+              10,
+              10,
+              12,
+              12,
+              10,
+              9
+            ]
+          }
+        },
+        "rate": {
+          "strategy": "float"
+        },
+        "effective_from": {
+          "strategy": "timestamp"
+        },
+        "effective_to": {
+          "strategy": "timestamp",
+          "options": {
+            "dependsOn": "effective_from",
+            "dependencyRule": "after"
+          }
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "fraud_rules": {
+      "match": "fraud_rules",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "rule_name": {
+          "strategy": "full_name"
+        },
+        "rule_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "velocity",
+              "amount_threshold",
+              "geo_fence",
+              "device_fingerprint",
+              "behavioral",
+              "network_analysis"
+            ],
+            "weights": [
+              20,
+              25,
+              15,
+              15,
+              15,
+              10
+            ]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "info",
+              "warning",
+              "alert",
+              "block"
+            ],
+            "weights": [
+              15,
+              30,
+              35,
+              20
+            ]
+          }
+        },
+        "is_active": {
+          "strategy": "boolean"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    },
+    "account_holders": {
+      "match": "account_holders",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "holder_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "primary",
+              "joint",
+              "beneficiary",
+              "authorized_signer"
+            ],
+            "weights": [
+              70,
+              20,
+              5,
+              5
+            ]
+          }
+        },
+        "is_active": {
+          "strategy": "boolean"
+        },
+        "created_at": {
+          "strategy": "timestamp"
+        }
+      }
+    }
+  },
+  "simulation": {
+    "seed": 42,
+    "timelineDays": 365,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.05
+  },
+  "generationConfig": {
+    "database": {
+      "client": "postgres"
+    },
+    "seed": {
+      "defaultRecords": 1000,
+      "randomSeed": 42
+    }
+  }
+}

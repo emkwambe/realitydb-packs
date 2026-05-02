@@ -1,0 +1,41 @@
+{
+  "version": "6.0.0",
+  "tables": [
+    { "id": "T1", "name": "customers", "columns": [
+      { "id": "T1C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+      { "id": "T1C2", "name": "risk_rating", "type": "enum", "strategy": "enum", "options": { "values": ["low", "medium", "high", "PEP"], "weights": [70, 20, 8, 2] } },
+      { "id": "T1C3", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+    ]},
+    { "id": "T2", "name": "accounts", "columns": [
+      { "id": "T2C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+      { "id": "T2C2", "name": "customer_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T1", "columnId": "T1C1" } },
+      { "id": "T2C3", "name": "type", "type": "enum", "strategy": "enum", "options": { "values": ["checking", "savings", "offshore", "crypto_bridge"], "weights": [50, 40, 7, 3] } },
+      { "id": "T2C4", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+    ]},
+    { "id": "T3", "name": "transactions", "columns": [
+      { "id": "T3C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+      { "id": "T3C2", "name": "sender_acc_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T2", "columnId": "T2C1" } },
+      { "id": "T3C3", "name": "amount", "type": "number", "strategy": "float", "options": { "min": 1, "max": 50000 } },
+      { "id": "T3C4", "name": "method", "type": "enum", "strategy": "enum", "options": { "values": ["ACH", "WIRE", "CASH", "P2P"], "weights": [40, 30, 20, 10] } },
+      { "id": "T3C5", "name": "created_at", "type": "timestamp", "strategy": "past_date" }
+    ]},
+    { "id": "T4", "name": "beneficiaries", "columns": [
+      { "id": "T4C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+      { "id": "T4C2", "name": "name", "type": "string", "strategy": "company_name" }
+    ]},
+    { "id": "T5", "name": "suspicious_activity_reports", "columns": [
+      { "id": "T5C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+      { "id": "T5C2", "name": "txn_id", "type": "uuid", "isFK": true, "fkTarget": { "tableId": "T3", "columnId": "T3C1" } },
+      { "id": "T5C3", "name": "status", "type": "enum", "strategy": "enum", "options": { "values": ["filed", "under_review", "dismissed"] } }
+    ]},
+    { "id": "T6", "name": "watchlists", "columns": [
+      { "id": "T6C1", "name": "id", "type": "uuid", "isPK": true, "strategy": "uuid" },
+      { "id": "T6C2", "name": "entity_name", "type": "string", "strategy": "company_name" }
+    ]}
+  ],
+  "relationships": [
+    { "id": "r1", "sourceTableId": "T1", "sourceColumnId": "T1C1", "targetTableId": "T2", "targetColumnId": "T2C2", "type": "one-to-many" },
+    { "id": "r2", "sourceTableId": "T2", "sourceColumnId": "T2C1", "targetTableId": "T3", "targetColumnId": "T3C2", "type": "one-to-many" },
+    { "id": "r3", "sourceTableId": "T3", "sourceColumnId": "T3C1", "targetTableId": "T5", "targetColumnId": "T5C2", "type": "one-to-one" }
+  ]
+}

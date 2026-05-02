@@ -1,0 +1,1409 @@
+{
+  "name": "studio-export",
+  "version": "1.0.0",
+  "description": "Converted from Studio v4 by realitydb doctor",
+  "tables": {
+    "trials": {
+      "match": "trials",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "nct_id": {
+          "strategy": "template",
+          "options": {
+            "template": "NCT{{rowIndex}}"
+          }
+        },
+        "phase": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Phase_I",
+              "Phase_I_II",
+              "Phase_II",
+              "Phase_II_III",
+              "Phase_III"
+            ],
+            "weights": [
+              15,
+              10,
+              30,
+              10,
+              35
+            ]
+          }
+        },
+        "study_design": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "randomized_controlled",
+              "single_arm",
+              "dose_escalation",
+              "basket",
+              "umbrella",
+              "platform"
+            ],
+            "weights": [
+              40,
+              25,
+              15,
+              8,
+              7,
+              5
+            ]
+          }
+        },
+        "randomization_ratio": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1:1",
+              "2:1",
+              "3:1",
+              "not_randomized"
+            ],
+            "weights": [
+              35,
+              20,
+              5,
+              40
+            ]
+          }
+        },
+        "primary_endpoint": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "overall_survival",
+              "progression_free_survival",
+              "objective_response_rate",
+              "dose_limiting_toxicity",
+              "disease_free_survival",
+              "pathologic_complete_response"
+            ],
+            "weights": [
+              25,
+              30,
+              20,
+              10,
+              8,
+              7
+            ]
+          }
+        },
+        "tumor_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "NSCLC",
+              "breast",
+              "colorectal",
+              "melanoma",
+              "renal_cell",
+              "urothelial",
+              "head_neck",
+              "gastric",
+              "hepatocellular",
+              "pan_tumor"
+            ],
+            "weights": [
+              20,
+              15,
+              12,
+              10,
+              8,
+              7,
+              6,
+              6,
+              6,
+              10
+            ]
+          }
+        },
+        "sponsor_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "industry",
+              "academic",
+              "cooperative_group",
+              "nci_funded",
+              "investigator_initiated"
+            ],
+            "weights": [
+              45,
+              20,
+              15,
+              10,
+              10
+            ]
+          }
+        },
+        "start_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "recruiting",
+              "active_not_recruiting",
+              "completed",
+              "terminated",
+              "suspended",
+              "withdrawn"
+            ],
+            "weights": [
+              30,
+              20,
+              25,
+              12,
+              8,
+              5
+            ]
+          }
+        }
+      }
+    },
+    "trial_arms": {
+      "match": "trial_arms",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trials",
+            "column": "id"
+          }
+        },
+        "arm_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "experimental",
+              "active_comparator",
+              "placebo_comparator",
+              "dose_level_1",
+              "dose_level_2",
+              "dose_level_3",
+              "combination"
+            ],
+            "weights": [
+              30,
+              20,
+              15,
+              8,
+              8,
+              7,
+              12
+            ]
+          }
+        },
+        "arm_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "experimental",
+              "active_control",
+              "placebo",
+              "dose_finding"
+            ],
+            "weights": [
+              40,
+              25,
+              15,
+              20
+            ]
+          }
+        },
+        "regimen_description": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "anti_PD1_mono",
+              "anti_PD1_chemo",
+              "anti_PDL1_mono",
+              "TKI_mono",
+              "TKI_chemo",
+              "anti_CTLA4_anti_PD1",
+              "ADC_mono",
+              "bispecific",
+              "chemo_standard",
+              "placebo_chemo"
+            ],
+            "weights": [
+              15,
+              18,
+              8,
+              12,
+              8,
+              10,
+              8,
+              5,
+              10,
+              6
+            ]
+          }
+        },
+        "target_enrollment": {
+          "strategy": "integer",
+          "options": {
+            "min": 20,
+            "max": 800
+          }
+        }
+      }
+    },
+    "sites": {
+      "match": "sites",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trials",
+            "column": "id"
+          }
+        },
+        "site_name": {
+          "strategy": "company_name"
+        },
+        "country": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "UK",
+              "Germany",
+              "France",
+              "Japan",
+              "China",
+              "Australia",
+              "Canada",
+              "South_Korea",
+              "Brazil"
+            ],
+            "weights": [
+              35,
+              10,
+              10,
+              8,
+              8,
+              8,
+              5,
+              6,
+              5,
+              5
+            ]
+          }
+        },
+        "site_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "closed",
+              "not_yet_recruiting",
+              "suspended"
+            ],
+            "weights": [
+              50,
+              25,
+              15,
+              10
+            ]
+          }
+        },
+        "irb_approval_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 5
+          }
+        }
+      }
+    },
+    "subjects": {
+      "match": "subjects",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trials",
+            "column": "id"
+          }
+        },
+        "arm_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trial_arms",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "subject_id_masked": {
+          "strategy": "template",
+          "options": {
+            "template": "SUBJ-{{rowIndex}}"
+          }
+        },
+        "age_at_enrollment": {
+          "strategy": "integer",
+          "options": {
+            "min": 18,
+            "max": 85
+          }
+        },
+        "sex": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "male",
+              "female"
+            ],
+            "weights": [
+              52,
+              48
+            ]
+          }
+        },
+        "ecog_at_baseline": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2"
+            ],
+            "weights": [
+              35,
+              50,
+              15
+            ]
+          }
+        },
+        "prior_lines_therapy": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "3_plus"
+            ],
+            "weights": [
+              30,
+              35,
+              20,
+              15
+            ]
+          }
+        },
+        "stratification_factor_1": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "PD-L1_high",
+              "PD-L1_low",
+              "PD-L1_negative"
+            ],
+            "weights": [
+              25,
+              30,
+              45
+            ]
+          }
+        },
+        "stratification_factor_2": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "squamous",
+              "non_squamous",
+              "other_histology"
+            ],
+            "weights": [
+              30,
+              60,
+              10
+            ]
+          }
+        },
+        "enrollment_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        },
+        "informed_consent_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "dosing_records": {
+      "match": "dosing_records",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "cycle_number": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 35
+          }
+        },
+        "dose_level_mg": {
+          "strategy": "number",
+          "options": {
+            "min": 50,
+            "max": 1200,
+            "precision": 0
+          }
+        },
+        "dose_modification": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "full_dose",
+              "reduced_level_1",
+              "reduced_level_2",
+              "held",
+              "discontinued"
+            ],
+            "weights": [
+              60,
+              15,
+              5,
+              12,
+              8
+            ]
+          }
+        },
+        "dose_delay_days": {
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 21
+          }
+        },
+        "dlt_event": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "no",
+              "yes"
+            ],
+            "weights": [
+              85,
+              15
+            ]
+          }
+        },
+        "administration_route": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "IV_infusion",
+              "oral",
+              "subcutaneous",
+              "intrathecal"
+            ],
+            "weights": [
+              50,
+              35,
+              10,
+              5
+            ]
+          }
+        },
+        "administration_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "adverse_events": {
+      "match": "adverse_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "ae_term": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "fatigue",
+              "nausea",
+              "diarrhea",
+              "rash",
+              "pneumonitis",
+              "hepatotoxicity",
+              "neutropenia",
+              "anemia",
+              "thrombocytopenia",
+              "neuropathy",
+              "colitis",
+              "thyroid_dysfunction",
+              "infusion_reaction",
+              "arthralgia",
+              "vomiting"
+            ],
+            "weights": [
+              14,
+              10,
+              8,
+              7,
+              6,
+              5,
+              8,
+              7,
+              4,
+              5,
+              4,
+              5,
+              4,
+              4,
+              3
+            ]
+          }
+        },
+        "ctcae_grade": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "weights": [
+              35,
+              30,
+              20,
+              10,
+              2
+            ]
+          }
+        },
+        "causality": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "related",
+              "possibly_related",
+              "unlikely_related",
+              "unrelated",
+              "not_assessable"
+            ],
+            "weights": [
+              15,
+              25,
+              20,
+              35,
+              5
+            ]
+          }
+        },
+        "serious": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "yes",
+              "no"
+            ],
+            "weights": [
+              25,
+              75
+            ]
+          }
+        },
+        "action_taken": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "none",
+              "dose_reduced",
+              "dose_interrupted",
+              "drug_withdrawn",
+              "concomitant_medication",
+              "hospitalization"
+            ],
+            "weights": [
+              30,
+              12,
+              15,
+              10,
+              20,
+              13
+            ]
+          }
+        },
+        "outcome": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "recovered",
+              "recovering",
+              "not_recovered",
+              "recovered_with_sequelae",
+              "fatal",
+              "unknown"
+            ],
+            "weights": [
+              45,
+              15,
+              20,
+              8,
+              2,
+              10
+            ]
+          }
+        },
+        "onset_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        },
+        "resolution_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 2
+          }
+        }
+      }
+    },
+    "efficacy_assessments": {
+      "match": "efficacy_assessments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "assessment_timepoint": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "week_6",
+              "week_9",
+              "week_12",
+              "week_18",
+              "week_24",
+              "week_36",
+              "week_48",
+              "end_of_treatment"
+            ],
+            "weights": [
+              15,
+              15,
+              20,
+              15,
+              12,
+              8,
+              5,
+              10
+            ]
+          }
+        },
+        "recist_response": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "CR",
+              "PR",
+              "SD",
+              "PD",
+              "NE"
+            ],
+            "weights": [
+              5,
+              25,
+              35,
+              30,
+              5
+            ]
+          }
+        },
+        "target_lesion_sum_mm": {
+          "strategy": "number",
+          "options": {
+            "min": 10,
+            "max": 200,
+            "precision": 1
+          }
+        },
+        "change_from_baseline_pct": {
+          "strategy": "number",
+          "options": {
+            "min": -100,
+            "max": 80,
+            "precision": 1
+          }
+        },
+        "new_lesions": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "no",
+              "equivocal",
+              "yes"
+            ],
+            "weights": [
+              65,
+              10,
+              25
+            ]
+          }
+        },
+        "confirmation_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "confirmed",
+              "unconfirmed",
+              "pending"
+            ],
+            "weights": [
+              60,
+              25,
+              15
+            ]
+          }
+        },
+        "assessment_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "survival": {
+      "match": "survival",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "pfs_months": {
+          "strategy": "number",
+          "options": {
+            "min": 0.5,
+            "max": 36,
+            "precision": 1
+          }
+        },
+        "pfs_event": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "progressed",
+              "censored_alive",
+              "censored_lost",
+              "death"
+            ],
+            "weights": [
+              50,
+              30,
+              10,
+              10
+            ]
+          }
+        },
+        "os_months": {
+          "strategy": "number",
+          "options": {
+            "min": 1,
+            "max": 60,
+            "precision": 1
+          }
+        },
+        "os_event": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "death",
+              "censored_alive",
+              "censored_lost"
+            ],
+            "weights": [
+              40,
+              45,
+              15
+            ]
+          }
+        },
+        "duration_of_response_months": {
+          "strategy": "number",
+          "options": {
+            "min": 1,
+            "max": 30,
+            "precision": 1
+          }
+        },
+        "best_overall_response": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "CR",
+              "PR",
+              "SD",
+              "PD",
+              "NE"
+            ],
+            "weights": [
+              5,
+              28,
+              32,
+              30,
+              5
+            ]
+          }
+        },
+        "last_followup_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 1
+          }
+        }
+      }
+    },
+    "lab_results": {
+      "match": "lab_results",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "test_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ANC",
+              "hemoglobin",
+              "platelets",
+              "creatinine",
+              "ALT",
+              "AST",
+              "bilirubin",
+              "TSH",
+              "LDH",
+              "albumin"
+            ],
+            "weights": [
+              15,
+              12,
+              10,
+              10,
+              10,
+              10,
+              8,
+              8,
+              10,
+              7
+            ]
+          }
+        },
+        "ctcae_lab_grade": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0_normal",
+              "1_mild",
+              "2_moderate",
+              "3_severe",
+              "4_life_threatening"
+            ],
+            "weights": [
+              50,
+              25,
+              12,
+              8,
+              5
+            ]
+          }
+        },
+        "numeric_value": {
+          "strategy": "number",
+          "options": {
+            "min": 0.1,
+            "max": 500,
+            "precision": 1
+          }
+        },
+        "collection_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "protocol_deviations": {
+      "match": "protocol_deviations",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "deviation_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "eligibility_violation",
+              "dosing_error",
+              "missed_assessment",
+              "wrong_procedure",
+              "consent_issue",
+              "visit_window_deviation",
+              "concomitant_medication",
+              "other"
+            ],
+            "weights": [
+              10,
+              12,
+              25,
+              5,
+              5,
+              20,
+              15,
+              8
+            ]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "minor",
+              "major",
+              "critical"
+            ],
+            "weights": [
+              55,
+              35,
+              10
+            ]
+          }
+        },
+        "deviation_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "concomitant_medications": {
+      "match": "concomitant_medications",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "medication_class": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "antiemetic",
+              "analgesic",
+              "corticosteroid",
+              "growth_factor",
+              "antibiotic",
+              "antihypertensive",
+              "antidiabetic",
+              "thyroid_hormone",
+              "proton_pump_inhibitor",
+              "anticoagulant"
+            ],
+            "weights": [
+              18,
+              15,
+              15,
+              10,
+              8,
+              8,
+              5,
+              5,
+              10,
+              6
+            ]
+          }
+        },
+        "indication": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ae_management",
+              "premedication",
+              "prophylaxis",
+              "comorbidity",
+              "supportive_care"
+            ],
+            "weights": [
+              35,
+              15,
+              15,
+              20,
+              15
+            ]
+          }
+        },
+        "start_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "disposition": {
+      "match": "disposition",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "disposition_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "ongoing",
+              "discontinued"
+            ],
+            "weights": [
+              30,
+              25,
+              45
+            ]
+          }
+        },
+        "reason_off_study": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed_protocol",
+              "progressive_disease",
+              "adverse_event",
+              "withdrawal_consent",
+              "death",
+              "lost_to_followup",
+              "physician_decision",
+              "protocol_violation",
+              "not_applicable"
+            ],
+            "weights": [
+              15,
+              25,
+              12,
+              8,
+              8,
+              5,
+              7,
+              5,
+              15
+            ]
+          }
+        },
+        "subsequent_therapy": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "next_line_systemic",
+              "clinical_trial",
+              "best_supportive_care",
+              "radiation",
+              "surgery",
+              "none_yet",
+              "unknown"
+            ],
+            "weights": [
+              30,
+              10,
+              20,
+              8,
+              5,
+              15,
+              12
+            ]
+          }
+        },
+        "disposition_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 3
+          }
+        }
+      }
+    },
+    "screening": {
+      "match": "screening",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trials",
+            "column": "id"
+          }
+        },
+        "screening_id_masked": {
+          "strategy": "template",
+          "options": {
+            "template": "SCR-{{rowIndex}}"
+          }
+        },
+        "screening_result": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "enrolled",
+              "screen_failure_eligibility",
+              "screen_failure_consent",
+              "screen_failure_disease",
+              "screen_failure_labs",
+              "screen_failure_other"
+            ],
+            "weights": [
+              55,
+              15,
+              5,
+              10,
+              8,
+              7
+            ]
+          }
+        },
+        "screening_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "vital_signs": {
+      "match": "vital_signs",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "subject_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "subjects",
+            "column": "id"
+          }
+        },
+        "visit_label": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "screening",
+              "baseline",
+              "cycle_1_day_1",
+              "cycle_2_day_1",
+              "cycle_3_day_1",
+              "every_3_cycles",
+              "end_of_treatment",
+              "follow_up"
+            ],
+            "weights": [
+              10,
+              15,
+              15,
+              12,
+              10,
+              15,
+              10,
+              13
+            ]
+          }
+        },
+        "weight_kg": {
+          "strategy": "number",
+          "options": {
+            "min": 40,
+            "max": 120,
+            "precision": 1
+          }
+        },
+        "systolic_bp": {
+          "strategy": "integer",
+          "options": {
+            "min": 90,
+            "max": 180
+          }
+        },
+        "diastolic_bp": {
+          "strategy": "integer",
+          "options": {
+            "min": 55,
+            "max": 110
+          }
+        },
+        "heart_rate": {
+          "strategy": "integer",
+          "options": {
+            "min": 50,
+            "max": 120
+          }
+        },
+        "temperature_c": {
+          "strategy": "number",
+          "options": {
+            "min": 36,
+            "max": 39.5,
+            "precision": 1
+          }
+        },
+        "measurement_date": {
+          "strategy": "past_date",
+          "options": {
+            "minYearsAgo": 0,
+            "maxYearsAgo": 4
+          }
+        }
+      }
+    },
+    "investigators": {
+      "match": "investigators",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "investigator_name": {
+          "strategy": "full_name"
+        },
+        "role": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "principal_investigator",
+              "sub_investigator",
+              "study_coordinator",
+              "research_nurse"
+            ],
+            "weights": [
+              25,
+              30,
+              25,
+              20
+            ]
+          }
+        },
+        "gcp_certified": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "yes",
+              "no"
+            ],
+            "weights": [
+              90,
+              10
+            ]
+          }
+        }
+      }
+    }
+  }
+}

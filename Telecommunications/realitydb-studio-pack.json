@@ -1,0 +1,1097 @@
+{
+  "tables": [
+    {
+      "id": "tbl-01",
+      "name": "subscribers",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "full_name",
+          "type": "string",
+          "strategy": "name"
+        },
+        {
+          "id": "c3",
+          "name": "status",
+          "type": "enum",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "suspended",
+              "churned"
+            ],
+            "weights": [
+              80,
+              5,
+              15
+            ]
+          }
+        },
+        {
+          "id": "c4",
+          "name": "churn_date",
+          "type": "timestamp",
+          "nullable": true,
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-02",
+      "name": "accounts",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "account_type",
+          "type": "enum",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "prepaid",
+              "postpaid",
+              "enterprise"
+            ],
+            "weights": [
+              40,
+              50,
+              10
+            ]
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-03",
+      "name": "plans",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "plan_name",
+          "type": "string",
+          "strategy": "name"
+        },
+        {
+          "id": "c3",
+          "name": "monthly_data_gb",
+          "type": "integer",
+          "strategy": "integer",
+          "options": {
+            "min": 5,
+            "max": 200
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-04",
+      "name": "subscriptions",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "plan_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-03",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 0
+      }
+    },
+    {
+      "id": "tbl-05",
+      "name": "devices",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "imei",
+          "type": "string",
+          "strategy": "random_string"
+        },
+        {
+          "id": "c4",
+          "name": "model",
+          "type": "string",
+          "strategy": "company_name"
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-06",
+      "name": "voice_usage",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "duration_seconds",
+          "type": "integer",
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 3600
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date",
+          "options": {
+            "dependsOnTable": "tbl-01",
+            "dependsOnColumn": "churn_date",
+            "dependencyRule": "before_if_not_null"
+          }
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-07",
+      "name": "data_usage",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "mb_consumed",
+          "type": "decimal",
+          "strategy": "decimal"
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date",
+          "options": {
+            "dependsOnTable": "tbl-01",
+            "dependsOnColumn": "churn_date",
+            "dependencyRule": "before_if_not_null"
+          }
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-08",
+      "name": "sms_logs",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 350
+      }
+    },
+    {
+      "id": "tbl-09",
+      "name": "invoices",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "account_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-02",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "amount_due",
+          "type": "decimal",
+          "strategy": "decimal"
+        },
+        {
+          "id": "c4",
+          "name": "due_date",
+          "type": "timestamp",
+          "strategy": "past_date"
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-10",
+      "name": "payments",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "invoice_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-09",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "payment_date",
+          "type": "timestamp",
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-11",
+      "name": "support_tickets",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "status",
+          "type": "enum",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "resolved"
+            ],
+            "weights": [
+              30,
+              70
+            ]
+          }
+        },
+        {
+          "id": "c4",
+          "name": "resolved_at",
+          "type": "timestamp",
+          "nullable": true,
+          "strategy": "past_date",
+          "options": {
+            "dependsOn": "created_at",
+            "dependencyRule": "after"
+          }
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-12",
+      "name": "ticket_updates",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "ticket_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-11",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "update_text",
+          "type": "string",
+          "strategy": "random_string"
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 700
+      }
+    },
+    {
+      "id": "tbl-13",
+      "name": "cell_towers",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "tower_name",
+          "type": "string",
+          "strategy": "company_name"
+        },
+        {
+          "id": "c3",
+          "name": "latitude",
+          "type": "decimal",
+          "strategy": "decimal"
+        },
+        {
+          "id": "c4",
+          "name": "longitude",
+          "type": "decimal",
+          "strategy": "decimal"
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 1050
+      }
+    },
+    {
+      "id": "tbl-14",
+      "name": "tower_sectors",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "tower_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-13",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "frequency_band",
+          "type": "enum",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "700MHz",
+              "1800MHz",
+              "2100MHz",
+              "3500MHz"
+            ]
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 1050
+      }
+    },
+    {
+      "id": "tbl-15",
+      "name": "handovers",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "device_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-05",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "source_sector_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-14",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c4",
+          "name": "target_sector_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-14",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 1050
+      }
+    },
+    {
+      "id": "tbl-16",
+      "name": "signal_quality",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "sector_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-14",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "dbm_strength",
+          "type": "integer",
+          "strategy": "integer",
+          "options": {
+            "min": -120,
+            "max": -50
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 1050
+      }
+    },
+    {
+      "id": "tbl-17",
+      "name": "churn_predictions",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "churn_probability",
+          "type": "decimal",
+          "strategy": "decimal",
+          "options": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 0,
+        "y": 1400
+      }
+    },
+    {
+      "id": "tbl-18",
+      "name": "retention_offers",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "prediction_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-17",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "offer_type",
+          "type": "enum",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "discount",
+              "data_boost",
+              "new_device"
+            ]
+          }
+        },
+        {
+          "id": "c4",
+          "name": "is_accepted",
+          "type": "boolean",
+          "strategy": "boolean"
+        },
+        {
+          "id": "c5",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 350,
+        "y": 1400
+      }
+    },
+    {
+      "id": "tbl-19",
+      "name": "roaming_records",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "subscriber_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-01",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "country_code",
+          "type": "string",
+          "strategy": "random_string"
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 700,
+        "y": 1400
+      }
+    },
+    {
+      "id": "tbl-20",
+      "name": "billing_disputes",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "invoice_id",
+          "type": "uuid",
+          "isFK": true,
+          "fkTarget": {
+            "tableId": "tbl-09",
+            "columnId": "c1"
+          }
+        },
+        {
+          "id": "c3",
+          "name": "dispute_reason",
+          "type": "enum",
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "overcharge",
+              "incorrect_usage",
+              "roaming_fees"
+            ]
+          }
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 1050,
+        "y": 1400
+      }
+    },
+    {
+      "id": "tbl-21",
+      "name": "device_inventory",
+      "columns": [
+        {
+          "id": "c1",
+          "name": "id",
+          "type": "uuid",
+          "isPK": true,
+          "strategy": "uuid"
+        },
+        {
+          "id": "c2",
+          "name": "model_name",
+          "type": "string",
+          "strategy": "company_name"
+        },
+        {
+          "id": "c3",
+          "name": "stock_quantity",
+          "type": "integer",
+          "strategy": "integer"
+        },
+        {
+          "id": "c4",
+          "name": "created_at",
+          "type": "timestamp",
+          "strategy": "past_date"
+        }
+      ],
+      "position": {
+        "x": 525,
+        "y": 1750
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "r1",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-02",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r2",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-04",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r3",
+      "sourceTableId": "tbl-03",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-04",
+      "targetColumnId": "c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r4",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-05",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r5",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-06",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r6",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-07",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r7",
+      "sourceTableId": "tbl-02",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-09",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r8",
+      "sourceTableId": "tbl-09",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-10",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r9",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-11",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r10",
+      "sourceTableId": "tbl-11",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-12",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r11",
+      "sourceTableId": "tbl-13",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-14",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r12",
+      "sourceTableId": "tbl-14",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-15",
+      "targetColumnId": "c3",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r13",
+      "sourceTableId": "tbl-05",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-15",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r14",
+      "sourceTableId": "tbl-14",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-16",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    },
+    {
+      "id": "r15",
+      "sourceTableId": "tbl-01",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-17",
+      "targetColumnId": "c2",
+      "type": "one-to-one"
+    },
+    {
+      "id": "r16",
+      "sourceTableId": "tbl-17",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-18",
+      "targetColumnId": "c2",
+      "type": "one-to-one"
+    },
+    {
+      "id": "r17",
+      "sourceTableId": "tbl-09",
+      "sourceColumnId": "c1",
+      "targetTableId": "tbl-20",
+      "targetColumnId": "c2",
+      "type": "one-to-many"
+    }
+  ],
+  "simulation": {
+    "seed": 42,
+    "timelineDays": 365,
+    "growthCurve": "s-curve",
+    "anomalyRate": 0.05
+  },
+  "version": "1.0.0",
+  "exportedAt": "2026-04-05T08:49:28.820Z"
+}
