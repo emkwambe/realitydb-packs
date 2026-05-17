@@ -1,0 +1,864 @@
+{
+  "name": "towernet",
+  "version": "3.0",
+  "description": "TowerNet Communications — public US wireless carrier dataset spanning 24 months (May 2024 - May 2026) with 50 named towers across 11 cluster groupings, 8 plan tiers, and a hidden story: tower cluster SE-CLUSTER-A (containing problem tower SE-447 in Georgia/Alabama/Tennessee region) had 14 outages in 8 months vs system average 1.2/cluster. Subscribers near SE-447 churn at 6.2% vs 1.9% elsewhere.",
+  "_meta": {
+    "purpose": "RealityDB Atelier Module 4 (TowerNet) — Chief Revenue Officer root-cause investigation; HireSQL telecom assessments; SimLab churn analytics scenarios",
+    "version": "1.0",
+    "created": "2026-05-17",
+    "author": "Eddy Mkwambe / Mpingo Systems",
+    "scale_target": "50,000 rows across 24-month window May 2024 - May 2026",
+    "currency": "USD (integer cents for all money fields; e.g., 1500 = $15.00)",
+    "company": {
+      "name": "TowerNet Communications",
+      "stage": "Public company",
+      "revenue_usd": 2800000000,
+      "subscribers_total": 4200000,
+      "trigger_event": "Board flagged subscriber growth stalled and ARPU declining in Q3; churn jumped from 2.1% to 3.8% in one region; root cause needed before investor call"
+    },
+    "story": {
+      "summary": "Tower SE-447 (within SE-CLUSTER-A in the Southeast region: Georgia, Alabama, Tennessee) had 14 network outages over 8 months vs system average 1.2 outages per cluster. Subscribers in the SE-447 service area churn at 6.2% vs 1.9% across the rest of the network. Support ticket volume mentioning network quality is 3x higher near SE-447. The maintenance backlog on this cluster was known internally but never escalated.",
+      "smoking_gun": "SE-447 incident frequency (14 in 8 months) + churn rate (6.2% vs 1.9%) + support ticket concentration (3x) + uptime 94.1% vs 99.7% — all visible together when stratified by tower_code (SE-447) or cluster_id (SE-CLUSTER-A).",
+      "visibility_tiers": [
+        "Surface (Ex 1-3): Overall churn 2.1% (GSMA benchmark); churn by region reveals Southeast outlier; churn by plan type rules out plan-mix as cause",
+        "Investigation (Ex 4-7): 8-month time split reveals churn inflection; network_incidents by tower reveals SE-447 outlier (14 vs avg 1.2); support tickets near SE-447 confirm network-quality narrative; churned subscribers cite network issues",
+        "Root cause (Ex 8-10): Revenue at risk calculation ($1.58M ARR); SE-447 incident+churn correlation; scenario quantification (emergency maintenance $2.1M vs retention credits $1.8M)"
+      ],
+      "enforcement": "Baseline distributions are written into this pack with UNIFORM behavior across all 50 towers and 8 plans. The SE-447 concentration story (14 incidents in 8 months, 6.2% local churn, 3x support tickets, 94.1% uptime, critical_backlog maintenance status) is enforced post-generation by scripts/enforce-towernet-story.mjs (Stage 7). The enforcer's T0-T6 transformations target SE-447 via towers.tower_code='SE-447'. Filter must use tower_code (bounded to 50 declared values) because the engine generates ~6 tower rows per declared tower_code."
+    },
+    "exceptions": [
+      {
+        "rule": "Tower count should be exactly 50, plans count 8 (one per named value)",
+        "actual": "~125 tower rows and ~125 plan rows at 50K scale (engine sizes roots by cascade math, not by explicit fixed counts)",
+        "reason": "Engine has no per-table row-count override. Story-critical filtering uses towers.tower_code (bounded to 50 declared values) and towers.cluster_id (bounded to 11 declared values) instead of id columns.",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17",
+        "future_fix": "Engine v2 feature request: support fixed lookup tables. Same gap noted in MedCore, SupplyLink packs."
+      },
+      {
+        "rule": "Lesson 2: avoid created_at on event tables (would conflict with explicit event timestamps)",
+        "actual": "created_at present on ALL tables per spec contract; conflicts expected with subscriptions.started_at, invoices.issued_at, payments.processed_at, network_incidents.started_at, support_tickets.opened_at, churn_signals.detected_at, usage_records.record_date",
+        "reason": "Spec contract explicitly requires created_at on every table. Baseline temporal_logic will score ~50/100. Stage 7 enforcer transformation T6 explicitly fixes temporal ordering post-generation. Final assess after enforcement should reach 100. DELIBERATE LESSON 2 OVERRIDE for spec fidelity.",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17"
+      },
+      {
+        "rule": "Scale confidence target HIGH",
+        "actual": "Expected MEDIUM at 50K (~250 root rows across 2 root tables, matches SupplyLink pattern)",
+        "reason": "Cascade math for 11 tables with 50K budget. HIGH confidence requires ~250K total rows. Accepting MEDIUM for v1.0 baseline."
+      },
+      {
+        "rule": "Distribution diversity should be 100",
+        "actual": "Expected ~88-92 — same domain-ratio issue as prior packs",
+        "reason": "Inherent ratios like uptime_pct_ytd near 99.7%, payment status 92% succeeded, plan_type 35/55/10 will flag as 'skewed' but reflect industry reality."
+      }
+    ],
+    "open_questions": [
+      "support_tickets.subject uses 'sentence' strategy — verify engine supports this strategy or fall back to enum/text placeholder.",
+      "Money fields use integer cents (1500 = $15.00). Downstream tooling must handle the cents convention.",
+      "tower_code SE-447 has equal weight (2%) to other tower codes; the enforcer adds the story concentration.",
+      "Roaming currency variations not modeled in v1.0 — invoice.amount_cents is USD only."
+    ],
+    "citations": [
+      {
+        "field": "Monthly churn rate baseline 2.1%",
+        "claim": "GSMA reports US wireless monthly churn averaging 2-3%; 2.1% as midpoint",
+        "source": "GSMA Mobile Economy Report 2024",
+        "url": "https://www.gsma.com/mobileeconomy"
+      },
+      {
+        "field": "Network uptime 99.7% system-wide benchmark",
+        "claim": "Ericsson and industry benchmarks for healthy mobile network uptime at 99.5-99.9%",
+        "source": "Ericsson Mobility Report 2024",
+        "url": "https://www.ericsson.com/mobility-report"
+      },
+      {
+        "field": "ARPU $45 blended baseline",
+        "claim": "US wireless ARPU $40-$55 depending on plan mix; $45 represents postpaid-weighted blended",
+        "source": "ITU World Telecommunication Statistics 2024",
+        "url": "https://www.itu.int/itu-d/statistics"
+      },
+      {
+        "field": "Churn-network quality correlation",
+        "claim": "J.D. Power finds network quality issues account for 30-40% of stated churn reasons",
+        "source": "J.D. Power Wireless Customer Satisfaction Study 2024",
+        "url": "https://www.jdpower.com/business/resources/wireless-customer-satisfaction"
+      },
+      {
+        "field": "Tower maintenance cost benchmarks",
+        "claim": "Industry benchmarks for tower cluster maintenance and capex amortization",
+        "source": "TOWERCOS / TowerXchange Annual Report 2024",
+        "url": "https://www.towerxchange.com"
+      },
+      {
+        "field": "Plan mix (prepaid 35%, postpaid 55%, business 10%)",
+        "claim": "Approximate US wireless plan distribution; postpaid-dominant",
+        "source": "Industry consensus from FCC and major-carrier 10-K filings",
+        "url": "https://www.fcc.gov/wireless-telecommunications"
+      },
+      {
+        "field": "Support ticket categorization patterns",
+        "claim": "Illustrative based on telecom customer service operations",
+        "source": "Illustrative — supported by industry context",
+        "url": "https://realitydb.dev/docs"
+      },
+      {
+        "field": "Network incident rate (~1.2 per cluster baseline)",
+        "claim": "Illustrative within plausible range for regional tower clusters",
+        "source": "Illustrative — supported by Ericsson context",
+        "url": "https://realitydb.dev/docs"
+      }
+    ]
+  },
+
+  "tables": {
+
+    "towers": {
+      "match": "towers",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "tower_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "SE-447", "SE-112", "SE-203", "SE-318", "SE-091",
+              "NE-801", "NE-442", "NE-215", "NE-667", "NE-339",
+              "MW-551", "MW-223", "MW-448", "MW-107", "MW-789",
+              "SW-334", "SW-118", "SW-667", "SW-445", "SW-229",
+              "NW-661", "NW-342", "NW-118", "NW-557", "NW-443",
+              "SE-554", "SE-668", "SE-779", "SE-890", "SE-992",
+              "NE-113", "NE-224", "NE-335", "NE-446", "NE-557",
+              "MW-901", "MW-902", "MW-903", "MW-904", "MW-905",
+              "SW-901", "SW-902", "SW-903", "SW-904", "SW-905",
+              "NW-901", "NW-902", "NW-903", "NW-904", "NW-905"
+            ],
+            "weights": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+          }
+        },
+        "cluster_id": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "SE-CLUSTER-A",
+              "SE-CLUSTER-B",
+              "SE-CLUSTER-C",
+              "NE-CLUSTER-A",
+              "NE-CLUSTER-B",
+              "MW-CLUSTER-A",
+              "MW-CLUSTER-B",
+              "SW-CLUSTER-A",
+              "SW-CLUSTER-B",
+              "NW-CLUSTER-A",
+              "NW-CLUSTER-B"
+            ],
+            "weights": [15, 10, 10, 10, 10, 10, 10, 10, 8, 8, 9]
+          }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": ["Southeast", "Northeast", "Midwest", "Southwest", "Northwest"],
+            "weights": [30, 20, 20, 15, 15]
+          }
+        },
+        "state": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "GA", "AL", "TN", "MS", "SC",
+              "NY", "NJ", "CT", "MA", "PA",
+              "IL", "OH", "MI", "IN", "WI",
+              "TX", "AZ", "NM", "CO", "NV",
+              "WA", "OR", "CA", "ID", "MT"
+            ],
+            "weights": [
+              8, 6, 6, 5, 5,
+              6, 5, 3, 3, 3,
+              5, 4, 4, 3, 4,
+              5, 3, 2, 3, 2,
+              4, 3, 4, 2, 2
+            ]
+          }
+        },
+        "city": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Atlanta", "Birmingham", "Memphis", "Jackson", "Charleston",
+              "Buffalo", "Newark", "Hartford", "Boston", "Pittsburgh",
+              "Chicago", "Cleveland", "Detroit", "Indianapolis", "Milwaukee",
+              "Dallas", "Phoenix", "Albuquerque", "Denver", "Las Vegas",
+              "Seattle", "Portland", "Sacramento", "Boise", "Bozeman"
+            ],
+            "weights": [
+              8, 6, 6, 5, 5,
+              6, 5, 3, 3, 3,
+              5, 4, 4, 3, 4,
+              5, 3, 2, 3, 2,
+              4, 3, 4, 2, 2
+            ]
+          }
+        },
+        "latitude": {
+          "strategy": "float",
+          "options": {
+            "distribution": "uniform",
+            "min": 24.0,
+            "max": 49.0
+          }
+        },
+        "longitude": {
+          "strategy": "float",
+          "options": {
+            "distribution": "uniform",
+            "min": -125.0,
+            "max": -66.0
+          }
+        },
+        "technology_type": {
+          "strategy": "enum",
+          "options": {
+            "values": ["5G", "LTE", "LTE-A", "3G"],
+            "weights": [25, 45, 25, 5]
+          }
+        },
+        "capacity_subscribers": {
+          "strategy": "integer",
+          "options": { "min": 5000, "max": 50000 }
+        },
+        "commissioned_date": { "strategy": "past_date" },
+        "last_maintenance_date": {
+          "strategy": "past_date",
+          "options": {
+            "nullable": true,
+            "nullWeight": 0.10
+          }
+        },
+        "maintenance_status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["current", "overdue", "scheduled", "critical_backlog"],
+            "weights": [60, 20, 15, 5]
+          }
+        },
+        "uptime_pct_ytd": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 0.997,
+            "stddev": 0.008,
+            "min": 0.91,
+            "max": 0.9999
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "plans": {
+      "match": "plans",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Basic Prepaid",
+              "Standard Prepaid",
+              "Premium Prepaid",
+              "Standard Postpaid",
+              "Premium Postpaid",
+              "Unlimited Postpaid",
+              "Business Essentials",
+              "Business Premium"
+            ],
+            "weights": [10, 15, 10, 20, 20, 15, 5, 5]
+          }
+        },
+        "type": {
+          "strategy": "enum",
+          "options": {
+            "values": ["prepaid", "postpaid", "business"],
+            "weights": [35, 55, 10]
+          }
+        },
+        "monthly_fee_cents": {
+          "strategy": "enum",
+          "options": {
+            "values": [1500, 2500, 3500, 3000, 4500, 6500, 8000, 12000],
+            "weights": [10, 15, 10, 20, 20, 15, 5, 5]
+          }
+        },
+        "data_gb": {
+          "strategy": "enum",
+          "options": {
+            "values": [2, 5, 10, 15, 25, 9999, 50, 100],
+            "weights": [10, 15, 10, 20, 20, 15, 5, 5]
+          }
+        },
+        "voice_minutes": {
+          "strategy": "enum",
+          "options": {
+            "values": [500, 1000, 2000, 3000, 9000, 9100, 9200, 9300],
+            "weights": [10, 15, 10, 20, 20, 15, 5, 5]
+          }
+        },
+        "sms_included": {
+          "strategy": "enum",
+          "options": {
+            "values": [500, 1000, 9000, 9100, 9200, 9300, 9400, 9500],
+            "weights": [10, 15, 10, 20, 20, 15, 5, 5]
+          }
+        },
+        "contract_months": {
+          "strategy": "enum",
+          "options": {
+            "values": [0, 12, 24],
+            "weights": [35, 40, 25]
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "subscribers": {
+      "match": "subscribers",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "tower_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "towers", "column": "id" }
+        },
+        "plan_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "plans", "column": "id" }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": ["Southeast", "Northeast", "Midwest", "Southwest", "Northwest"],
+            "weights": [30, 20, 20, 15, 15]
+          }
+        },
+        "state": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "GA", "AL", "TN", "MS", "SC",
+              "NY", "NJ", "CT", "MA", "PA",
+              "IL", "OH", "MI", "IN", "WI",
+              "TX", "AZ", "NM", "CO", "NV",
+              "WA", "OR", "CA", "ID", "MT"
+            ],
+            "weights": [
+              8, 6, 6, 5, 5,
+              6, 5, 3, 3, 3,
+              5, 4, 4, 3, 4,
+              5, 3, 2, 3, 2,
+              4, 3, 4, 2, 2
+            ]
+          }
+        },
+        "city": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Atlanta", "Birmingham", "Memphis", "Jackson", "Charleston",
+              "Buffalo", "Newark", "Hartford", "Boston", "Pittsburgh",
+              "Chicago", "Cleveland", "Detroit", "Indianapolis", "Milwaukee",
+              "Dallas", "Phoenix", "Albuquerque", "Denver", "Las Vegas",
+              "Seattle", "Portland", "Sacramento", "Boise", "Bozeman"
+            ],
+            "weights": [
+              8, 6, 6, 5, 5,
+              6, 5, 3, 3, 3,
+              5, 4, 4, 3, 4,
+              5, 3, 2, 3, 2,
+              4, 3, 4, 2, 2
+            ]
+          }
+        },
+        "age_bracket": {
+          "strategy": "enum",
+          "options": {
+            "values": ["18-24", "25-34", "35-44", "45-54", "55-64", "65+"],
+            "weights": [15, 25, 25, 20, 10, 5]
+          }
+        },
+        "tenure_months": {
+          "strategy": "integer",
+          "options": { "min": 1, "max": 120 }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["active", "churned", "suspended"],
+            "weights": [79, 18, 3]
+          }
+        },
+        "acquired_channel": {
+          "strategy": "enum",
+          "options": {
+            "values": ["store", "online", "referral", "corporate", "dealer", "port_in"],
+            "weights": [30, 25, 15, 10, 12, 8]
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "subscriptions": {
+      "match": "subscriptions",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "subscribers", "column": "id" }
+        },
+        "plan_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "plans", "column": "id" }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["active", "cancelled", "suspended", "past_due"],
+            "weights": [79, 18, 2, 1]
+          }
+        },
+        "monthly_fee_cents": {
+          "strategy": "integer",
+          "options": { "min": 1500, "max": 12000 }
+        },
+        "started_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "cancelled_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-06-01",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.82
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "usage_records": {
+      "match": "usage_records",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "subscribers", "column": "id" }
+        },
+        "tower_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "towers", "column": "id" }
+        },
+        "record_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "data_mb_used": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 4800,
+            "stddev": 3200,
+            "min": 0,
+            "max": 50000
+          }
+        },
+        "voice_minutes_used": {
+          "strategy": "integer",
+          "options": { "min": 0, "max": 3000 }
+        },
+        "sms_count": {
+          "strategy": "integer",
+          "options": { "min": 0, "max": 500 }
+        },
+        "roaming_flag": {
+          "strategy": "enum",
+          "options": {
+            "values": ["false", "true"],
+            "weights": [94, 6]
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "invoices": {
+      "match": "invoices",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "subscribers", "column": "id" }
+        },
+        "amount_cents": {
+          "strategy": "integer",
+          "options": { "min": 1500, "max": 12000 }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["paid", "unpaid", "past_due", "void"],
+            "weights": [85, 8, 5, 2]
+          }
+        },
+        "issued_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "paid_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-15",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.15
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "payments": {
+      "match": "payments",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "subscribers", "column": "id" }
+        },
+        "invoice_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "invoices", "column": "id" }
+        },
+        "amount_cents": {
+          "strategy": "integer",
+          "options": { "min": 1500, "max": 12000 }
+        },
+        "payment_method": {
+          "strategy": "enum",
+          "options": {
+            "values": ["autopay", "online", "store", "phone", "check"],
+            "weights": [55, 25, 10, 7, 3]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["succeeded", "failed", "refunded"],
+            "weights": [92, 6, 2]
+          }
+        },
+        "processed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-15",
+            "end": "2026-05-31",
+            "distribution": "uniform"
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "network_incidents": {
+      "match": "network_incidents",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "tower_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "towers", "column": "id" }
+        },
+        "incident_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "outage",
+              "degraded_service",
+              "planned_maintenance",
+              "equipment_failure",
+              "power_issue",
+              "fiber_cut"
+            ],
+            "weights": [20, 30, 25, 12, 8, 5]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": ["low", "medium", "high", "critical"],
+            "weights": [30, 40, 20, 10]
+          }
+        },
+        "started_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "resolved_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.10
+          }
+        },
+        "duration_minutes": {
+          "strategy": "integer",
+          "options": { "min": 5, "max": 2880 }
+        },
+        "affected_subscribers_est": {
+          "strategy": "integer",
+          "options": { "min": 100, "max": 50000 }
+        },
+        "root_cause": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "hardware_failure",
+              "software_bug",
+              "power_outage",
+              "fiber_damage",
+              "weather",
+              "capacity_overload",
+              "unknown"
+            ],
+            "weights": [25, 15, 20, 15, 10, 10, 5]
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "support_tickets": {
+      "match": "support_tickets",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "subscribers", "column": "id" }
+        },
+        "tower_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "towers", "column": "id" },
+          "nullable": true,
+          "nullWeight": 0.40
+        },
+        "category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "network_quality",
+              "billing",
+              "device",
+              "roaming",
+              "account",
+              "coverage",
+              "speed",
+              "other"
+            ],
+            "weights": [28, 22, 15, 8, 12, 8, 5, 2]
+          }
+        },
+        "priority": {
+          "strategy": "enum",
+          "options": {
+            "values": ["low", "medium", "high", "urgent"],
+            "weights": [30, 45, 18, 7]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["open", "in_progress", "resolved", "closed"],
+            "weights": [10, 15, 50, 25]
+          }
+        },
+        "subject": {
+          "strategy": "sentence"
+        },
+        "opened_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "resolved_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.25
+          }
+        },
+        "satisfaction_score": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 5,
+            "nullable": true,
+            "nullWeight": 0.35
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "churn_signals": {
+      "match": "churn_signals",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "subscriber_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "subscribers", "column": "id" }
+        },
+        "signal_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "usage_drop",
+              "payment_failure",
+              "support_spike",
+              "network_complaint",
+              "competitor_inquiry",
+              "plan_downgrade"
+            ],
+            "weights": [25, 20, 20, 18, 10, 7]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": ["low", "medium", "high", "critical"],
+            "weights": [35, 35, 20, 10]
+          }
+        },
+        "detected_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    }
+
+  },
+
+  "relationships": [
+    {
+      "targetTable": "subscribers",
+      "sourceTable": "towers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 60,
+        "min": 15,
+        "max": 200
+      }
+    },
+    {
+      "targetTable": "subscriptions",
+      "sourceTable": "subscribers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 1.0,
+        "min": 1,
+        "max": 3
+      }
+    },
+    {
+      "targetTable": "usage_records",
+      "sourceTable": "subscribers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2.0,
+        "min": 0,
+        "max": 24
+      }
+    },
+    {
+      "targetTable": "invoices",
+      "sourceTable": "subscribers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 1.0,
+        "min": 1,
+        "max": 24
+      }
+    },
+    {
+      "targetTable": "payments",
+      "sourceTable": "invoices",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.875,
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "targetTable": "network_incidents",
+      "sourceTable": "towers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 8,
+        "min": 0,
+        "max": 30
+      }
+    },
+    {
+      "targetTable": "support_tickets",
+      "sourceTable": "subscribers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.25,
+        "min": 0,
+        "max": 8
+      }
+    },
+    {
+      "targetTable": "churn_signals",
+      "sourceTable": "subscribers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.19,
+        "min": 0,
+        "max": 5
+      }
+    }
+  ]
+}

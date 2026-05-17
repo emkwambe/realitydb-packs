@@ -1,0 +1,143 @@
+{
+  "id": "RDB-ASSESS-20260517-eiff",
+  "version": "1.0",
+  "timestamp": "2026-05-17T22:56:37.118Z",
+  "file": "C:\\Users\\HP\\Documents\\realityDB Packs\\towernet-50k-v1.0.sql",
+  "datasetHash": "bdab64675f1b6aa3",
+  "format": "sql",
+  "tables": 10,
+  "columns": 94,
+  "rows": 50002,
+  "standard": "Generic",
+  "overallScore": 97,
+  "pillars": [
+    {
+      "name": "Fidelity",
+      "score": 97,
+      "metrics": [
+        {
+          "name": "Completeness",
+          "pillar": "fidelity",
+          "value": "100%",
+          "threshold": ">=90%",
+          "score": 100,
+          "status": "pass",
+          "detail": "0 null values out of 440,884 cells"
+        },
+        {
+          "name": "Distribution diversity",
+          "pillar": "fidelity",
+          "value": "42/46 diverse",
+          "threshold": ">=70%",
+          "score": 91,
+          "status": "pass",
+          "detail": "subscriptions.status: entropy=0.44 (skewed); usage_records.roaming_flag: entropy=0.32 (skewed); invoices.status: entropy=0.39 (skewed)"
+        },
+        {
+          "name": "Correlation stability",
+          "pillar": "fidelity",
+          "value": "20/20 stable",
+          "threshold": "No artificial correlations",
+          "score": 100,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "name": "Structure",
+      "score": 95,
+      "metrics": [
+        {
+          "name": "FK integrity",
+          "pillar": "structure",
+          "value": "100% (86,870/86,870)",
+          "threshold": "100%",
+          "score": 100,
+          "status": "pass"
+        },
+        {
+          "name": "PK uniqueness",
+          "pillar": "structure",
+          "value": "10/10 tables with unique PKs",
+          "threshold": "100%",
+          "score": 100,
+          "status": "pass"
+        },
+        {
+          "name": "Temporal logic",
+          "pillar": "structure",
+          "value": "51006/61374 ordered correctly",
+          "threshold": "100%",
+          "score": 83,
+          "status": "warn",
+          "detail": "subscriptions: started_at (2025-10-11T01:01:48.579Z) < created_at (2026-03-15T14:44:49.907Z); subscriptions: cancelled_at (2025-06-06T03:09:48.651Z) < created_at (2026-03-15T14:44:49.907Z); subscriptions: started_at (2025-10-17T00:41:24.736Z) < created_at (2026-01-27T16:55:56.491Z)"
+        },
+        {
+          "name": "Enum validity",
+          "pillar": "structure",
+          "value": "30/30 clean",
+          "threshold": "No empty or placeholder values",
+          "score": 100,
+          "status": "pass"
+        },
+        {
+          "name": "Cardinality ratios",
+          "pillar": "structure",
+          "value": "12.0/13 healthy (vs pack)",
+          "threshold": "Within 20% of declared cardinality",
+          "score": 92,
+          "status": "pass",
+          "detail": "subscribers/towers: actual 19.992x vs declared 60.000x (67% off)"
+        }
+      ]
+    },
+    {
+      "name": "Privacy",
+      "score": 100,
+      "metrics": [
+        {
+          "name": "k-Anonymity",
+          "pillar": "privacy",
+          "value": "k=1",
+          "threshold": "k >= 5",
+          "score": 100,
+          "status": "pass",
+          "detail": "Table: towers. Min group size for quasi-identifier combinations"
+        },
+        {
+          "name": "Exact match rate",
+          "pillar": "privacy",
+          "value": "0.00%",
+          "threshold": "0%",
+          "score": 100,
+          "status": "pass",
+          "detail": "0 exact duplicate rows out of 50,002"
+        },
+        {
+          "name": "PII column detection",
+          "pillar": "privacy",
+          "value": "0 PII-shaped column(s) — synthetic provenance verified",
+          "threshold": "Synthetic data — PII-shaped columns expected",
+          "score": 100,
+          "status": "pass",
+          "detail": "No PII-named columns found"
+        },
+        {
+          "name": "Sensitive value uniqueness",
+          "pillar": "privacy",
+          "value": "0/1 high-uniqueness",
+          "threshold": "Sensitive columns should have high uniqueness (synthetic)",
+          "score": 100,
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "disclaimer": "This report presents measured statistical properties. It does not constitute legal advice, regulatory certification, or fitness-for-purpose endorsement. Compliance determination is the responsibility of the data controller.",
+  "scaleConfidence": {
+    "level": "MEDIUM",
+    "rootRows": 1394,
+    "label": "MODERATE variance — directionally useful",
+    "cardinalityVariancePct": 3
+  }
+}
