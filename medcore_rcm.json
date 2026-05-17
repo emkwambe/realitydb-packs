@@ -1,0 +1,724 @@
+{
+  "name": "medcore_rcm",
+  "version": "3.0",
+  "description": "MedCore Healthcare Revenue Cycle Management — a US hospital system's RCM dataset spanning 24 months (Jan 2024 - Dec 2025) with 8 named payers, ~125 providers, and a hidden story: one payer (MidState Mutual) silently changed prior authorization rules in July 2025, causing a denial-rate inflection visible only in payer + denial-code + time stratification.",
+  "_meta": {
+    "purpose": "Atelier Module 2 (MedCore) hidden-story discovery; HireSQL healthcare assessments; SimLab scenarios",
+    "version": "1.1",
+    "created": "2026-05-10",
+    "updated": "2026-05-17",
+    "author": "Eddy Mkwambe / Mpingo Systems",
+    "scale_target": "50,000 rows; ~6,200 encounters; 24 months Jan 2024 - Dec 2025",
+    "currency": "USD",
+    "changelog": [
+      "v1.0 (2026-05-10): initial draft",
+      "v1.1 (2026-05-17): dropped encounters.created_at (caused temporal-logic failures vs encounter_date); lowered patients/providers cardinality mean 75 to 20 to match generation reality; documented payer-count and low-entropy enum exceptions"
+    ],
+    "story": {
+      "summary": "MidState Mutual changed prior authorization rules in July 2025. Claims submitted under old PA assumptions are now denied with CO-197 (prior auth required). Baseline denial rate ~13% holds for all 8 named payers through Jun 2025; from Jul 2025 onward, MidState's denial rate climbs to ~25% with CO-197 share rising from ~5% to ~35% of its denials.",
+      "visibility_tiers": [
+        "Surface (basic aggregate): SELECT MONTH(filed_at), AVG(denied) GROUP BY month shows overall denial rate creeping up after Jul 2025.",
+        "Investigation (medium): SELECT p.name, AVG(denied) FROM claims c JOIN payers p ON c.payer_id=p.id WHERE filed_at>='2025-07' GROUP BY p.name reveals MidState as the outlier. Note: payer.name is the story-relevant identifier (multiple payer.id rows can share the same name due to engine root-sizing).",
+        "Root cause (deep): SELECT p.name, d.carc_code, COUNT(*) FROM denials d JOIN claims c ON d.claim_id=c.id JOIN payers p ON c.payer_id=p.id WHERE d.denial_date>='2025-07' GROUP BY p.name, d.carc_code reveals CO-197 spike concentrated in MidState."
+      ],
+      "enforcement": "Baseline distributions are written into this pack. The time-trended story signal (MidState denial-rate inflection in Jul 2025 + CO-197 weighting) is enforced post-generation by scripts/enforce-medcore-story.ps1 (Stage 7). The enforcer must filter on payer.name (not payer.id) because the engine generates ~12-15 payer rows per named payer."
+    },
+    "exceptions": [
+      {
+        "rule": "Payer count should be exactly 8 (one per named payer)",
+        "actual": "~125 payer rows at 50K scale (~15 per name on average)",
+        "reason": "Engine has no per-table row-count override; payers as a root table is sized by total-rows budget across the cascade. Story-critical filtering uses payer.name (which IS bounded to the 8 declared enum values) instead of payer.id.",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17",
+        "future_fix": "Engine feature request: support fixed lookup tables for story-critical small enumerable entities."
+      },
+      {
+        "rule": "examine assess distribution_diversity should be 100",
+        "actual": "88 - providers.active_status (entropy 0.34), payers.active_status (0.28), claims.is_duplicate_flag (0.14) flagged as skewed",
+        "reason": "These are legitimate domain ratios: 95% of providers ARE active, 98% of claims are NOT duplicates, 0.3% fraud flag rate. The assess metric penalizes near-constant columns but these reflect industry reality (CMS, HFMA citations).",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17"
+      }
+    ],
+    "open_questions": [
+      "Charge amount modeling: pack uses lognormal distribution per encounter type. Payment-to-charge ratio varies by payer (commercial ~190% of Medicare allowed) - enforced via Stage 7 script when payment_amount is computed.",
+      "Synthetic CPT and ICD-10 codes: pack uses a small synthetic vocabulary (~25 procedure codes, ~30 diagnosis codes) sufficient for the story. Does NOT claim real CPT/ICD-10 fidelity.",
+      "Underpayment rate 8% and duplicate claim rate 2%: illustrative-supported within industry plausible ranges; precise authoritative citations not pinned.",
+      "Fraud flag rate 0.3%: illustrative within OIG/CMS plausible range."
+    ],
+    "citations": [
+      {
+        "field": "Baseline initial denial rate ~13%",
+        "claim": "Kodiak Solutions 2024 reported 11.8% average initial claim denial rate, up from 10.2% prior years. Pack uses 13% as midpoint of credible sources.",
+        "source": "Kodiak Solutions 2024 RCA benchmarking via Becker's Payer Issues",
+        "url": "https://www.beckerspayer.com/payer/claims-denial-rates-up-prior-auth-denials-down-in-2024-report/"
+      },
+      {
+        "field": "Payer-type denial rate variation",
+        "claim": "Premier Inc. 2024 survey: commercial 14.8%, Medicare Advantage 15.7%, Managed Medicaid 15.1%, Medicare FFS 8.4%",
+        "source": "Premier Inc. 2024 hospital survey via TechTarget",
+        "url": "https://www.techtarget.com/revcyclemanagement/feature/Breaking-down-claim-denial-rates-by-healthcare-payer"
+      },
+      {
+        "field": "Hospital payer mix weights",
+        "claim": "U.S. hospital payor mix 2023-2024: commercial ~70%, Medicare ~16%, Medicaid ~14%",
+        "source": "Definitive Healthcare HospitalView 2025 (CMS Medicare Cost Report basis)",
+        "url": "https://www.definitivehc.com/resources/healthcare-insights/breaking-down-us-hospital-payor-mixes"
+      },
+      {
+        "field": "Days in A/R distribution (mean ~45)",
+        "claim": "HFMA benchmark target 30-40 days; Kodiak 2024 reports true A/R days increased 5.2% YoY due to denial volume; pack uses 45-day mean to reflect current industry strain",
+        "source": "HFMA KPI Guide; HFMA Hospital Financial and Revenue Cycle Benchmarks Dec 2024",
+        "url": "https://www.hfma.org/revenue-cycle/kpis/7-kpis-providers-should-be-tracking/"
+      },
+      {
+        "field": "Top CARC denial codes (CO-16, CO-50, CO-97, CO-22, CO-45, CO-197, etc.)",
+        "claim": "X12 CARC official list; Medicare FCSO denial guidance; consensus distribution across multiple industry guides",
+        "source": "X12.org official CARC list; CMS / FCSO documentation",
+        "url": "https://x12.org/codes/claim-adjustment-reason-codes"
+      },
+      {
+        "field": "Encounter type distribution (outpatient 70%, ED 15%, inpatient 10%, observation 5%)",
+        "claim": "Industry consensus for general hospital encounter mix; outpatient-dominant",
+        "source": "Industry consensus from multiple RCM benchmarking sources",
+        "url": "https://www.hfma.org/finance-and-business-strategy/hospital-financial-and-revenue-cycle-benchmarks-paint-a-complicated-picture-heading-into-the-new-year/"
+      },
+      {
+        "field": "Commercial reimbursement at ~190% of Medicare FFS allowed",
+        "claim": "Milliman 2024 commercial reimbursement benchmarking estimates national commercial medical reimbursement at ~190% of Medicare FFS rates",
+        "source": "Milliman 2024 Commercial Reimbursement Benchmarking",
+        "url": "https://www.milliman.com/en/insight/commercial-reimbursement-benchmarking-medicare-ffs-rates"
+      },
+      {
+        "field": "Synthetic CPT/ICD-10 vocabulary, underpayment/duplicate/fraud rates",
+        "claim": "Illustrative values within plausible industry ranges; not claiming real-code distribution fidelity",
+        "source": "Illustrative - supported by industry context, not specific cited numbers",
+        "url": "https://realitydb.dev/docs"
+      }
+    ]
+  },
+
+  "tables": {
+
+    "providers": {
+      "match": "providers",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "npi": {
+          "strategy": "integer",
+          "options": { "min": 1000000000, "max": 1999999999 }
+        },
+        "first_name": {
+          "strategy": "enum",
+          "options": {
+            "values": ["James", "Mary", "John", "Patricia", "Robert", "Linda", "Michael", "Barbara", "William", "Elizabeth", "David", "Jennifer", "Richard", "Maria", "Joseph", "Susan", "Thomas", "Karen", "Charles", "Lisa"],
+            "weights": [6, 6, 6, 5, 6, 5, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          }
+        },
+        "last_name": {
+          "strategy": "enum",
+          "options": {
+            "values": ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Wilson", "Anderson", "Taylor", "Thomas", "Moore", "Jackson", "Martin", "Lee", "Thompson", "White"],
+            "weights": [7, 7, 6, 6, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]
+          }
+        },
+        "specialty": {
+          "strategy": "enum",
+          "options": {
+            "values": ["Internal Medicine", "Family Practice", "Cardiology", "Orthopedics", "Gastroenterology", "OB/GYN", "General Surgery", "Endocrinology", "Pulmonology", "Neurology"],
+            "weights": [25, 15, 12, 10, 7, 7, 6, 5, 4, 4]
+          }
+        },
+        "credential": {
+          "strategy": "enum",
+          "options": {
+            "values": ["MD", "DO", "NP", "PA"],
+            "weights": [70, 12, 12, 6]
+          }
+        },
+        "active_status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["active", "inactive"],
+            "weights": [95, 5]
+          }
+        },
+        "hire_date": { "strategy": "past_date" }
+      }
+    },
+
+    "patients": {
+      "match": "patients",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "primary_provider_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "providers", "column": "id" }
+        },
+        "mrn": {
+          "strategy": "integer",
+          "options": { "min": 100000, "max": 999999 }
+        },
+        "age_bracket": {
+          "strategy": "enum",
+          "options": {
+            "values": ["0-17", "18-34", "35-49", "50-64", "65-74", "75+"],
+            "weights": [15, 18, 17, 22, 18, 10]
+          }
+        },
+        "sex": {
+          "strategy": "enum",
+          "options": {
+            "values": ["F", "M"],
+            "weights": [54, 46]
+          }
+        },
+        "state": {
+          "strategy": "enum",
+          "options": {
+            "values": ["NC", "SC", "VA", "TN", "GA"],
+            "weights": [60, 12, 12, 9, 7]
+          }
+        },
+        "primary_payer_type": {
+          "strategy": "enum",
+          "options": {
+            "values": ["commercial", "medicare", "medicaid", "self_pay"],
+            "weights": [55, 25, 15, 5]
+          }
+        },
+        "created_at": { "strategy": "past_date" }
+      }
+    },
+
+    "payers": {
+      "match": "payers",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "MidState Mutual",
+              "BlueShield Premier",
+              "United Health Plan",
+              "Aetna Choice",
+              "Cigna Connect",
+              "Medicare FFS",
+              "Medicare Advantage Plus",
+              "State Medicaid Plan"
+            ],
+            "weights": [13, 13, 12, 12, 12, 13, 13, 12]
+          }
+        },
+        "type": {
+          "strategy": "enum",
+          "options": {
+            "values": ["commercial", "medicare_ffs", "medicare_advantage", "medicaid"],
+            "weights": [60, 15, 15, 10]
+          }
+        },
+        "active_status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["active", "inactive"],
+            "weights": [98, 2]
+          }
+        },
+        "contract_start_date": { "strategy": "past_date" }
+      }
+    },
+
+    "contracts": {
+      "match": "contracts",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "payer_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "payers", "column": "id" }
+        },
+        "tier": {
+          "strategy": "enum",
+          "options": {
+            "values": ["preferred", "standard", "out_of_network"],
+            "weights": [50, 40, 10]
+          }
+        },
+        "fee_schedule_basis": {
+          "strategy": "enum",
+          "options": {
+            "values": ["percent_of_medicare", "fixed_fee", "DRG", "capitation"],
+            "weights": [55, 25, 15, 5]
+          }
+        },
+        "effective_date": { "strategy": "past_date" }
+      }
+    },
+
+    "encounters": {
+      "match": "encounters",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "patients", "column": "id" }
+        },
+        "provider_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "providers", "column": "id" }
+        },
+        "encounter_type": {
+          "strategy": "enum",
+          "options": {
+            "values": ["outpatient", "emergency", "inpatient", "observation"],
+            "weights": [70, 15, 10, 5]
+          }
+        },
+        "service_location": {
+          "strategy": "enum",
+          "options": {
+            "values": ["main_hospital", "north_clinic", "south_clinic", "ambulatory_center", "ed"],
+            "weights": [40, 20, 18, 12, 10]
+          }
+        },
+        "encounter_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-01-01",
+            "end": "2025-12-31",
+            "distribution": "uniform"
+          }
+        },
+        "length_of_stay_days": {
+          "strategy": "float",
+          "options": {
+            "distribution": "weibull",
+            "k": 1.2,
+            "lambda": 1.5,
+            "min": 0,
+            "max": 30
+          }
+        },
+        "chief_complaint_category": {
+          "strategy": "enum",
+          "options": {
+            "values": ["chronic_management", "acute_illness", "preventive", "injury", "post_op", "other"],
+            "weights": [30, 25, 20, 12, 8, 5]
+          }
+        }
+      }
+    },
+
+    "diagnoses": {
+      "match": "diagnoses",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "encounter_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "encounters", "column": "id" }
+        },
+        "icd10_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "I10", "E11.9", "Z00.00", "M54.5", "J45.909", "K21.9", "F41.9", "N39.0", "R10.9", "J20.9",
+              "I25.10", "E78.5", "K57.30", "M25.50", "R51", "J06.9", "L03.90", "S52.501A", "N18.3", "F32.9",
+              "I48.91", "G47.00", "M79.3", "K59.00", "R05", "Z79.4", "J44.1", "I50.9", "E11.65", "N39.41"
+            ],
+            "weights": [9, 8, 7, 6, 6, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]
+          }
+        },
+        "diagnosis_role": {
+          "strategy": "enum",
+          "options": {
+            "values": ["primary", "secondary", "comorbidity"],
+            "weights": [50, 35, 15]
+          }
+        }
+      }
+    },
+
+    "procedures": {
+      "match": "procedures",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "encounter_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "encounters", "column": "id" }
+        },
+        "cpt_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "99213", "99214", "99203", "99204", "99284", "99285", "99232", "99233", "93000", "71046",
+              "80053", "85025", "36415", "97110", "20610", "29881", "47562", "45378", "76700", "12001",
+              "11042", "27130", "23472", "64483", "62323"
+            ],
+            "weights": [18, 15, 8, 6, 5, 5, 4, 4, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1]
+          }
+        },
+        "procedure_category": {
+          "strategy": "enum",
+          "options": {
+            "values": ["e_and_m", "lab", "imaging", "minor_procedure", "surgery", "therapy"],
+            "weights": [40, 18, 15, 12, 10, 5]
+          }
+        }
+      }
+    },
+
+    "claims": {
+      "match": "claims",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "encounter_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "encounters", "column": "id" }
+        },
+        "payer_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "payers", "column": "id" }
+        },
+        "contract_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "contracts", "column": "id" }
+        },
+        "claim_number": {
+          "strategy": "integer",
+          "options": { "min": 100000000, "max": 999999999 }
+        },
+        "total_charges": {
+          "strategy": "float",
+          "options": {
+            "distribution": "lognormal",
+            "mean": 6.5,
+            "stddev": 1.0,
+            "min": 50,
+            "max": 250000
+          }
+        },
+        "claim_status": {
+          "strategy": "enum",
+          "options": {
+            "values": ["paid", "denied", "pending", "partial"],
+            "weights": [78, 13, 5, 4]
+          }
+        },
+        "is_duplicate_flag": {
+          "strategy": "enum",
+          "options": {
+            "values": ["false", "true"],
+            "weights": [98, 2]
+          }
+        },
+        "fraud_flag": {
+          "strategy": "enum",
+          "options": {
+            "values": ["false", "true"],
+            "weights": [997, 3]
+          }
+        },
+        "filed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-01-05",
+            "end": "2025-12-31",
+            "distribution": "uniform"
+          }
+        },
+        "adjudicated_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-01-15",
+            "end": "2026-02-15",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+
+    "claim_lines": {
+      "match": "claim_lines",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "claim_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "claims", "column": "id" }
+        },
+        "procedure_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "procedures", "column": "id" }
+        },
+        "line_number": {
+          "strategy": "integer",
+          "options": { "min": 1, "max": 10 }
+        },
+        "billed_amount": {
+          "strategy": "float",
+          "options": {
+            "distribution": "lognormal",
+            "mean": 5.8,
+            "stddev": 0.9,
+            "min": 25,
+            "max": 100000
+          }
+        },
+        "allowed_amount": {
+          "strategy": "float",
+          "options": {
+            "distribution": "lognormal",
+            "mean": 5.2,
+            "stddev": 0.9,
+            "min": 10,
+            "max": 80000
+          }
+        },
+        "modifier": {
+          "strategy": "enum",
+          "options": {
+            "values": ["25", "59", "50", "26", "TC", "GA"],
+            "nullable": true,
+            "nullWeight": 0.45,
+            "weights": [70, 10, 7, 5, 4, 2, 2]
+          }
+        }
+      }
+    },
+
+    "payments": {
+      "match": "payments",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "claim_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "claims", "column": "id" }
+        },
+        "payment_amount": {
+          "strategy": "float",
+          "options": {
+            "distribution": "lognormal",
+            "mean": 5.0,
+            "stddev": 1.0,
+            "min": 0,
+            "max": 80000
+          }
+        },
+        "payment_method": {
+          "strategy": "enum",
+          "options": {
+            "values": ["EFT", "check", "ACH", "wire"],
+            "weights": [70, 15, 12, 3]
+          }
+        },
+        "days_to_payment": {
+          "strategy": "float",
+          "options": {
+            "distribution": "lognormal",
+            "mean": 3.7,
+            "stddev": 0.5,
+            "min": 1,
+            "max": 180
+          }
+        },
+        "is_underpayment": {
+          "strategy": "enum",
+          "options": {
+            "values": ["false", "true"],
+            "weights": [92, 8]
+          }
+        },
+        "received_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-01-20",
+            "end": "2026-03-31",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+
+    "denials": {
+      "match": "denials",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "claim_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "claims", "column": "id" }
+        },
+        "carc_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "CO-16",
+              "CO-50",
+              "CO-97",
+              "CO-22",
+              "CO-45",
+              "CO-29",
+              "CO-109",
+              "CO-18",
+              "CO-167",
+              "CO-96",
+              "CO-197",
+              "CO-OTHER"
+            ],
+            "weights": [22, 18, 15, 8, 7, 5, 4, 4, 3, 3, 5, 6]
+          }
+        },
+        "denial_category": {
+          "strategy": "enum",
+          "options": {
+            "values": ["administrative", "medical_necessity", "coding", "coverage", "authorization", "other"],
+            "weights": [30, 22, 18, 15, 10, 5]
+          }
+        },
+        "denial_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-01-20",
+            "end": "2026-02-28",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+
+    "appeals": {
+      "match": "appeals",
+      "columns": {
+        "id": { "strategy": "uuid" },
+        "denial_id": {
+          "strategy": "uuid",
+          "foreignKey": { "table": "denials", "column": "id" }
+        },
+        "appeal_level": {
+          "strategy": "enum",
+          "options": {
+            "values": ["first_level", "second_level", "external_review"],
+            "weights": [75, 20, 5]
+          }
+        },
+        "outcome": {
+          "strategy": "enum",
+          "options": {
+            "values": ["overturned", "upheld", "partial", "pending"],
+            "weights": [55, 30, 10, 5]
+          }
+        },
+        "filed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-02-01",
+            "end": "2026-03-31",
+            "distribution": "uniform"
+          }
+        }
+      }
+    }
+
+  },
+
+  "relationships": [
+    {
+      "targetTable": "patients",
+      "sourceTable": "providers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 20,
+        "min": 5,
+        "max": 80
+      }
+    },
+    {
+      "targetTable": "encounters",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2.5,
+        "min": 1,
+        "max": 15
+      }
+    },
+    {
+      "targetTable": "diagnoses",
+      "sourceTable": "encounters",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 1.5,
+        "min": 1,
+        "max": 6
+      }
+    },
+    {
+      "targetTable": "procedures",
+      "sourceTable": "encounters",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 1.2,
+        "min": 0,
+        "max": 8
+      }
+    },
+    {
+      "targetTable": "claims",
+      "sourceTable": "encounters",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.85,
+        "min": 0,
+        "max": 3
+      }
+    },
+    {
+      "targetTable": "claim_lines",
+      "sourceTable": "claims",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2.5,
+        "min": 1,
+        "max": 10
+      }
+    },
+    {
+      "targetTable": "payments",
+      "sourceTable": "claims",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.85,
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "targetTable": "denials",
+      "sourceTable": "claims",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.13,
+        "min": 0,
+        "max": 3
+      }
+    },
+    {
+      "targetTable": "appeals",
+      "sourceTable": "denials",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.3,
+        "min": 0,
+        "max": 2
+      }
+    },
+    {
+      "targetTable": "contracts",
+      "sourceTable": "payers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2.0,
+        "min": 1,
+        "max": 4
+      }
+    }
+  ]
+}
