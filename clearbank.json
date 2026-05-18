@@ -1,0 +1,1517 @@
+{
+  "name": "clearbank",
+  "version": "3.0",
+  "description": "ClearBank Financial \u2014 regional commercial bank ($8B assets, 280K customers, 42 branches) spanning 24 months (May 2024 - May 2026). Mixed retail and SMB banking with full BSA/AML compliance schema. Hidden story: three business_checking accounts opened 12-16 months ago exhibit a classic structuring pattern \u2014 large incoming wires split into 8-12 sub-$10K outgoing wires within 48 hours, forwarded through layered accounts to offshore destinations (Cayman Islands, Cyprus, Panama). EDD requested 11 months ago but never completed. Pattern not yet escalated to SAR. FinCEN exam scheduled in 60 days.",
+  "_meta": {
+    "purpose": "RealityDB Atelier Module 5 (ClearBank) \u2014 Chief Compliance Officer BSA/AML investigation before FinCEN examination; HireSQL banking-compliance assessments; SimLab AML analytics scenarios",
+    "version": "1.1",
+    "created": "2026-05-17",
+    "author": "Eddy Mkwambe / Mpingo Systems",
+    "scale_target": "50,000 rows across 24-month window May 2024 - May 2026",
+    "currency": "USD primary (integer cents); EUR/GBP/CAD for legitimate international; KYD/CYP/PAB for offshore destinations (Cayman/Cyprus/Panama dollars)",
+    "company": {
+      "name": "ClearBank Financial",
+      "stage": "Regional commercial bank",
+      "assets_usd": 8000000000,
+      "customers_total": 280000,
+      "branches_total": 42,
+      "trigger_event": "FinCEN examination scheduled in 60 days; internal audit flagged three accounts with unusual wire patterns; determine if structuring, layering, or false positive before examiner arrives"
+    },
+    "story": {
+      "summary": "Three business_checking accounts (designated ACT-A receives, ACT-B and ACT-C forward) opened 12-16 months ago show a classic structuring + layering pattern. ACT-A receives large incoming wires (~$2M average) and within 48 hours splits each into 8-12 outgoing wires, ALL below the $10,000 CTR threshold. 94% of outgoing wires from ACT-B and ACT-C are sub-$10K. All three accounts share the same beneficial owner who resides in Cayman/Cyprus/Panama. KYC Enhanced Due Diligence was requested 11 months ago but never completed.",
+      "smoking_gun": "94% sub-$10K outgoing wires + 48-hour split timing + 100% offshore destinations (KY/CY/PA) + same beneficial owner across 3 accounts + EDD never completed despite 11-month elapsed time + 100% of fraud alerts on these accounts open or under_review (none filed as SAR).",
+      "visibility_tiers": [
+        "Surface (Ex 1-4): Understand portfolio (customer/account/wire mix); identify anomaly via wire-pattern analysis; spot sub-threshold dollar-amount clustering on 3 accounts",
+        "Investigation (Ex 5-7): Confirm structuring signal (94% sub-$10K); investigate KYC failures (EDD pending 11 months); map beneficial-owner overlap across 3 accounts",
+        "Root cause (Ex 8-10): Trace offshore destinations (KY/CY/PA correspondent banks); quantify total structured amount; recommend SAR filing vs enhanced monitoring with regulatory citations (31 USC 5324, 31 CFR 1020.320)"
+      ],
+      "enforcement": "Baseline distributions are written with UNIFORM behavior across all accounts. The structuring/layering story (ACT-A/B/C wire patterns, KYC failures, beneficial owner concentration, offshore destinations) is enforced post-generation by scripts/enforce-clearbank-story.mjs (Stage 7). The enforcer's T0-T5 + T7 transformations (T6 temporal-fix step no longer needed for event tables \u2014 created_at dropped per Lesson 2) tag the first 3 business_checking accounts opened 12-16 months ago as ACT-A/B/C, then enforce wire patterns and link beneficial owners. Filter strategy is positional (date-window + account_type) not name-based because account_number is randomly generated."
+    },
+    "exceptions": [
+      {
+        "rule": "branches count should be exactly 42, employees ~200 (per spec)",
+        "actual": "~125 branches rows and ~125 employees rows at 50K scale (engine sizes roots by cascade math; 3 root tables share the budget)",
+        "reason": "Engine has no per-table row-count override. Branches and employees serve schema completeness; story is carried by accounts/wires/customers. Filtering uses account_type='business_checking' + opened_date window in the enforcer.",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17",
+        "future_fix": "Engine v2 feature request: fixed lookup tables. Same gap as MedCore/SupplyLink/TowerNet."
+      },
+      {
+        "rule": "Scale confidence target HIGH",
+        "actual": "Expected MEDIUM at 50K (~375 root rows across 3 root tables vs SupplyLink's 1304 from cascade \u2014 TBD)",
+        "reason": "3 root tables (vs 2 in prior packs) could improve confidence by adding more root rows. Cascade math depends on engine's interpretation. HIGH still requires ~250K total rows."
+      },
+      {
+        "rule": "Distribution diversity 100",
+        "actual": "Expected ~88-92",
+        "reason": "Inherent ratios \u2014 kyc_status 72% verified, transactions.status 88% completed, customers.risk_rating 60% low \u2014 reflect industry reality. Same domain-ratio issue as prior packs."
+      },
+      {
+        "rule": "branches.region had duplicate values in spec (Mid-Atlantic and Southeast listed twice)",
+        "actual": "De-duplicated to 3 unique regions with combined weights",
+        "reason": "Likely spec typo; consolidated [Carolinas, Mid-Atlantic, Southeast] with weights [35, 35, 30]."
+      },
+      {
+        "rule": "Lesson 2 applied: created_at dropped from 4 event tables",
+        "actual": "created_at dropped from transactions, wires, fraud_alerts, sar_filings (each has explicit event anchor: processed_at, initiated_at, detected_at, activity_start_date). KEPT on customers, branches, employees, accounts, kyc_records, beneficial_owners, case_notes (entity/log tables where created_at IS the legitimate event time).",
+        "reason": "v1.0 had created_at on all tables per spec contract; produced temporal_logic 84/100 (17% violations on event tables). v1.1 selectively drops created_at where it conflicts with an explicit event timestamp. Stage 7 enforcer T6 step still needed for ordering between event-anchor timestamps and dependent timestamps (e.g., wires.settled_at after initiated_at).",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17"
+      }
+    ],
+    "open_questions": [
+      "wires.amount_cents max 1.5B = $15M per single wire \u2014 plausible for commercial banking but on the high end.",
+      "Boolean fields modeled as enum 'false'/'true' with weighted distribution (matches roaming_flag pattern in TowerNet).",
+      "Currency codes KYD/CYP/PAB are valid ISO codes (Cayman, Cyprus discontinued/Cyprus Pound, Panama Balboa). CYP retained for story fidelity despite Cyprus switching to EUR in 2008.",
+      "Engine's 'full_name' and 'sentence' strategies relied upon (worked in TowerNet)."
+    ],
+    "citations": [
+      {
+        "field": "Structuring prohibition and definition",
+        "claim": "Federal law prohibiting transaction structuring to evade reporting requirements",
+        "source": "BSA 31 USC 5324",
+        "url": "https://www.govinfo.gov/content/pkg/USCODE-2022-title31/pdf/USCODE-2022-title31-subtitleIV-chapter53-subchapterII-sec5324.pdf"
+      },
+      {
+        "field": "CTR filing threshold $10,000",
+        "claim": "Currency Transaction Reports required for transactions over $10,000",
+        "source": "FinCEN Currency Transaction Report guidance",
+        "url": "https://www.fincen.gov/resources/statutes-and-regulations/ctr"
+      },
+      {
+        "field": "SAR filing requirements for suspicious transactions",
+        "claim": "Banks required to file SAR for suspicious activity over threshold within 30 days of detection",
+        "source": "31 CFR 1020.320",
+        "url": "https://www.ecfr.gov/current/title-31/subtitle-B/chapter-X/part-1020/section-1020.320"
+      },
+      {
+        "field": "BSA civil money penalty range",
+        "claim": "FinCEN may assess civil money penalties for willful BSA violations",
+        "source": "FinCEN Enforcement Actions",
+        "url": "https://www.fincen.gov/news/enforcement-actions"
+      },
+      {
+        "field": "EDD requirements for high-risk customers",
+        "claim": "Customer Due Diligence Final Rule mandates beneficial-owner identification for legal entity customers",
+        "source": "FinCEN CDD Final Rule",
+        "url": "https://www.fincen.gov/resources/statutes-and-regulations/cdd-final-rule"
+      },
+      {
+        "field": "BSA/AML examination procedures",
+        "claim": "FFIEC manual governs federal examination procedures for BSA/AML compliance",
+        "source": "FFIEC BSA/AML Examination Manual",
+        "url": "https://bsaaml.ffiec.gov/manual"
+      },
+      {
+        "field": "Bank account and wire-volume baselines",
+        "claim": "Approximate distributions for retail/SMB banking; illustrative within plausible US regional commercial bank range",
+        "source": "Illustrative \u2014 supported by FDIC Statistics on Depository Institutions",
+        "url": "https://www.fdic.gov/analysis/quarterly-banking-profile/"
+      },
+      {
+        "field": "Correspondent banking patterns",
+        "claim": "Major correspondent banks and offshore destinations illustrative; offshore inclusion necessary for story fidelity",
+        "source": "Illustrative \u2014 supported by FATF and OFAC public guidance",
+        "url": "https://www.fincen.gov/resources/statutes-and-regulations"
+      }
+    ],
+    "updated": "2026-05-17",
+    "changelog": [
+      {
+        "version": "1.1",
+        "date": "2026-05-17",
+        "changes": "Drop created_at from 4 event tables (transactions, wires, fraud_alerts, sar_filings) per Lesson 2. Targets temporal_logic 100/100 (was 84). Resolves data integrity concern from v1.0 review."
+      }
+    ]
+  },
+  "tables": {
+    "customers": {
+      "match": "customers",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "individual",
+              "sole_proprietor",
+              "llc",
+              "corporation",
+              "partnership",
+              "trust"
+            ],
+            "weights": [
+              55,
+              15,
+              15,
+              8,
+              4,
+              3
+            ]
+          }
+        },
+        "business_name": {
+          "strategy": "sentence",
+          "options": {
+            "nullable": true,
+            "nullWeight": 0.55
+          }
+        },
+        "first_name": {
+          "strategy": "full_name"
+        },
+        "last_name": {
+          "strategy": "full_name"
+        },
+        "state": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "NC",
+              "SC",
+              "VA",
+              "TN",
+              "GA",
+              "FL",
+              "MD",
+              "DC",
+              "DE",
+              "PA"
+            ],
+            "weights": [
+              30,
+              15,
+              12,
+              10,
+              10,
+              8,
+              6,
+              4,
+              3,
+              2
+            ]
+          }
+        },
+        "country": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "CA",
+              "MX",
+              "GB",
+              "DE",
+              "CN",
+              "IN",
+              "BR",
+              "NG",
+              "KY",
+              "CY",
+              "PA"
+            ],
+            "weights": [
+              82,
+              4,
+              3,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "kyc_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "verified",
+              "pending",
+              "expired",
+              "failed",
+              "exempt"
+            ],
+            "weights": [
+              72,
+              15,
+              6,
+              4,
+              3
+            ]
+          }
+        },
+        "kyc_tier": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "standard",
+              "enhanced",
+              "simplified"
+            ],
+            "weights": [
+              70,
+              20,
+              10
+            ]
+          }
+        },
+        "edd_required": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              80,
+              20
+            ]
+          }
+        },
+        "edd_completed_date": {
+          "strategy": "past_date",
+          "options": {
+            "nullable": true,
+            "nullWeight": 0.4
+          }
+        },
+        "risk_rating": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "prohibited"
+            ],
+            "weights": [
+              60,
+              28,
+              10,
+              2
+            ]
+          }
+        },
+        "onboarded_date": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "branches": {
+      "match": "branches",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "sentence"
+        },
+        "state": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "NC",
+              "SC",
+              "VA",
+              "TN",
+              "GA",
+              "FL",
+              "MD",
+              "DC",
+              "DE",
+              "PA"
+            ],
+            "weights": [
+              30,
+              15,
+              12,
+              10,
+              10,
+              8,
+              6,
+              4,
+              3,
+              2
+            ]
+          }
+        },
+        "city": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Charlotte",
+              "Raleigh",
+              "Durham",
+              "Greensboro",
+              "Winston-Salem",
+              "Columbia",
+              "Greenville",
+              "Charleston",
+              "Richmond",
+              "Norfolk",
+              "Nashville",
+              "Memphis",
+              "Atlanta",
+              "Savannah",
+              "Miami",
+              "Baltimore",
+              "Washington",
+              "Wilmington",
+              "Philadelphia",
+              "Pittsburgh"
+            ],
+            "weights": [
+              15,
+              8,
+              6,
+              5,
+              5,
+              6,
+              4,
+              4,
+              5,
+              4,
+              5,
+              4,
+              6,
+              3,
+              4,
+              4,
+              3,
+              2,
+              3,
+              2
+            ]
+          }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Carolinas",
+              "Mid-Atlantic",
+              "Southeast"
+            ],
+            "weights": [
+              35,
+              35,
+              30
+            ]
+          }
+        },
+        "branch_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "full_service",
+              "limited_service",
+              "drive_through",
+              "commercial_only"
+            ],
+            "weights": [
+              60,
+              20,
+              12,
+              8
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "employees": {
+      "match": "employees",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "name": {
+          "strategy": "full_name"
+        },
+        "role": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "teller",
+              "personal_banker",
+              "branch_manager",
+              "loan_officer",
+              "compliance_analyst",
+              "bsa_officer",
+              "relationship_manager",
+              "fraud_analyst",
+              "operations_specialist"
+            ],
+            "weights": [
+              25,
+              20,
+              10,
+              12,
+              8,
+              5,
+              10,
+              5,
+              5
+            ]
+          }
+        },
+        "department": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "retail_banking",
+              "commercial_banking",
+              "compliance",
+              "operations",
+              "risk_management",
+              "lending"
+            ],
+            "weights": [
+              35,
+              20,
+              15,
+              15,
+              8,
+              7
+            ]
+          }
+        },
+        "branch_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "branches",
+            "column": "id"
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "accounts": {
+      "match": "accounts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_number": {
+          "strategy": "integer",
+          "options": {
+            "min": 100000000,
+            "max": 999999999
+          }
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "branch_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "branches",
+            "column": "id"
+          }
+        },
+        "account_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "checking",
+              "savings",
+              "money_market",
+              "business_checking",
+              "business_savings",
+              "cd",
+              "loan",
+              "line_of_credit"
+            ],
+            "weights": [
+              35,
+              25,
+              8,
+              15,
+              8,
+              4,
+              3,
+              2
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "dormant",
+              "closed",
+              "frozen",
+              "restricted"
+            ],
+            "weights": [
+              82,
+              8,
+              5,
+              3,
+              2
+            ]
+          }
+        },
+        "balance_usd": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 18000,
+            "stddev": 45000,
+            "min": 0,
+            "max": 2500000
+          }
+        },
+        "currency": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CAD"
+            ],
+            "weights": [
+              92,
+              4,
+              2,
+              2
+            ]
+          }
+        },
+        "opened_date": {
+          "strategy": "past_date"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "transactions": {
+      "match": "transactions",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "transaction_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "deposit",
+              "withdrawal",
+              "transfer",
+              "wire",
+              "ach",
+              "check",
+              "fee",
+              "interest"
+            ],
+            "weights": [
+              25,
+              20,
+              18,
+              12,
+              12,
+              8,
+              3,
+              2
+            ]
+          }
+        },
+        "amount_cents": {
+          "strategy": "integer",
+          "options": {
+            "min": 100,
+            "max": 500000000
+          }
+        },
+        "currency": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CAD"
+            ],
+            "weights": [
+              92,
+              4,
+              2,
+              2
+            ]
+          }
+        },
+        "direction": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "credit",
+              "debit"
+            ],
+            "weights": [
+              50,
+              50
+            ]
+          }
+        },
+        "channel": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "branch",
+              "online",
+              "mobile",
+              "atm",
+              "wire",
+              "ach",
+              "check"
+            ],
+            "weights": [
+              15,
+              30,
+              25,
+              12,
+              8,
+              7,
+              3
+            ]
+          }
+        },
+        "description": {
+          "strategy": "sentence"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "pending",
+              "failed",
+              "reversed"
+            ],
+            "weights": [
+              88,
+              7,
+              3,
+              2
+            ]
+          }
+        },
+        "processed_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+    "wires": {
+      "match": "wires",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "direction": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "outgoing",
+              "incoming"
+            ],
+            "weights": [
+              55,
+              45
+            ]
+          }
+        },
+        "amount_cents": {
+          "strategy": "integer",
+          "options": {
+            "min": 50000,
+            "max": 1500000000
+          }
+        },
+        "currency": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USD",
+              "EUR",
+              "GBP",
+              "CAD",
+              "KYD",
+              "CYP",
+              "PAB"
+            ],
+            "weights": [
+              80,
+              8,
+              5,
+              3,
+              1,
+              1,
+              2
+            ]
+          }
+        },
+        "correspondent_bank": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "JPMorgan Chase",
+              "Bank of America",
+              "Wells Fargo",
+              "Citibank",
+              "HSBC",
+              "Deutsche Bank",
+              "Barclays",
+              "Standard Chartered",
+              "Cayman National Bank",
+              "Bank of Cyprus",
+              "Banistmo Panama"
+            ],
+            "weights": [
+              20,
+              18,
+              15,
+              12,
+              8,
+              6,
+              5,
+              4,
+              4,
+              4,
+              4
+            ]
+          }
+        },
+        "destination_country": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "GB",
+              "DE",
+              "CA",
+              "MX",
+              "CN",
+              "IN",
+              "KY",
+              "CY",
+              "PA",
+              "NG",
+              "AE"
+            ],
+            "weights": [
+              55,
+              8,
+              6,
+              5,
+              4,
+              4,
+              3,
+              4,
+              4,
+              4,
+              1,
+              2
+            ]
+          }
+        },
+        "destination_account_masked": {
+          "strategy": "sentence"
+        },
+        "purpose_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "trade_payment",
+              "investment",
+              "family_remittance",
+              "loan_repayment",
+              "consulting_fees",
+              "real_estate",
+              "other"
+            ],
+            "weights": [
+              25,
+              20,
+              15,
+              12,
+              12,
+              8,
+              8
+            ]
+          }
+        },
+        "processing_time_hours": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 72
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "pending",
+              "returned",
+              "held"
+            ],
+            "weights": [
+              85,
+              8,
+              4,
+              3
+            ]
+          }
+        },
+        "initiated_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "settled_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-02",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.1
+          }
+        }
+      }
+    },
+    "kyc_records": {
+      "match": "kyc_records",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "document_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "passport",
+              "drivers_license",
+              "national_id",
+              "articles_of_incorporation",
+              "operating_agreement",
+              "tax_id",
+              "utility_bill",
+              "bank_reference"
+            ],
+            "weights": [
+              20,
+              30,
+              15,
+              10,
+              8,
+              7,
+              5,
+              5
+            ]
+          }
+        },
+        "verification_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "verified",
+              "pending",
+              "failed",
+              "expired",
+              "waived"
+            ],
+            "weights": [
+              68,
+              15,
+              6,
+              7,
+              4
+            ]
+          }
+        },
+        "verified_date": {
+          "strategy": "past_date",
+          "options": {
+            "nullable": true,
+            "nullWeight": 0.22
+          }
+        },
+        "expiry_date": {
+          "strategy": "past_date",
+          "options": {
+            "nullable": true,
+            "nullWeight": 0.3
+          }
+        },
+        "notes": {
+          "strategy": "sentence",
+          "options": {
+            "nullable": true,
+            "nullWeight": 0.4
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "beneficial_owners": {
+      "match": "beneficial_owners",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "owner_name": {
+          "strategy": "full_name"
+        },
+        "ownership_pct": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 35,
+            "stddev": 20,
+            "min": 10,
+            "max": 100
+          }
+        },
+        "country_of_residence": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "US",
+              "CA",
+              "GB",
+              "DE",
+              "CN",
+              "IN",
+              "MX",
+              "BR",
+              "AE",
+              "KY",
+              "CY",
+              "PA"
+            ],
+            "weights": [
+              70,
+              5,
+              5,
+              4,
+              4,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        "id_verified": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              25,
+              75
+            ]
+          }
+        },
+        "pep_flag": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              97,
+              3
+            ]
+          }
+        },
+        "sanctions_flag": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              99,
+              1
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "fraud_alerts": {
+      "match": "fraud_alerts",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "alert_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "structuring",
+              "unusual_wire_pattern",
+              "velocity_breach",
+              "geographic_anomaly",
+              "round_dollar_amount",
+              "edd_overdue",
+              "high_risk_jurisdiction",
+              "rapid_movement"
+            ],
+            "weights": [
+              5,
+              8,
+              15,
+              10,
+              12,
+              8,
+              6,
+              36
+            ]
+          }
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "weights": [
+              35,
+              40,
+              18,
+              7
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "under_review",
+              "closed_false_positive",
+              "closed_filed_sar",
+              "closed_no_action"
+            ],
+            "weights": [
+              15,
+              25,
+              35,
+              5,
+              20
+            ]
+          }
+        },
+        "rule_triggered": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "RULE-AML-001",
+              "RULE-AML-002",
+              "RULE-AML-003",
+              "RULE-AML-004",
+              "RULE-AML-005",
+              "RULE-WIRE-001",
+              "RULE-WIRE-002",
+              "RULE-KYC-001"
+            ],
+            "weights": [
+              15,
+              12,
+              12,
+              10,
+              10,
+              15,
+              15,
+              11
+            ]
+          }
+        },
+        "amount_cents": {
+          "strategy": "integer",
+          "options": {
+            "min": 100,
+            "max": 500000000,
+            "nullable": true,
+            "nullWeight": 0.2
+          }
+        },
+        "detected_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "resolved_at": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.4
+          }
+        },
+        "disposition": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false_positive",
+              "filed_sar",
+              "enhanced_monitoring",
+              "account_closed",
+              "referred_law_enforcement"
+            ],
+            "weights": [
+              45,
+              8,
+              30,
+              10,
+              7
+            ],
+            "nullable": true,
+            "nullWeight": 0.4
+          }
+        }
+      }
+    },
+    "sar_filings": {
+      "match": "sar_filings",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "customer_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "customers",
+            "column": "id"
+          }
+        },
+        "filing_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "initial",
+              "continuing",
+              "joint"
+            ],
+            "weights": [
+              70,
+              20,
+              10
+            ]
+          }
+        },
+        "activity_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "structuring",
+              "money_laundering",
+              "fraud",
+              "identity_theft",
+              "terrorist_financing",
+              "other"
+            ],
+            "weights": [
+              25,
+              20,
+              25,
+              15,
+              5,
+              10
+            ]
+          }
+        },
+        "amount_cents": {
+          "strategy": "integer",
+          "options": {
+            "min": 500000,
+            "max": 50000000
+          }
+        },
+        "activity_start_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-04-15",
+            "distribution": "uniform"
+          }
+        },
+        "activity_end_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-06-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "filed_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-06-01",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.6
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "draft",
+              "filed",
+              "under_review",
+              "closed"
+            ],
+            "weights": [
+              20,
+              50,
+              20,
+              10
+            ]
+          }
+        },
+        "analyst_notes": {
+          "strategy": "sentence"
+        }
+      }
+    },
+    "case_notes": {
+      "match": "case_notes",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "account_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "accounts",
+            "column": "id"
+          }
+        },
+        "employee_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "employees",
+            "column": "id"
+          }
+        },
+        "note_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "aml_review",
+              "kyc_update",
+              "customer_contact",
+              "escalation",
+              "disposition",
+              "general"
+            ],
+            "weights": [
+              25,
+              20,
+              20,
+              15,
+              10,
+              10
+            ]
+          }
+        },
+        "subject": {
+          "strategy": "sentence"
+        },
+        "body": {
+          "strategy": "sentence"
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "targetTable": "employees",
+      "sourceTable": "branches",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 5,
+        "min": 2,
+        "max": 15
+      }
+    },
+    {
+      "targetTable": "accounts",
+      "sourceTable": "customers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 1.2,
+        "min": 1,
+        "max": 6
+      }
+    },
+    {
+      "targetTable": "transactions",
+      "sourceTable": "accounts",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 3,
+        "min": 0,
+        "max": 30
+      }
+    },
+    {
+      "targetTable": "wires",
+      "sourceTable": "accounts",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.5,
+        "min": 0,
+        "max": 12
+      }
+    },
+    {
+      "targetTable": "kyc_records",
+      "sourceTable": "customers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 1.3,
+        "min": 1,
+        "max": 6
+      }
+    },
+    {
+      "targetTable": "beneficial_owners",
+      "sourceTable": "customers",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.8,
+        "min": 0,
+        "max": 5
+      }
+    },
+    {
+      "targetTable": "fraud_alerts",
+      "sourceTable": "accounts",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.4,
+        "min": 0,
+        "max": 8
+      }
+    },
+    {
+      "targetTable": "sar_filings",
+      "sourceTable": "accounts",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.13,
+        "min": 0,
+        "max": 3
+      }
+    },
+    {
+      "targetTable": "case_notes",
+      "sourceTable": "accounts",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.67,
+        "min": 0,
+        "max": 10
+      }
+    }
+  ]
+}
