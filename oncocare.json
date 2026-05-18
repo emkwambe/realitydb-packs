@@ -1,0 +1,1687 @@
+{
+  "name": "oncocare",
+  "version": "3.0",
+  "description": "OncoCare Therapeutics ONC-441 Phase III clinical trial dataset \u2014 targeted therapy for advanced non-small cell lung cancer (NSCLC), 2,400 patients across 12 international trial sites, 24-month enrollment window. Hidden story: SITE-07 (Sao Paulo, Brazil) has 34% protocol deviation rate (vs 8% system avg), administered 85% of protocol dose due to undocumented tolerability concerns, producing 31% response rate (vs 54% at other sites) \u2014 dragging trial-wide response from 54% down to 49.8%, just below FDA accelerated approval threshold.",
+  "_meta": {
+    "purpose": "RealityDB Atelier Module 6 (OncoCare) \u2014 VP of Clinical Operations investigation of DSMB-flagged site outlier before FDA advisory meeting; HireSQL biotech/clinical-trial assessments; SimLab efficacy analytics scenarios",
+    "version": "1.0",
+    "created": "2026-05-17",
+    "updated": "2026-05-17",
+    "author": "Eddy Mkwambe / Mpingo Systems",
+    "scale_target": "30,000 rows across 24-month enrollment window May 2024 - May 2026 (smaller than other packs \u2014 clinical trials run smaller)",
+    "company": {
+      "name": "OncoCare Therapeutics",
+      "stage": "Pre-NDA submission, Phase III ongoing",
+      "trial_id": "ONC-441-P3-001",
+      "drug": "ONC-441 targeted therapy",
+      "indication": "Advanced non-small cell lung cancer (NSCLC)",
+      "patients_enrolled": 2400,
+      "sites": 12,
+      "trigger_event": "DSMB interim analysis flagged one treatment arm underperforming; overall response rate 49.8% just below FDA accelerated-approval threshold of 50%; CMO needs full root-cause investigation before FDA advisory meeting in 6 weeks"
+    },
+    "story": {
+      "summary": "Trial Site 7 (Sao Paulo, Brazil) has 34% protocol deviation rate vs 8% system-wide. Type: dose modification \u2014 administering 85% of protocol 400mg dose. Reason: site investigators downgraded doses due to tolerability concerns but never escalated to sponsor. Site 7 response rate is 31% vs 54% at other sites. Adverse event severity at Site 7 is LOWER (consistent with underdosing \u2014 less drug, fewer side effects, less efficacy). Site 7 represents 18% of enrolled patients; including them drags overall response rate from 54.1% to 49.8%.",
+      "smoking_gun": "SITE-07 dose 85% of protocol + 34% deviation rate + 31% response (vs 54%) + MILDER adverse events (severity grades 1-2 at 85% vs 70% elsewhere) all visible together when stratified by site_code. The milder AEs are the epistemic twist \u2014 students must recognize this means underdosing, not healthier patients.",
+      "visibility_tiers": [
+        "Surface (Ex 1-3): Trial portfolio understanding; overall response rate 49.8% vs FDA 50% threshold; response by site reveals SITE-07 outlier",
+        "Investigation (Ex 4-6): Protocol deviations by site concentration; deviation type at SITE-07 (dose_modification dominant); dose adherence at SITE-07 = 85% of protocol",
+        "Root cause (Ex 7-10): Adverse event severity at SITE-07 (milder than elsewhere); smoking gun \u2014 underdosing explains both lower AEs AND lower response; quantify exclusion impact (49.8% -> 54.1% if SITE-07 excluded); recommend scenario A (exclude) or B (remediate)"
+      ],
+      "enforcement": "Baseline distributions are written with UNIFORM behavior across all 12 sites. The SITE-07 underdosing story (34% deviation, 85% dose, 31% response, milder AEs, more for_cause monitoring visits) is enforced post-generation by scripts/enforce-oncocare-story.mjs (Stage 7). Filter must use sites.site_code='SITE-07' (bounded to 12 declared values) because the engine generates ~6 site rows per declared site_code. T0-T8 transformations + key interim_analyses.overall_response_rate set to exactly 0.498."
+    },
+    "exceptions": [
+      {
+        "rule": "trials count fixed 1, sites 12, treatment_arms 2",
+        "actual": "~75-125 rows per root at 30K scale (engine sizes by cascade math)",
+        "reason": "Engine has no per-table row-count override. Story-critical filtering uses sites.site_code='SITE-07' (bounded to 12 declared values), trials.trial_id (single value), treatment_arms.arm_code (bounded to 2 values).",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17"
+      },
+      {
+        "rule": "Lesson 19 applied: created_at dropped from 8 event tables",
+        "actual": "created_at present only on entity tables (trials, sites, treatment_arms, patients); dropped from event tables (visits, adverse_events, lab_results, protocol_deviations, dropout_events, response_assessments, site_monitoring_visits, interim_analyses)",
+        "reason": "Each event table has ONE explicit temporal anchor (visits.scheduled_date, adverse_events.onset_date, lab_results.collection_date, protocol_deviations.detected_date, dropout_events.dropout_date, response_assessments.assessment_date, site_monitoring_visits.visit_date, interim_analyses.analysis_date). Adding created_at would produce 17% temporally broken rows per Lesson 16 evidence from TowerNet/ClearBank. Patients keeps created_at because enrollment_date is enrollment intent, not record creation time \u2014 they can legitimately differ.",
+        "approved_by": "Eddy Mkwambe",
+        "date": "2026-05-17"
+      },
+      {
+        "rule": "Lesson 3 applied: adverse_events.action_taken 'none' value replaced",
+        "actual": "Replaced 'none' enum value with explicit values ['observed', 'dose_reduction', 'dose_delay', 'discontinuation', 'hospitalization'] where 'observed' replaces 'none' semantically (action: clinical observation, no intervention)",
+        "reason": "Per Lesson 3, 'none' as enum value flags as placeholder in assess. 'observed' is semantically correct for the underlying meaning (no intervention but ongoing clinical observation)."
+      },
+      {
+        "rule": "Scale confidence target HIGH",
+        "actual": "Expected LOW at 30K scale due to small interim_analyses (3 rows intent, will limit confidence per Lesson 18)",
+        "reason": "interim_analyses is intentionally tiny (3 interim analyses per trial). Multiple small root-side tables limit cardinality variance metric. Per Lesson 18, more small roots can lower scale confidence. Accepting LOW for v1.0 baseline."
+      },
+      {
+        "rule": "Distribution diversity 100",
+        "actual": "Expected ~85-92",
+        "reason": "Multiple inherent skewed ratios: severity_grade weighted toward grades 1-2 (real clinical reality), visit_status 82% completed, monitor visit_type 65% routine. Domain reality per Lesson 19 \u2014 documentation territory."
+      }
+    ],
+    "open_questions": [
+      "interim_analyses cardinality: spec asks for ~3 rows; engine will produce more. Enforcer targets the LATEST analysis for the 0.498 value.",
+      "Boolean fields modeled as 'false'/'true' string enums (matches prior packs).",
+      "Site name and country are aligned by position in spec \u2014 pack uses independent enums; enforcer can validate or rely on the position alignment after data load.",
+      "ECOG performance status values 0/1/2 modeled as string enum (matches spec format)."
+    ],
+    "citations": [
+      {
+        "field": "Protocol deviation rate 8% baseline",
+        "claim": "Industry benchmark for protocol deviation rate in Phase III oncology trials around 5-10%",
+        "source": "TransCelerate BioPharma Clinical Quality Metrics 2024",
+        "url": "https://transceleratebiopharmainc.com"
+      },
+      {
+        "field": "FDA accelerated approval response rate threshold",
+        "claim": "Response rate threshold for accelerated approval typically targets 30-50% depending on indication; threshold of 50% is illustrative for this advanced NSCLC scenario",
+        "source": "FDA Oncology Center of Excellence Accelerated Approval guidance",
+        "url": "https://www.fda.gov/patients/fast-track-breakthrough-therapy-accelerated-approval-priority-review/accelerated-approval-program"
+      },
+      {
+        "field": "DSMB charter requirements and interim analysis governance",
+        "claim": "ICH E6 GCP governs Data Safety Monitoring Board composition and interim analysis procedures",
+        "source": "ICH E6 Good Clinical Practice",
+        "url": "https://www.ich.org/page/efficacy-guidelines"
+      },
+      {
+        "field": "NSCLC targeted therapy response rates",
+        "claim": "Advanced NSCLC response rates with targeted therapies range 30-60% depending on biomarker selection",
+        "source": "IQVIA Global Oncology Trends Report 2024",
+        "url": "https://www.iqvia.com/insights/the-iqvia-institute/reports/global-oncology-trends-2024"
+      },
+      {
+        "field": "Risk-based monitoring approach",
+        "claim": "FDA guidance on risk-based monitoring established for-cause visit triggers",
+        "source": "FDA Guidance on Risk-Based Approach to Monitoring",
+        "url": "https://www.fda.gov/media/116754/download"
+      },
+      {
+        "field": "Clinical trial dropout rate 18% benchmark",
+        "claim": "Phase III oncology trial dropout rates typically 15-25% over enrollment window",
+        "source": "Tufts CSDD Impact Report on Clinical Trial Retention 2024",
+        "url": "https://csdd.tufts.edu"
+      },
+      {
+        "field": "ECOG performance status distribution",
+        "claim": "Phase III oncology eligibility typically requires ECOG 0-2; distribution roughly 25%/55%/20%",
+        "source": "Illustrative \u2014 supported by Eastern Cooperative Oncology Group performance criteria",
+        "url": "https://ecog-acrin.org"
+      },
+      {
+        "field": "Adverse event severity grading",
+        "claim": "CTCAE v5.0 grading system 1-5 with characteristic distribution where most events are grades 1-2",
+        "source": "NCI CTCAE v5.0",
+        "url": "https://ctep.cancer.gov/protocoldevelopment/electronic_applications/ctc.htm"
+      }
+    ]
+  },
+  "tables": {
+    "trials": {
+      "match": "trials",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ONC-441-P3-001"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "title": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "A Phase III Randomized Study of ONC-441 in Advanced NSCLC"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "phase": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Phase III"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "therapeutic_area": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Oncology"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "drug_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ONC-441"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "target_enrollment": {
+          "strategy": "integer",
+          "options": {
+            "min": 2400,
+            "max": 2400
+          }
+        },
+        "actual_enrollment": {
+          "strategy": "integer",
+          "options": {
+            "min": 2380,
+            "max": 2400
+          }
+        },
+        "primary_endpoint": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Overall Response Rate"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ongoing"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "irb_approval_date": {
+          "strategy": "past_date"
+        },
+        "start_date": {
+          "strategy": "past_date"
+        },
+        "estimated_end_date": {
+          "strategy": "future_date"
+        },
+        "sponsor": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "OncoCare Therapeutics"
+            ],
+            "weights": [
+              100
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "sites": {
+      "match": "sites",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "site_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "SITE-01",
+              "SITE-02",
+              "SITE-03",
+              "SITE-04",
+              "SITE-05",
+              "SITE-06",
+              "SITE-07",
+              "SITE-08",
+              "SITE-09",
+              "SITE-10",
+              "SITE-11",
+              "SITE-12"
+            ],
+            "weights": [
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9
+            ]
+          }
+        },
+        "site_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Memorial Cancer Center Houston",
+              "Johns Hopkins Oncology Baltimore",
+              "MD Anderson Houston",
+              "Mayo Clinic Rochester",
+              "Stanford Cancer Institute",
+              "Dana-Farber Boston",
+              "Instituto do Cancer Sao Paulo",
+              "Gustave Roussy Paris",
+              "National Cancer Center Tokyo",
+              "Charite Berlin",
+              "Royal Marsden London",
+              "Peter MacCallum Melbourne"
+            ],
+            "weights": [
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9
+            ]
+          }
+        },
+        "country": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "USA",
+              "Brazil",
+              "France",
+              "Japan",
+              "Germany",
+              "UK",
+              "Australia"
+            ],
+            "weights": [
+              50,
+              8,
+              8,
+              8,
+              8,
+              9,
+              9
+            ]
+          }
+        },
+        "region": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "North America",
+              "Latin America",
+              "Europe",
+              "Asia Pacific"
+            ],
+            "weights": [
+              50,
+              8,
+              25,
+              17
+            ]
+          }
+        },
+        "city": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Houston",
+              "Baltimore",
+              "Houston",
+              "Rochester",
+              "Stanford",
+              "Boston",
+              "Sao Paulo",
+              "Paris",
+              "Tokyo",
+              "Berlin",
+              "London",
+              "Melbourne"
+            ],
+            "weights": [
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9,
+              9
+            ]
+          }
+        },
+        "investigator_name": {
+          "strategy": "full_name"
+        },
+        "site_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "academic_medical_center",
+              "community_hospital",
+              "cancer_center"
+            ],
+            "weights": [
+              50,
+              25,
+              25
+            ]
+          }
+        },
+        "activation_date": {
+          "strategy": "past_date"
+        },
+        "enrollment_target": {
+          "strategy": "integer",
+          "options": {
+            "min": 150,
+            "max": 250
+          }
+        },
+        "enrollment_actual": {
+          "strategy": "integer",
+          "options": {
+            "min": 140,
+            "max": 250
+          }
+        },
+        "deviation_rate_pct": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 0.08,
+            "stddev": 0.03,
+            "min": 0.02,
+            "max": 0.2
+          }
+        },
+        "performance_tier": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "excellent",
+              "good",
+              "adequate",
+              "watch_list",
+              "probation"
+            ],
+            "weights": [
+              20,
+              40,
+              25,
+              10,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "treatment_arms": {
+      "match": "treatment_arms",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "arm_code": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ARM-A",
+              "ARM-B"
+            ],
+            "weights": [
+              50,
+              50
+            ]
+          }
+        },
+        "arm_name": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "ONC-441 Full Dose",
+              "ONC-441 Reduced Dose"
+            ],
+            "weights": [
+              50,
+              50
+            ]
+          }
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trials",
+            "column": "id"
+          }
+        },
+        "drug_dose_mg": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              400,
+              320
+            ],
+            "weights": [
+              50,
+              50
+            ]
+          }
+        },
+        "drug_dose_pct_of_protocol": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              100,
+              80
+            ],
+            "weights": [
+              50,
+              50
+            ]
+          }
+        },
+        "administration_route": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "oral",
+              "intravenous"
+            ],
+            "weights": [
+              70,
+              30
+            ]
+          }
+        },
+        "frequency": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "once_daily",
+              "twice_daily",
+              "weekly"
+            ],
+            "weights": [
+              50,
+              30,
+              20
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "patients": {
+      "match": "patients",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_code": {
+          "strategy": "integer",
+          "options": {
+            "min": 100000,
+            "max": 999999
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "treatment_arm_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "treatment_arms",
+            "column": "id"
+          }
+        },
+        "age_bracket": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "18-44",
+              "45-54",
+              "55-64",
+              "65-74",
+              "75+"
+            ],
+            "weights": [
+              8,
+              18,
+              32,
+              28,
+              14
+            ]
+          }
+        },
+        "sex": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "Male",
+              "Female"
+            ],
+            "weights": [
+              55,
+              45
+            ]
+          }
+        },
+        "ecog_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2"
+            ],
+            "weights": [
+              25,
+              55,
+              20
+            ]
+          }
+        },
+        "prior_therapy_lines": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "weights": [
+              10,
+              45,
+              35,
+              10
+            ]
+          }
+        },
+        "enrollment_date": {
+          "strategy": "past_date"
+        },
+        "consent_date": {
+          "strategy": "past_date"
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "active",
+              "completed",
+              "dropped_out",
+              "died",
+              "lost_to_followup"
+            ],
+            "weights": [
+              55,
+              20,
+              12,
+              8,
+              5
+            ]
+          }
+        },
+        "created_at": {
+          "strategy": "past_date"
+        }
+      }
+    },
+    "visits": {
+      "match": "visits",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "visit_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "screening",
+              "baseline",
+              "cycle_1",
+              "cycle_2",
+              "cycle_3",
+              "cycle_4",
+              "cycle_5",
+              "cycle_6",
+              "end_of_treatment",
+              "followup"
+            ],
+            "weights": [
+              10,
+              10,
+              15,
+              13,
+              12,
+              10,
+              9,
+              8,
+              8,
+              5
+            ]
+          }
+        },
+        "visit_number": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 15
+          }
+        },
+        "scheduled_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "actual_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.18
+          }
+        },
+        "visit_status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "missed",
+              "rescheduled",
+              "cancelled"
+            ],
+            "weights": [
+              82,
+              8,
+              6,
+              4
+            ]
+          }
+        },
+        "dose_administered_mg": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 390,
+            "stddev": 30,
+            "min": 280,
+            "max": 420,
+            "nullable": true,
+            "nullWeight": 0.2
+          }
+        },
+        "dose_pct_of_protocol": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 0.98,
+            "stddev": 0.04,
+            "min": 0.75,
+            "max": 1.05,
+            "nullable": true,
+            "nullWeight": 0.2
+          }
+        },
+        "protocol_deviation_flag": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              92,
+              8
+            ]
+          }
+        }
+      }
+    },
+    "adverse_events": {
+      "match": "adverse_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "ae_term": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "fatigue",
+              "nausea",
+              "vomiting",
+              "diarrhea",
+              "anemia",
+              "neutropenia",
+              "thrombocytopenia",
+              "alopecia",
+              "peripheral_neuropathy",
+              "pneumonitis",
+              "rash",
+              "fever"
+            ],
+            "weights": [
+              20,
+              18,
+              12,
+              10,
+              8,
+              8,
+              6,
+              5,
+              5,
+              3,
+              3,
+              2
+            ]
+          }
+        },
+        "severity_grade": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "weights": [
+              40,
+              30,
+              18,
+              9,
+              3
+            ]
+          }
+        },
+        "ae_category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "hematologic",
+              "gastrointestinal",
+              "constitutional",
+              "neurologic",
+              "dermatologic",
+              "pulmonary",
+              "other"
+            ],
+            "weights": [
+              22,
+              20,
+              18,
+              12,
+              10,
+              8,
+              10
+            ]
+          }
+        },
+        "is_serious": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              85,
+              15
+            ]
+          }
+        },
+        "is_related_to_drug": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              35,
+              65
+            ]
+          }
+        },
+        "onset_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "resolution_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-15",
+            "end": "2026-05-31",
+            "distribution": "uniform",
+            "nullable": true,
+            "nullWeight": 0.25
+          }
+        },
+        "action_taken": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "observed",
+              "dose_reduction",
+              "dose_delay",
+              "discontinuation",
+              "hospitalization"
+            ],
+            "weights": [
+              45,
+              25,
+              18,
+              8,
+              4
+            ]
+          }
+        }
+      }
+    },
+    "lab_results": {
+      "match": "lab_results",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "lab_test": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "CBC",
+              "CMP",
+              "LFT",
+              "creatinine",
+              "albumin",
+              "CEA",
+              "CA125",
+              "neutrophil_count",
+              "platelet_count",
+              "hemoglobin"
+            ],
+            "weights": [
+              15,
+              12,
+              12,
+              10,
+              8,
+              10,
+              8,
+              10,
+              8,
+              7
+            ]
+          }
+        },
+        "result_value": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 5.5,
+            "stddev": 3.0,
+            "min": 0.1,
+            "max": 50.0
+          }
+        },
+        "result_unit": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "mg/dL",
+              "g/dL",
+              "U/L",
+              "x10^9/L",
+              "ng/mL",
+              "U/mL"
+            ],
+            "weights": [
+              20,
+              18,
+              18,
+              15,
+              15,
+              14
+            ]
+          }
+        },
+        "normal_range_low": {
+          "strategy": "float",
+          "options": {
+            "distribution": "uniform",
+            "min": 0,
+            "max": 5
+          }
+        },
+        "normal_range_high": {
+          "strategy": "float",
+          "options": {
+            "distribution": "uniform",
+            "min": 5,
+            "max": 20
+          }
+        },
+        "is_abnormal": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              70,
+              30
+            ]
+          }
+        },
+        "abnormality_grade": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "weights": [
+              45,
+              30,
+              18,
+              7
+            ],
+            "nullable": true,
+            "nullWeight": 0.55
+          }
+        },
+        "collection_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+    "protocol_deviations": {
+      "match": "protocol_deviations",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "deviation_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "dose_modification",
+              "visit_window_deviation",
+              "informed_consent",
+              "eligibility_criteria",
+              "assessment_timing",
+              "concomitant_medication",
+              "sample_collection",
+              "documentation_error"
+            ],
+            "weights": [
+              5,
+              20,
+              8,
+              6,
+              18,
+              15,
+              12,
+              16
+            ]
+          }
+        },
+        "deviation_category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "major",
+              "minor",
+              "administrative"
+            ],
+            "weights": [
+              20,
+              55,
+              25
+            ]
+          }
+        },
+        "description": {
+          "strategy": "sentence"
+        },
+        "severity": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "critical",
+              "major",
+              "minor",
+              "administrative"
+            ],
+            "weights": [
+              8,
+              22,
+              48,
+              22
+            ]
+          }
+        },
+        "impact_on_data": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "significant",
+              "moderate",
+              "minimal"
+            ],
+            "weights": [
+              19,
+              31,
+              50
+            ],
+            "nullable": true,
+            "nullWeight": 0.2
+          }
+        },
+        "corrective_action": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "retrain_staff",
+              "update_procedure",
+              "patient_counseling",
+              "protocol_amendment",
+              "site_closeout",
+              "none_required"
+            ],
+            "weights": [
+              30,
+              20,
+              15,
+              10,
+              5,
+              20
+            ]
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "open",
+              "resolved",
+              "under_review",
+              "escalated"
+            ],
+            "weights": [
+              20,
+              55,
+              15,
+              10
+            ]
+          }
+        },
+        "detected_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "reported_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-02",
+            "end": "2026-05-20",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+    "dropout_events": {
+      "match": "dropout_events",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "dropout_reason": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "adverse_event",
+              "disease_progression",
+              "patient_withdrawal",
+              "investigator_decision",
+              "lost_to_followup",
+              "death",
+              "protocol_deviation"
+            ],
+            "weights": [
+              25,
+              30,
+              15,
+              10,
+              8,
+              8,
+              4
+            ]
+          }
+        },
+        "dropout_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-06-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "last_visit_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-15",
+            "end": "2026-05-10",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+    "response_assessments": {
+      "match": "response_assessments",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "patient_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "patients",
+            "column": "id"
+          }
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "assessment_timepoint": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "baseline",
+              "week_8",
+              "week_16",
+              "week_24",
+              "end_of_treatment"
+            ],
+            "weights": [
+              25,
+              25,
+              20,
+              18,
+              12
+            ]
+          }
+        },
+        "response_category": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "complete_response",
+              "partial_response",
+              "stable_disease",
+              "progressive_disease",
+              "not_evaluable"
+            ],
+            "weights": [
+              12,
+              42,
+              25,
+              15,
+              6
+            ]
+          }
+        },
+        "tumor_measurement_mm": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 35,
+            "stddev": 18,
+            "min": 0,
+            "max": 150,
+            "nullable": true,
+            "nullWeight": 0.2
+          }
+        },
+        "assessor_blinded": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "weights": [
+              15,
+              85
+            ]
+          }
+        },
+        "assessment_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        }
+      }
+    },
+    "site_monitoring_visits": {
+      "match": "site_monitoring_visits",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "site_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "sites",
+            "column": "id"
+          }
+        },
+        "monitor_name": {
+          "strategy": "full_name"
+        },
+        "visit_type": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "initiation",
+              "routine",
+              "for_cause",
+              "closeout"
+            ],
+            "weights": [
+              10,
+              65,
+              15,
+              10
+            ]
+          }
+        },
+        "visit_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-05-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        },
+        "findings_count": {
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 25
+          }
+        },
+        "critical_findings": {
+          "strategy": "integer",
+          "options": {
+            "min": 0,
+            "max": 8
+          }
+        },
+        "status": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "completed",
+              "pending",
+              "cancelled"
+            ],
+            "weights": [
+              80,
+              15,
+              5
+            ]
+          }
+        }
+      }
+    },
+    "interim_analyses": {
+      "match": "interim_analyses",
+      "columns": {
+        "id": {
+          "strategy": "uuid"
+        },
+        "trial_id": {
+          "strategy": "uuid",
+          "foreignKey": {
+            "table": "trials",
+            "column": "id"
+          }
+        },
+        "analysis_number": {
+          "strategy": "integer",
+          "options": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        "patients_included": {
+          "strategy": "integer",
+          "options": {
+            "min": 800,
+            "max": 2400
+          }
+        },
+        "overall_response_rate": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 0.498,
+            "stddev": 0.02,
+            "min": 0.4,
+            "max": 0.6
+          }
+        },
+        "response_rate_ci_low": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 0.46,
+            "stddev": 0.02,
+            "min": 0.38,
+            "max": 0.52
+          }
+        },
+        "response_rate_ci_high": {
+          "strategy": "float",
+          "options": {
+            "distribution": "normal",
+            "mean": 0.538,
+            "stddev": 0.02,
+            "min": 0.48,
+            "max": 0.62
+          }
+        },
+        "recommendation": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "continue",
+              "stop_for_efficacy",
+              "stop_for_futility",
+              "modify_protocol"
+            ],
+            "weights": [
+              65,
+              10,
+              15,
+              10
+            ]
+          }
+        },
+        "dsmb_decision": {
+          "strategy": "enum",
+          "options": {
+            "values": [
+              "continue",
+              "pause",
+              "stop",
+              "request_additional_data"
+            ],
+            "weights": [
+              60,
+              15,
+              10,
+              15
+            ]
+          }
+        },
+        "analysis_date": {
+          "strategy": "timestamp",
+          "options": {
+            "start": "2024-08-01",
+            "end": "2026-05-15",
+            "distribution": "uniform"
+          }
+        }
+      }
+    }
+  },
+  "relationships": [
+    {
+      "targetTable": "treatment_arms",
+      "sourceTable": "trials",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2,
+        "min": 1,
+        "max": 4
+      }
+    },
+    {
+      "targetTable": "patients",
+      "sourceTable": "sites",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 50,
+        "min": 10,
+        "max": 250
+      }
+    },
+    {
+      "targetTable": "visits",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 6,
+        "min": 1,
+        "max": 20
+      }
+    },
+    {
+      "targetTable": "adverse_events",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2,
+        "min": 0,
+        "max": 12
+      }
+    },
+    {
+      "targetTable": "lab_results",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 3,
+        "min": 0,
+        "max": 15
+      }
+    },
+    {
+      "targetTable": "protocol_deviations",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.2,
+        "min": 0,
+        "max": 5
+      }
+    },
+    {
+      "targetTable": "dropout_events",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 0.18,
+        "min": 0,
+        "max": 1
+      }
+    },
+    {
+      "targetTable": "response_assessments",
+      "sourceTable": "patients",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 2,
+        "min": 0,
+        "max": 8
+      }
+    },
+    {
+      "targetTable": "site_monitoring_visits",
+      "sourceTable": "sites",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 10,
+        "min": 0,
+        "max": 30
+      }
+    },
+    {
+      "targetTable": "interim_analyses",
+      "sourceTable": "trials",
+      "cardinality": {
+        "strategy": "poisson",
+        "mean": 3,
+        "min": 1,
+        "max": 5
+      }
+    }
+  ]
+}

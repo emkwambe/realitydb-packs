@@ -1,0 +1,143 @@
+{
+  "id": "RDB-ASSESS-20260518-fo2w",
+  "version": "1.0",
+  "timestamp": "2026-05-18T01:07:26.801Z",
+  "file": "C:\\Users\\HP\\Documents\\realityDB Packs\\oncocare-30k-v1.0.sql",
+  "datasetHash": "09187533f4dad141",
+  "format": "sql",
+  "tables": 12,
+  "columns": 127,
+  "rows": 30000,
+  "standard": "Generic",
+  "overallScore": 98,
+  "pillars": [
+    {
+      "name": "Fidelity",
+      "score": 96,
+      "metrics": [
+        {
+          "name": "Completeness",
+          "pillar": "fidelity",
+          "value": "100%",
+          "threshold": ">=90%",
+          "score": 100,
+          "status": "pass",
+          "detail": "0 null values out of 315,811 cells"
+        },
+        {
+          "name": "Distribution diversity",
+          "pillar": "fidelity",
+          "value": "72/83 diverse",
+          "threshold": ">=70%",
+          "score": 87,
+          "status": "pass",
+          "detail": "trials.trial_id: entropy=0.00 (skewed); trials.title: entropy=0.00 (skewed); trials.phase: entropy=0.00 (skewed)"
+        },
+        {
+          "name": "Correlation stability",
+          "pillar": "fidelity",
+          "value": "28/28 stable",
+          "threshold": "No artificial correlations",
+          "score": 100,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "name": "Structure",
+      "score": 98,
+      "metrics": [
+        {
+          "name": "FK integrity",
+          "pillar": "structure",
+          "value": "100% (58,131/58,131)",
+          "threshold": "100%",
+          "score": 100,
+          "status": "pass"
+        },
+        {
+          "name": "PK uniqueness",
+          "pillar": "structure",
+          "value": "12/12 tables with unique PKs",
+          "threshold": "100%",
+          "score": 100,
+          "status": "pass"
+        },
+        {
+          "name": "Temporal logic",
+          "pillar": "structure",
+          "value": "0/0 ordered correctly",
+          "threshold": "100%",
+          "score": 100,
+          "status": "pass",
+          "detail": "All timestamps correctly ordered"
+        },
+        {
+          "name": "Enum validity",
+          "pillar": "structure",
+          "value": "61/61 clean",
+          "threshold": "No empty or placeholder values",
+          "score": 100,
+          "status": "pass"
+        },
+        {
+          "name": "Cardinality ratios",
+          "pillar": "structure",
+          "value": "15.0/17 healthy (vs pack)",
+          "threshold": "Within 20% of declared cardinality",
+          "score": 88,
+          "status": "warn",
+          "detail": "patients/sites: actual 20.102x vs declared 50.000x (60% off); visits/sites: 120.602x"
+        }
+      ]
+    },
+    {
+      "name": "Privacy",
+      "score": 100,
+      "metrics": [
+        {
+          "name": "k-Anonymity",
+          "pillar": "privacy",
+          "value": "k=1",
+          "threshold": "k >= 5",
+          "score": 100,
+          "status": "pass",
+          "detail": "Table: sites. Min group size for quasi-identifier combinations"
+        },
+        {
+          "name": "Exact match rate",
+          "pillar": "privacy",
+          "value": "0.00%",
+          "threshold": "0%",
+          "score": 100,
+          "status": "pass",
+          "detail": "0 exact duplicate rows out of 30,000"
+        },
+        {
+          "name": "PII column detection",
+          "pillar": "privacy",
+          "value": "0 PII-shaped column(s) — synthetic provenance verified",
+          "threshold": "Synthetic data — PII-shaped columns expected",
+          "score": 100,
+          "status": "pass",
+          "detail": "No PII-named columns found"
+        },
+        {
+          "name": "Sensitive value uniqueness",
+          "pillar": "privacy",
+          "value": "N/A",
+          "score": 100,
+          "status": "info",
+          "detail": "No sensitive-pattern columns found"
+        }
+      ]
+    }
+  ],
+  "disclaimer": "This report presents measured statistical properties. It does not constitute legal advice, regulatory certification, or fitness-for-purpose endorsement. Compliance determination is the responsibility of the data controller.",
+  "scaleConfidence": {
+    "level": "LOW",
+    "rootRows": 295,
+    "label": "HIGH variance — cardinality scores unreliable at this scale",
+    "cardinalityVariancePct": 6
+  }
+}
